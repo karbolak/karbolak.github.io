@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clickable Buttons</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+        .message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-bottom: 2px solid #ccc;
+            font-size: 18px;
+            color: #333;
+            z-index: 1000;
+            text-align: center;
+        }
+        .button-container {
+            margin-top: 80px; /* To avoid overlap with the fixed message */
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+        .button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
+            width: 150px;
+            cursor: pointer;
+            transition: 0.3s ease-in-out;
+            background-color: #f9f9f9;
+        }
+        .button:hover {
+            background-color: #f0f0f0;
+        }
+        .button img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        .button-title {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="message" class="message">Click a button to see its message!</div>
+    <div class="button-container">
+        <!-- Buttons will be generated dynamically -->
+    </div>
+
+    <script>
+        const data = {
+            "anioł": "zwiastun dobrych wieści",
+            "arkada": "ten znak może mieć dwojakie znaczenie: niebawem odbędziesz daleką podróż lub staniesz na ślubnym kobiercu",
+            "beczka": "beczka śmiechu, beczka piwa... ten symbol można rozumieć różnie, ale zawsze wróży dobrą zabawę",
+            "biurko": "niebawem otrzymasz wiadomość, której treść z pewnością cię ucieszy",
+            "bukiet": "przepowiada szczęście w miłości",
+            "chmury": "to niezbyt pomyślna wróżba: oznacza, że w twoim życiu pojawią się poważne problemy",
+            "chorągiewka": "bardzo dosłowny znak, symbolizuje niezdecydowanie",
+            "czajnik": "spodziewaj się problemów ze zdrowiem, na szczęście szybko wrócisz do pełni sił",
+            "drabina": "możesz się cieszyć, bo wkrótce otrzymasz zasłużony awans",
+            "drzewo": "w twoim życiu zajdzie wiele dobrych zmian",
+            "dzwon": "niebawem otrzymasz wiadomość, której się nie spodziewasz",
+            "fasola": "to niepomyślny symbol, oznacza życie w ubóstwie",
+            "filar": "obok ciebie jest osoba, na którą możesz liczyć w każdej sytuacji",
+            "fontanna": "czeka cię jeszcze wiele szczęśliwych chwil",
+            "gęś": "niebawem do twoich drzwi zapukają niespodziewani goście",
+            "gitara": "odnajdziesz szczęście w miłości",
+            "gniazdo": "w twoim domu zapanuje zgoda, która przełoży się na szczęśliwe życie rodzinne",
+            "igła": "w swoim otoczeniu wzbudzasz podziw i jesteś autorytetem dla wielu osób",
+            "jabłko": "symbolizuje najlepszy czas na podejmowanie przedsięwzięć, każde z nich zakończy się dużym powodzeniem",
+            "jaskółka": "niebawem staniesz przed koniecznością odbycia niespodziewanej podróży",
+            "jeleń": "wkrótce odbędziesz burzliwą dyskusję z bliską ci osobą",
+            "kaczka": "to bardzo dobry znak, przepowiada spory przypływ gotówki",
+            "kapelusz": "w twoim życiu zawodowym zajdą istotne zmiany, najprawdopodobniej niebawem zmienisz pracę",
+            "kieliszek": "do tej pory zagrażało ci niebezpieczeństwo, ale teraz wreszcie możesz cieszyć się spokojem",
+            "koło": "twoja ciężka praca przyniesie ci zasłużony sukces",
+            "kosa": "obok ciebie czyha niebezpieczeństwo",
+            "lampa": "zbyt wiele czasu poświęcasz zajęciom, którym nie towarzyszy żadna wartość",
+            "latawiec": "spodziewaj się spełnienia najskrytszych marzeń",
+            "lornetka": "pokłócisz się z najbliższym przyjacielem, a wasze drogi rozejdą się na zawsze",
+            "miecz": "także ten symbol przepowiada kłótnie, w efekcie których doznasz wielu rozczarowań",
+            "młotek": "na twojej drodze jest wiele przeszkód, ale uda ci się pokonać każdą z nich",
+            "muszla": "powinnaś spodziewać się pomyślnej nowiny",
+            "niemowlę": "to będzie dość trudny czas, spodziewaj się serii drobnych kłopotów",
+            "nożyczki": "powinnaś spodziewać się problemów i kłótni w domu",
+            "okno": "twój bliski przyjaciel wyciągnie w twoim kierunku pomocną dłoń",
+            "orzeł": "twoje życie zmieni się na lepsze",
+            "ostryga": "to symbol o dwóch znaczeniach: możesz spodziewać się poprawy w sferze finansowej lub niebawem zacznie interesować się tobą przystojny mężczyzna",
+            "pająk": "ten symbol zwiastuje niespodziewany przypływ gotówki",
+            "paproć": "lepiej przyjrzyj się osobie, z którą spędzasz życie, najprawdopodobniej jesteś zdradzana",
+            "podkowa": "ten znak przepowiada pomyślność",
+            "ręka": "to symbol mocnej, nierozerwalnej przyjaźni",
+            "ropucha": "ktoś będzie obdarzał cię pochlebstwami, ale tylko po to, by osiągnąć swój cel",
+            "róża": "nie będzie narzekać na brak popularności i zainteresowania",
+            "schody": "twoja sytuacja życiowa ulegnie wyraźnej poprawie",
+            "siekiera": "czekają na ciebie spore trudności, ale wszystkie uda ci się przezwyciężyć",
+            "słońce": "ten znak symbolizuje nieskończone szczęście i życiowe powodzenie",
+            "tory": "czeka cię długa podróż",
+            "trumna": "spodziewaj się złej wiadomości",
+            "ucho": "wkrótce otrzymasz niespodziewane wieści",
+            "urna": "będziesz wieść bogate i szczęśliwe życie",
+            "wazon": "obok ciebie jest ktoś, kto potrzebuje twojej pomocy",
+            "wąż": "w pobliżu czyha na ciebie przebiegły wróg",
+            "wilk": "wystrzegaj się zazdrości, to uczucie wpędzi cię w niemałe kłopoty",
+            "zamek": "ten znak określa cię jako osobę interesowną, która nawiązuje relacje z ludźmi przede wszystkim z myślą o własnych korzyściach",
+            "zegar": "to właściwy moment żeby zatroszczyć się o przyszłość",
+            "żółw": "musisz przygotować się na sporą dawkę krytyki",
+            "żuk": "przed tobą trudne przedsięwzięcie, ale nie zniechęcaj się, bo nagrodą za trud będzie duży zysk"
+        };
+
+        const container = document.querySelector('.button-container');
+        const messageDiv = document.getElementById('message');
+
+        function generateButtons() {
+            for (const [title, message] of Object.entries(data)) {
+                const button = document.createElement('div');
+                button.classList.add('button');
+                button.innerHTML = `
+                    <div class="button-title">${title}</div>
+                `;
+                button.addEventListener('click', () => {
+                    showMessage(message);
+                });
+                container.appendChild(button);
+            }
+        }
+
+        function showMessage(message) {
+            messageDiv.textContent = message;
+        }
+
+        generateButtons();
+    </script>
+</body>
+</html>
