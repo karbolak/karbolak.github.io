@@ -3,12 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clickable Buttons</title>
+    <title>Szklana Kula</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
             text-align: center;
+            position: relative; /* Ensure proper stacking of elements */
+        }
+        .back-button {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 3px;
+            text-decoration: none;
+            z-index: 1000; /* Ensure it stays on top */
+        }
+        .back-button:hover {
+            background-color: #555;
         }
         .message {
             position: fixed;
@@ -22,9 +40,10 @@
             color: #333;
             z-index: 1000;
             text-align: center;
+            z-index: 999; /* Below back-button */
         }
         .button-container {
-            margin-top: 80px;
+            margin-top: 100px;
             display: flex;
             flex-wrap: wrap;
             gap: 20px;
@@ -57,6 +76,7 @@
     </style>
 </head>
 <body>
+    <a class="back-button" href="../utilities.html">Go Back</a>
     <div id="message" class="message">Naciśnij przycisk by zobaczyć wróżbę!</div>
     <div class="button-container">
     </div>

@@ -12,26 +12,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
             height: 100vh;
             background: #010B25;
             color: #E7D6B5;
-            overflow: hidden;
-        }
-        .container {
-            text-align: center;
-        }
-        .title img {
-            max-width: 100%;
-            height: auto;
-        }
-        .gif-container {
-            position: absolute;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
             overflow: hidden;
         }
         .gif {
@@ -46,6 +30,13 @@
             to {
                 transform: translateY(-20px);
             }
+        }
+        .container {
+            text-align: center;
+        }
+        .title img {
+            max-width: 100%;
+            height: auto;
         }
         .button {
             background-color: #E7D6B5;
@@ -64,18 +55,26 @@
         .button:hover {
             background-color: #d4c1a0;
         }
+        .gif-lower {
+            margin-top: 50px; /* Pushes the second GIF further down */
+        }
     </style>
 </head>
 <body>
+    <!-- GIF above the title -->
+    <img class="gif" src="attachments/dog.gif" alt="GIF 1">
+    
+    <!-- Title section -->
     <div class="container">
         <div class="title">
             <img src="attachments/title_text.png" alt="Website Title">
         </div>
-        <div class="gif-container">
-            <img class="gif" src="attachments/dog.gif" alt="GIF 1">
-            <img class="gif" src="attachments/cat.gif" alt="GIF 2">
-        </div>
+        
+        <!-- Button -->
         <a class="button" href="utilities.html">Utilities</a>
     </div>
+
+    <!-- GIF below the title -->
+    <img class="gif gif-lower" src="attachments/cat.gif" alt="GIF 2">
 </body>
 </html>
