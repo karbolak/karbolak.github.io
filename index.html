@@ -1,1 +1,79 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kajtkowa strona</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #010B25;
+            color: #E7D6B5;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+        }
+        .title img {
+            max-width: 100%;
+            height: auto;
+        }
+        .gif-container {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            overflow: hidden;
+        }
+        .gif {
+            width: 150px;
+            height: 150px;
+            animation: float 5s infinite alternate;
+        }
+        @keyframes float {
+            from {
+                transform: translateY(0);
+            }
+            to {
+                transform: translateY(-20px);
+            }
+        }
+        .button {
+            background-color: #E7D6B5;
+            color: #010B25;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .button:hover {
+            background-color: #d4c1a0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title">
+            <img src="attachments/title_text.png" alt="Website Title">
+        </div>
+        <div class="gif-container">
+            <img class="gif" src="moving-gif1.gif" alt="GIF 1">
+            <img class="gif" src="moving-gif2.gif" alt="GIF 2">
+        </div>
+        <a class="button" href="utilities.html">Utilities</a>
+    </div>
+</body>
+</html>
