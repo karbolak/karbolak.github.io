@@ -2,22 +2,55 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Pub-Quiz Grouping Tool</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 🔧 Important for mobile scaling -->
+  <title>Totally-Not-Racial-Segregation-Tool</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-    input, button { margin: 5px 0; width: 100%; padding: 5px; }
-    .group { margin-top: 15px; border-top: 1px solid #ccc; padding-top: 10px; }
+    body {
+      font-family: sans-serif;
+      padding: 10px;
+      max-width: 100%;
+      margin: auto;
+    }
+
+    input, button {
+      margin: 5px 0;
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    .group {
+      margin-top: 15px;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+      word-wrap: break-word;
+    }
+
+    h1 {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .back-button {
+      display: inline-block;
+      margin-bottom: 10px;
+      text-decoration: none;
+      color: #007bff;
+      font-size: 0.9em;
+    }
   </style>
 </head>
 <body>
-  <a class="back-button" href="../utilities.html">Go Back</a>
-  <h1>Pub-Quiz Grouping Tool</h1>
+  <a class="back-button" href="../utilities.html">← Go Back</a>
+  <h1>Totally-Not-Racial-Segregation-Tool</h1>
 
   <label>Class Polish (comma-separated names or IDs):</label>
-  <input id="classA" type="text" value="Zuza, 2, 3, Kacper, Hania,">
+  <input id="classA" type="text" value="Zuza, 2, 3, Kacper, Hania">
 
   <label>Class Slovak (comma-separated names or IDs):</label>
-  <input id="classB" type="text" value="Terez, 5, 6, Nat, DidntHaveMoreNames,">
+  <input id="classB" type="text" value="Terez, 5, 6, Nat, DidntHaveMoreNames">
 
   <label>Number of groups:</label>
   <input id="numGroups" type="number" value="2" min="1">
@@ -41,17 +74,14 @@
 
       const groups = Array.from({ length: numGroups }, () => ({ A: [], B: [] }));
 
-      // Distribute Class A evenly
       A.forEach((person, i) => {
         groups[i % numGroups].A.push(person);
       });
 
-      // Distribute Class B evenly
       B.forEach((person, i) => {
         groups[i % numGroups].B.push(person);
       });
 
-      // Display results
       groups.forEach((g, i) => {
         const countA = g.A.length;
         const countB = g.B.length;
