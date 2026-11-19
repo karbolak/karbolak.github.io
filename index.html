@@ -10,45 +10,103 @@
 </head>
 <body>
   <div class="portfolio" data-theme="light">
-    <div class="sheet">
-      <div class="dos-window">
-        <header class="dos-banner">
-          <span>Kajetan Karbowski <small>/ Portfolio</small></span>
-          <div class="dos-themes" role="group" aria-label="Color theme">
-            <button type="button" data-color="light" aria-label="Light theme" aria-pressed="true">Light</button>
-            <button type="button" data-color="dark" aria-label="Dark theme" aria-pressed="false">Dark</button>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="sheet dos-window">
+      <header class="site-header">
+        <div class="dos-banner">
+          <a class="wordmark" href="./" data-page="home">Kajetan Karbowski <small>/ Portfolio</small></a>
+          <div class="header-tools">
+            <button type="button" id="outline-toggle" aria-controls="outline" aria-expanded="false" aria-keyshortcuts="E">Outline</button>
+            <div class="dos-themes" role="group" aria-label="Color theme">
+              <button type="button" data-color="light" aria-label="Light theme" aria-pressed="true">Light</button>
+              <button type="button" data-color="dark" aria-label="Dark theme" aria-pressed="false">Dark</button>
+            </div>
           </div>
-        </header>
-        <nav class="dos-tabs" aria-label="Portfolio sections">
-          <button type="button" data-section="home" aria-pressed="true">Home</button>
-          <button type="button" data-section="projects" aria-pressed="false">Projects</button>
-          <button type="button" data-section="experience" aria-pressed="false">Experience</button>
-          <button type="button" data-section="education" aria-pressed="false">Education</button>
-          <button type="button" data-section="skills" aria-pressed="false">Skills</button>
-        </nav>
-        <div class="dos-workspace">
-          <aside class="dos-sidebar">
-            <p>Perspective</p>
-            <nav aria-label="Portfolio perspectives">
-              <button type="button" data-role="general" aria-pressed="true">General</button>
-              <button type="button" data-role="research" aria-pressed="false">AI / Research</button>
-              <button type="button" data-role="engineering" aria-pressed="false">Software Engineering</button>
-              <button type="button" data-role="teaching" aria-pressed="false">Teaching / Education</button>
-            </nav>
-          </aside>
-          <main class="dos-content">
-            <header class="hero">
-              <p class="eyebrow dos-path"><span class="heading-text">~/portfolio/home</span><span class="typed" aria-hidden="true"></span></p>
-              <h1><span class="heading-text">Kajetan Karbowski</span><span class="typed" aria-hidden="true"></span></h1>
-              <p class="intro">I’m an MSc Artificial Intelligence student at the University of Groningen, interested in AI research, software engineering, and education.</p>
-            </header>
-            <div id="section-content"></div>
-          </main>
         </div>
-        <div class="dos-status"><span id="current-role">General</span><span id="current-section">Home</span></div>
+        <nav class="dos-tabs" aria-label="Primary">
+          <a href="./" data-page="home" aria-current="page">Home</a>
+          <a href="?section=projects" data-page="projects">Projects</a>
+          <a href="?section=experience" data-page="experience">Experience</a>
+          <a href="?section=education" data-page="education">Education</a>
+          <a href="?section=skills" data-page="skills">Skills</a>
+          <a href="?section=contact" data-page="contact">Contact</a>
+        </nav>
+        <div class="command-bar" id="command-bar">
+          <form class="command-line" id="command-form" role="search">
+            <span class="prompt" aria-hidden="true"><span id="prompt-path">~/portfolio</span> <b>❯</b></span>
+            <div class="command-field">
+              <input id="command-input" type="search" role="combobox" aria-label="Search projects, pages, or commands" aria-controls="command-results" aria-autocomplete="list" aria-expanded="false" aria-keyshortcuts="Control+K Meta+K" autocomplete="off" spellcheck="false" placeholder="Search projects, pages, or commands…">
+              <span id="command-feedback" class="command-feedback" aria-hidden="true" hidden></span>
+            </div>
+            <kbd class="command-key" aria-hidden="true">Ctrl / ⌘ K</kbd>
+          </form>
+          <div id="search-panel" class="search-panel" hidden>
+            <div class="search-results" id="search-results">
+              <p class="search-caption">Results</p>
+              <ul id="command-results" role="listbox" aria-label="Search results"></ul>
+              <p id="search-empty" hidden>No matches.</p>
+            </div>
+            <div class="search-preview" id="search-preview"></div>
+            <div class="search-help" id="command-help" hidden>
+              <h2>Command help</h2>
+              <p>Type a name to search. Use ↑ ↓ to move, Enter to open, and Escape to close.</p>
+              <dl>
+                <dt>Navigate</dt><dd><code>cd projects</code>, <code>cd experience</code>, <code>cd education</code>, <code>cd contact</code></dd>
+                <dt>Open a project</dt><dd><code>open psag</code></dd>
+                <dt>Change view</dt><dd><code>view ai</code>, <code>view software</code>, <code>view education</code>, <code>view general</code></dd>
+                <dt>Filter projects</dt><dd><code>filter --tag python</code>, <code>filter --clear</code></dd>
+              </dl>
+            </div>
+            <div class="search-footer"><span id="search-count" aria-live="polite"></span><span>↑ ↓ Move · Enter Open · Esc Close</span></div>
+          </div>
+        </div>
+      </header>
+
+      <div class="dos-workspace">
+        <aside class="outline" id="outline" hidden>
+          <nav aria-label="Page outline">
+            <p id="outline-path">portfolio/</p>
+            <ul id="outline-links"></ul>
+          </nav>
+        </aside>
+        <main class="dos-content" id="main" tabindex="-1">
+          <div class="views" role="group" aria-label="Perspective">
+            <span class="view-label" aria-hidden="true">View</span>
+            <button type="button" data-perspective="general" aria-pressed="true">All</button>
+            <button type="button" data-perspective="research" aria-pressed="false">Research</button>
+            <button type="button" data-perspective="engineering" aria-pressed="false">Software</button>
+            <button type="button" data-perspective="teaching" aria-pressed="false">Education</button>
+          </div>
+
+          <a class="back-link" id="back-to-projects" href="?section=projects" data-page="projects" hidden>← Back to projects</a>
+          <header class="hero" data-home>
+            <div class="hero-copy">
+              <h1 tabindex="-1">Kajetan Karbowski</h1>
+              <p class="intro">I’m an MSc Artificial Intelligence student at the University of Groningen, interested in AI research, software engineering, and education.</p>
+              <div class="hero-actions">
+                <a class="button primary" href="?section=projects" data-page="projects">Browse projects</a>
+                <a class="button" href="?section=contact#cv" data-page="contact" data-anchor="cv">CV information</a>
+                <a class="button" href="?section=contact" data-page="contact">Contact</a>
+              </div>
+            </div>
+            <div class="media-placeholder portrait" id="portrait"><span>Portrait placeholder</span></div>
+          </header>
+
+          <div class="filters" id="filters" hidden>
+            <span>Filter</span>
+            <button type="button" id="clear-filter">Clear filter</button>
+            <span id="filter-count"></span>
+          </div>
+          <div id="section-content"></div>
+        </main>
       </div>
-      <footer class="profile-footer"><a href="https://github.com/karbolak">GitHub</a></footer>
+
+      <footer class="dos-status">
+        <span id="status" role="status" aria-live="polite" aria-atomic="true">Ready</span>
+        <span id="status-path" aria-hidden="true">~/portfolio</span>
+      </footer>
     </div>
+
   </div>
 </body>
 </html>
