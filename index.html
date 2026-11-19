@@ -1,80 +1,54 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kajtkowa strona</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            height: 100vh;
-            background: #010B25;
-            color: #E7D6B5;
-            overflow: hidden;
-        }
-        .gif {
-            width: 150px;
-            height: 150px;
-            animation: float 5s infinite alternate;
-        }
-        @keyframes float {
-            from {
-                transform: translateY(0);
-            }
-            to {
-                transform: translateY(-20px);
-            }
-        }
-        .container {
-            text-align: center;
-        }
-        .title img {
-            max-width: 100%;
-            height: auto;
-        }
-        .button {
-            background-color: #E7D6B5;
-            color: #010B25;
-            border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 20px;
-            text-decoration: none;
-            display: inline-block;
-            position: relative;
-            z-index: 10;
-        }
-        .button:hover {
-            background-color: #d4c1a0;
-        }
-        .gif-lower {
-            margin-top: 50px; /* Pushes the second GIF further down */
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Kajetan Karbowski, MSc Artificial Intelligence student at the University of Groningen.">
+  <title>Kajetan Karbowski</title>
+  <link rel="stylesheet" href="portfolio.css">
+  <script src="portfolio.js" defer></script>
 </head>
 <body>
-    <!-- GIF above the title -->
-    <img class="gif" src="attachments/dog.gif" alt="GIF 1">
-    
-    <!-- Title section -->
-    <div class="container">
-        <div class="title">
-            <img src="attachments/title_text.png" alt="Website Title">
+  <div class="portfolio" data-theme="light">
+    <div class="sheet">
+      <div class="dos-window">
+        <header class="dos-banner">
+          <span>Kajetan Karbowski <small>/ Portfolio</small></span>
+          <div class="dos-themes" role="group" aria-label="Color theme">
+            <button type="button" data-color="light" aria-label="Light theme" aria-pressed="true">Light</button>
+            <button type="button" data-color="dark" aria-label="Dark theme" aria-pressed="false">Dark</button>
+          </div>
+        </header>
+        <nav class="dos-tabs" aria-label="Portfolio sections">
+          <button type="button" data-section="home" aria-pressed="true">Home</button>
+          <button type="button" data-section="projects" aria-pressed="false">Projects</button>
+          <button type="button" data-section="experience" aria-pressed="false">Experience</button>
+          <button type="button" data-section="education" aria-pressed="false">Education</button>
+          <button type="button" data-section="skills" aria-pressed="false">Skills</button>
+        </nav>
+        <div class="dos-workspace">
+          <aside class="dos-sidebar">
+            <p>Perspective</p>
+            <nav aria-label="Portfolio perspectives">
+              <button type="button" data-role="general" aria-pressed="true">General</button>
+              <button type="button" data-role="research" aria-pressed="false">AI / Research</button>
+              <button type="button" data-role="engineering" aria-pressed="false">Software Engineering</button>
+              <button type="button" data-role="teaching" aria-pressed="false">Teaching / Education</button>
+            </nav>
+          </aside>
+          <main class="dos-content">
+            <header class="hero">
+              <p class="eyebrow dos-path"><span class="heading-text">~/portfolio/home</span><span class="typed" aria-hidden="true"></span></p>
+              <h1><span class="heading-text">Kajetan Karbowski</span><span class="typed" aria-hidden="true"></span></h1>
+              <p class="intro">I’m an MSc Artificial Intelligence student at the University of Groningen, interested in AI research, software engineering, and education.</p>
+            </header>
+            <div id="section-content"></div>
+          </main>
         </div>
-        
-        <!-- Button -->
-        <a class="button" href="utilities.html">Utilities</a>
+        <div class="dos-status"><span id="current-role">General</span><span id="current-section">Home</span></div>
+      </div>
+      <footer class="profile-footer"><a href="https://github.com/karbolak">GitHub</a></footer>
     </div>
-
-    <!-- GIF below the title -->
-    <img class="gif gif-lower" src="attachments/cat.gif" alt="GIF 2">
+  </div>
 </body>
 </html>
