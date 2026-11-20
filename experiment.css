@@ -311,13 +311,14 @@ body:has(> .portfolio[data-design="experimental"]:not([hidden])) {
     white-space: nowrap;
   }
   .portfolio[data-design="experimental"] .command-line {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, max-content) minmax(calc(18ch + 4px), 1fr) auto;
     gap: 4px;
     padding: 4px 7px;
+    font-size: .72rem;
   }
   .portfolio[data-design="experimental"] .prompt { display: flex; align-items: center; overflow: visible; }
   .portfolio[data-design="experimental"] #prompt-path {
-    max-width: min(25vw, 14ch);
+    min-width: 0;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;

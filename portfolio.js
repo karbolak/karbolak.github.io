@@ -77,7 +77,7 @@ const pageIntros = {
   skills: 'Areas of experience across research, software, and teaching.',
   contact: 'Professional profiles and contact information.',
 };
-const contact = { email: '', linkedin: 'https://www.linkedin.com/in/kajetan-karbowski/', cvs: [] };
+const contact = { email: 'kajetan.karbowski@gmail.com', linkedin: 'https://www.linkedin.com/in/kajetan-karbowski/', cvs: [] };
 const portfolio = document.querySelector('.portfolio');
 const main = document.querySelector('#main');
 const designOptions = document.querySelector('#design-options');
@@ -103,6 +103,7 @@ const status = document.querySelector('#status');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const narrowLayout = matchMedia('(max-width: 760px)');
 const compactCommandBar = matchMedia('(max-width: 520px)');
+let displayedPath = '~';
 let animationFrame;
 let statusTimer;
 let statusText;
@@ -450,6 +451,21 @@ function currentPath() {
   return portfolioPath(state.page, state.project);
 }
 
+function fitPromptPath() {
+  promptPath.textContent = displayedPath;
+  if (state.design === 'experimental' && compactCommandBar.matches &&
+      displayedPath.endsWith('.md') && promptPath.scrollWidth > promptPath.clientWidth) {
+    promptPath.textContent = displayedPath.slice(0, -3);
+  }
+}
+
+function setPromptPath(path) {
+  if (path === displayedPath) return;
+  displayedPath = path;
+  promptPath.title = path;
+  fitPromptPath();
+}
+
 function stopTyping() {
   cancelAnimationFrame(animationFrame);
   feedback.hidden = true;
@@ -457,7 +473,7 @@ function stopTyping() {
   feedback.removeAttribute('data-hold');
   feedback.removeAttribute('data-returning');
   feedback.textContent = '';
-  promptPath.textContent = currentPath();
+  setPromptPath(currentPath());
 }
 
 const experimentalTiming = { min: 600, max: 880, msPerCharacter: 11, hold: 600, sqlHold: 750, settle: 180 };
@@ -465,7 +481,7 @@ commandBar.style.setProperty('--command-settle', `${experimentalTiming.settle}ms
 
 function typeCommand(text, oldPath = currentPath(), duration = 350, resolved = '') {
   if (reducedMotion.matches || search.value || document.activeElement === search) return;
-  promptPath.textContent = oldPath;
+  setPromptPath(oldPath);
   feedback.hidden = false;
   feedback.setAttribute('data-typing', '');
   const started = performance.now();
@@ -487,7 +503,7 @@ function typeCommand(text, oldPath = currentPath(), duration = 350, resolved = '
         feedback.removeAttribute('data-typing');
         feedback.toggleAttribute('data-hold', elapsed < holdUntil);
         feedback.toggleAttribute('data-returning', elapsed >= holdUntil);
-        if (elapsed >= holdUntil) promptPath.textContent = currentPath();
+        if (elapsed >= holdUntil) setPromptPath(currentPath());
       } else {
         feedback.textContent = text.slice(0, Math.floor(Math.max(0, elapsed) / typeTime * text.length));
       }
@@ -763,8 +779,11 @@ function runMatch(item) {
 function updateSearchPrompt() {
   search.placeholder = state.design === 'classic' ? 'Search projects, pages, or commands…'
     : compactCommandBar.matches ? 'Search or command…' : 'Search or type a command…';
+  fitPromptPath();
 }
 compactCommandBar.addEventListener('change', updateSearchPrompt);
+new ResizeObserver(fitPromptPath).observe(search.form);
+document.fonts.ready.then(fitPromptPath);
 designOptions.addEventListener('change', event => {
   if (event.target.name !== 'typography') return;
   const typography = event.target.value;
