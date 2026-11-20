@@ -81,7 +81,10 @@ const contact = { email: 'kajetan.karbowski@gmail.com', linkedin: 'https://www.l
 const portfolio = document.querySelector('.portfolio');
 const main = document.querySelector('#main');
 const designOptions = document.querySelector('#design-options');
+const cvPreview = document.querySelector('#cv-preview');
 const typographyOptions = ['mono', 'mixed', 'reading'];
+const layouts = ['current', 'cv-abstract'];
+const photoOptions = ['colour', 'bw', 'site'];
 const hero = main.querySelector('.hero');
 const heading = hero.querySelector('h1');
 const commandBar = document.querySelector('#command-bar');
@@ -109,6 +112,11 @@ let statusTimer;
 let statusText;
 let matches = [];
 let selection = 0;
+let cvPreviewTrigger;
+
+function landingPage(design, role) {
+  return design === 'cv-abstract' ? 'home' : roles[role].start;
+}
 
 function readLocation() {
   const params = new URLSearchParams(location.search);
@@ -118,14 +126,17 @@ function readLocation() {
     catch { typography = null; }
   }
   const role = Object.hasOwn(roles, params.get('role')) ? params.get('role') : 'general';
+  const design = layouts.includes(params.get('design')) ? params.get('design') : 'current';
   const id = projects.find(project => project.id === (params.get('project') === 'psag-platform' ? 'psag' : params.get('project')))?.id ?? '';
-  const page = Object.hasOwn(sectionNames, params.get('section')) ? params.get('section') : id ? 'projects' : roles[role].start;
+  const page = Object.hasOwn(sectionNames, params.get('section')) ? params.get('section') : id ? 'projects' : landingPage(design, role);
   return {
     page, role,
     project: page === 'projects' ? id : '',
     filter: Object.hasOwn(technologies, params.get('filter')) ? params.get('filter') : '',
     theme: params.get('theme') === 'dark' ? 'dark' : 'light',
-    design: params.get('design') === 'classic' ? 'classic' : 'experimental',
+    design,
+    photo: photoOptions.includes(params.get('photo')) ? params.get('photo') : 'colour',
+    evidence: params.get('evidence') !== '0',
     typography: typographyOptions.includes(typography) ? typography : 'mono',
   };
 }
@@ -133,10 +144,12 @@ let state = readLocation();
 
 function urlFor(next, anchor = '') {
   const params = new URLSearchParams();
-  if (next.design === 'classic') params.set('design', 'classic');
+  if (next.design !== 'current') params.set('design', next.design);
+  if (next.photo !== 'colour') params.set('photo', next.photo);
+  if (!next.evidence) params.set('evidence', '0');
   if (next.typography !== 'mono') params.set('type', next.typography);
   if (next.role !== 'general') params.set('role', next.role);
-  if (next.page !== roles[next.role].start) params.set('section', next.page);
+  if (next.page !== landingPage(next.design, next.role)) params.set('section', next.page);
   if (next.project) params.set('project', next.project);
   if (next.page === 'projects' && next.filter) params.set('filter', next.filter);
   if (next.theme === 'dark') params.set('theme', next.theme);
@@ -198,67 +211,145 @@ function listingDate({ date, start, end, ongoing, date_label }) {
 }
 
 function listingEmphasis(role) {
-  return state.design === 'experimental' && state.role !== 'general' && relevantToView(role) ? ' data-relevant' : '';
+  return state.role !== 'general' && relevantToView(role) ? ' data-relevant' : '';
+}
+
+function cvPreviewButton(key, label, name = label) {
+  return `<button type="button" class="cv-preview-trigger" data-cv-preview="${key}" aria-label="Preview ${name}" popovertarget="cv-preview" aria-expanded="false">${label}</button>`;
+}
+
+function cvRowPreview(kind, item) {
+  return state.evidence ? cvPreviewButton(`${kind}:${item.id}`, 'Preview', item.shortTitle ?? item.title) : '';
+}
+
+function showCvPreview(trigger) {
+  if (cvPreview.matches(':popover-open')) {
+    cvPreview.hidePopover();
+    if (trigger === cvPreviewTrigger) return;
+  }
+  const [kind, id] = trigger.dataset.cvPreview.split(':');
+  const source = { project: projects, education, experience }[kind];
+  const item = source.find(entry => entry.id === id);
+  const title = item.shortTitle ?? item.title;
+  const link = kind === 'project' ? projectLink(item, 'Open project')
+    : `<a href="${urlFor({ ...state, page: kind, project: '' }, id)}" data-page="${kind}" data-anchor="${id}">Open ${kind === 'education' ? 'education' : 'experience'} entry</a>`;
+  const text = kind === 'project' && id === 'psag' ? item.summary : item.details ?? item.summary;
+  cvPreview.innerHTML = `<h3 id="cv-preview-title">${title}</h3><p>${text}</p>${link}`;
+  cvPreviewTrigger?.setAttribute('aria-expanded', 'false');
+  cvPreviewTrigger = trigger;
+  trigger.setAttribute('aria-expanded', 'true');
+  cvPreview.showPopover({ source: trigger });
+  const anchor = trigger.getBoundingClientRect();
+  const { clientWidth, clientHeight } = document.documentElement;
+  const { offsetWidth, offsetHeight } = cvPreview;
+  const left = Math.max(8, Math.min(anchor.left, clientWidth - offsetWidth - 8));
+  const top = anchor.bottom + offsetHeight + 8 <= clientHeight
+    ? anchor.bottom + 4 : Math.max(8, anchor.top - offsetHeight - 4);
+  cvPreview.style.inset = `${top}px auto auto ${left}px`;
+  cvPreview.querySelector('a').focus({ preventScroll: true });
+}
+
+cvPreview.addEventListener('toggle', () => {
+  if (!cvPreview.matches(':popover-open')) cvPreviewTrigger?.setAttribute('aria-expanded', 'false');
+});
+
+function cvHome() {
+  const timeline = chronological(projects);
+  const priority = ordered(timeline, item => item.role);
+  const shortlist = [...timeline.filter(item => item.pinned || item.featured),
+    ...priority.filter(item => !item.pinned && !item.featured)].slice(0, 3);
+  const work = timeline.filter(item => shortlist.includes(item));
+  const experienceIds = {
+    engineering: ['psag-president'],
+    teaching: ['tdj-camp', 'private-tutoring'],
+  }[state.role] ?? ['psag-president', 'tdj-camp'];
+  const history = chronological(experience.filter(item => experienceIds.includes(item.id)));
+
+  return `<section id="cv-work" class="cv-section" aria-labelledby="cv-work-title" data-outline="02 / Selected work">
+    <header class="cv-section-heading">
+      <h2 id="cv-work-title"><span>02 /</span> Selected work</h2>
+      <a href="?section=projects" data-page="projects">View all projects</a>
+    </header>
+    <ul class="cv-rows">${work.map(item => `<li${listingEmphasis(item.role)}>
+      <h3>${projectLink(item, item.shortTitle ?? item.title)}</h3>
+      <p>${item.abstract ?? item.summary} ${cvRowPreview('project', item)}</p>
+      <div class="cv-row-meta"><span>${item.kind}</span>${listingDate(item)}</div>
+    </li>`).join('')}</ul>
+  </section>
+  <section id="cv-experience" class="cv-section" aria-labelledby="cv-experience-title" data-outline="03 / Selected experience">
+    <header class="cv-section-heading">
+      <h2 id="cv-experience-title"><span>03 /</span> Selected experience</h2>
+      <a href="?section=experience" data-page="experience">Full history</a>
+    </header>
+    <ul class="cv-rows">${history.map(item => `<li${listingEmphasis(item.tags)}>
+      <h3><a href="?section=experience#${item.id}" data-page="experience" data-anchor="${item.id}">${item.shortTitle ?? item.title}</a></h3>
+      <p>${item.abstract ?? item.details} ${cvRowPreview('experience', item)}</p>
+      ${listingDate(item)}
+    </li>`).join('')}</ul>
+  </section>`;
+}
+
+function renderCvProfile(active) {
+  const actions = document.querySelector('#cv-actions');
+  const glance = document.querySelector('#cv-glance');
+  actions.hidden = glance.hidden = !active;
+  if (!active) {
+    heading.removeAttribute('id');
+    heading.removeAttribute('data-outline');
+    glance.removeAttribute('data-outline');
+    return;
+  }
+  heading.id = 'cv-profile';
+  heading.dataset.outline = '00 / Profile';
+  glance.dataset.outline = '01 / At a glance';
+  const cv = ordered(contact.cvs, item => item.role)[0];
+  actions.innerHTML = [
+    contact.email && `<a href="mailto:${contact.email}">Email</a>`,
+    github && `<a href="${github}">GitHub</a>`,
+    contact.linkedin && `<a href="${contact.linkedin}">LinkedIn</a>`,
+    cv ? `<a href="${cv.url}">CV</a>` : '<a href="?section=contact#cv" data-page="contact" data-anchor="cv">CV details</a>',
+  ].filter(Boolean).join('<span aria-hidden="true">·</span>');
+  for (const term of glance.querySelectorAll('[data-cv-source]')) {
+    const label = term.textContent;
+    if (state.evidence) term.innerHTML = cvPreviewButton(term.dataset.cvSource, label);
+    else term.textContent = label;
+  }
 }
 
 function homeContent() {
   const featured = projects.find(project => project.pinned) ?? projects[0];
   const highlights = ordered(projects.filter(project => project !== featured), project => project.role).slice(0, 2);
-  if (state.design === 'experimental') {
-    return `<section class="dossier-work" aria-labelledby="featured">
-      <h2 id="featured" data-outline><span>01 /</span> Selected work</h2>
-      <div class="dossier-feature">
-        <div>
-          <p class="meta">Featured</p>
-          <h3>${projectLink(featured)}</h3>
-          <p>${featured.description}</p>
-        </div>
-        ${projectLink(featured, '<span>Screenshot placeholder</span>', 'media-placeholder dossier-image')}
-      </div>
-      <ul class="dossier-index">${highlights.map(project => `<li>
-        <h3>${projectLink(project)}</h3><p class="meta">${project.meta}</p>${listingDate(project)}
-      </li>`).join('')}</ul>
-    </section>`;
-  }
-  return `<section class="home-section" aria-labelledby="featured">
-    <h2 id="featured" data-outline>Featured project</h2>
-    <div class="featured">
-      ${projectLink(featured, '<span>Screenshot placeholder</span>', 'media-placeholder feature-image')}
-      <div class="feature-copy">
-        <p class="meta">${featured.meta}</p>
-        <h3>${featured.title}</h3>
+  return `<section class="dossier-work" aria-labelledby="featured">
+    <h2 id="featured" data-outline><span>01 /</span> Selected work</h2>
+    <div class="dossier-feature">
+      <div>
+        <p class="meta">Featured</p>
+        <h3>${projectLink(featured)}</h3>
         <p>${featured.description}</p>
-        ${tags(featured)}
-        ${projectLink(featured, 'View project', 'text-action')}
       </div>
+      ${projectLink(featured, '<span>Screenshot placeholder</span>', 'media-placeholder dossier-image')}
     </div>
-  </section>
-  <section class="home-section" aria-labelledby="highlights">
-    <h2 id="highlights" data-outline>More projects</h2>
-    <ul class="highlights">${highlights.map(project => `<li>
-      <h3>${projectLink(project)}</h3><p class="meta">${project.meta}</p>
+    <ul class="dossier-index">${highlights.map(project => `<li>
+      <h3>${projectLink(project)}</h3><p class="meta">${project.meta}</p>${listingDate(project)}
     </li>`).join('')}</ul>
   </section>`;
 }
 
 function projectIndex(items) {
   if (!items.length) return '<p class="empty">No projects match this filter.</p>';
-  const experimental = state.design === 'experimental';
   return `<ul class="project-list">${items.map(project => `<li${listingEmphasis(project.role)}>
     <div class="project-copy">
-      <p class="meta">${experimental && project.pinned ? 'Featured · ' : ''}${project.meta}</p>
+      <p class="meta">${project.pinned ? 'Featured · ' : ''}${project.meta}</p>
       <h2>${projectLink(project)}</h2>
       <p>${project.description}</p>
       ${tags(project, true)}
     </div>
-    ${experimental ? `<div class="listing-aside">${listingDate(project)}${projectLink(project, 'View project', 'text-action')}</div>` : projectLink(project, 'View project', 'text-action')}
+    <div class="listing-aside">${listingDate(project)}${projectLink(project, 'View project', 'text-action')}</div>
   </li>`).join('')}</ul>`;
 }
 
 function projectDetail(project) {
-  const related = state.design === 'experimental'
-    ? ordered(projects.filter(item => item.id !== project.id), item => item.role).slice(0, 2)
-    : [];
+  const related = ordered(projects.filter(item => item.id !== project.id), item => item.role).slice(0, 2);
   return `<div class="project-detail">
     <nav class="document-index" aria-label="Project sections"></nav>
     <div class="media-placeholder detail-image"><span>Screenshot placeholder</span></div>
@@ -284,50 +375,30 @@ function projectDetail(project) {
 }
 
 function contactContent() {
-  if (state.design === 'experimental') {
-    const { email, linkedin, cvs } = contact;
-    return `<div class="contact-document">
-      <section aria-labelledby="email-heading">
-        <p class="meta">00 / Contact</p>
-        <h2 id="email-heading" data-outline>Email</h2>
-        <div class="contact-record">
-          ${email ? `<a id="email-address" href="mailto:${email}">${email}</a>
-            <span class="contact-links"><button type="button" id="copy-email">Copy email</button><a href="mailto:${email}">Compose</a></span>`
-            : '<p class="contact-pending">Email address pending</p>'}
-        </div>
-      </section>
-      <section aria-labelledby="links-heading">
-        <p class="meta">01 / Profiles</p>
-        <h2 id="links-heading" data-outline>Professional profiles</h2>
-        <div class="contact-record"><a href="${github}">GitHub</a></div>
-        <div class="contact-record">${linkedin ? `<a href="${linkedin}">LinkedIn</a>` : '<span>LinkedIn</span><span class="contact-pending">Profile link pending</span>'}</div>
-      </section>
-      <section id="cv" tabindex="-1" aria-labelledby="cv-heading">
-        <p class="meta">02 / Documents</p>
-        <h2 id="cv-heading" data-outline>Curriculum vitae</h2>
-        ${cvs.length ? ordered(cvs, item => item.role).map(({ title, url }) =>
-          `<div class="contact-record"><span>${title}</span><span class="contact-links"><a href="${url}" aria-label="View ${title}">View</a> <a href="${url}" download aria-label="Download ${title}">Download</a></span></div>`).join('')
-          : '<div class="contact-record"><p class="contact-pending">CV download pending</p></div>'}
-      </section>
-    </div>`;
-  }
-  return `<div class="contact-grid">
+  const { email, linkedin, cvs } = contact;
+  return `<div class="contact-document">
     <section aria-labelledby="email-heading">
+      <p class="meta">00 / Contact</p>
       <h2 id="email-heading" data-outline>Email</h2>
-      ${contact.email ? `<p><a id="email-address" href="mailto:${contact.email}">${contact.email}</a></p>
-        <div class="contact-actions"><button type="button" id="copy-email">Copy email</button></div>`
-        : '<p>Email address pending</p>'}
+      <div class="contact-record contact-email">
+        ${email ? `<a id="email-address" href="mailto:${email}">${email}</a>
+          <button type="button" id="copy-email">Copy email</button>`
+          : '<p class="contact-pending">Email address pending</p>'}
+      </div>
+      <p id="email-copy-status" role="status"></p>
     </section>
     <section aria-labelledby="links-heading">
+      <p class="meta">01 / Profiles</p>
       <h2 id="links-heading" data-outline>Professional profiles</h2>
-      <p><a href="${github}">GitHub</a></p>
-      ${contact.linkedin ? `<p><a href="${contact.linkedin}">LinkedIn</a></p>` : '<p class="meta">LinkedIn link pending</p>'}
+      <div class="contact-record"><a href="${github}">GitHub</a></div>
+      <div class="contact-record">${linkedin ? `<a href="${linkedin}">LinkedIn</a>` : '<span>LinkedIn</span><span class="contact-pending">Profile link pending</span>'}</div>
     </section>
     <section id="cv" tabindex="-1" aria-labelledby="cv-heading">
-      <h2 id="cv-heading" data-outline>CV</h2>
-      ${contact.cvs.length ? ordered(contact.cvs, item => item.role).map(({ title, url }) =>
-        `<p><a href="${url}">${title}</a> · <a href="${url}" download aria-label="Download ${title}">Download</a></p>`).join('')
-        : '<p>CV download pending.</p>'}
+      <p class="meta">02 / Documents</p>
+      <h2 id="cv-heading" data-outline>Curriculum vitae</h2>
+      ${cvs.length ? ordered(cvs, item => item.role).map(({ title, url }) =>
+        `<div class="contact-record"><span>${title}</span><span class="contact-links"><a href="${url}" aria-label="View ${title}">View</a> <a href="${url}" download aria-label="Download ${title}">Download</a></span></div>`).join('')
+        : '<div class="contact-record"><p class="contact-pending">CV download pending</p></div>'}
     </section>
   </div>`;
 }
@@ -343,12 +414,13 @@ function entryList(items) {
 
 function render() {
   stopTyping();
+  if (cvPreview.matches(':popover-open')) cvPreview.hidePopover();
   clearTimeout(statusTimer);
   const { page, role, project, filter, theme } = state;
   const view = roles[role];
   const detail = projects.find(item => item.id === project);
   const home = page === 'home';
-  const experimental = state.design === 'experimental';
+  const cvHomeActive = home && state.design === 'cv-abstract';
   const listing = page === 'projects' && !detail;
   const breadcrumb = currentPath();
   const visibleProjects = listing ? chronological(projects)
@@ -356,35 +428,37 @@ function render() {
   const matches = `${visibleProjects.length} ${visibleProjects.length === 1 ? 'match' : 'matches'}`;
 
   portfolio.dataset.theme = theme;
-  portfolio.dataset.design = state.design;
+  portfolio.toggleAttribute('data-cv-home', cvHomeActive);
+  portfolio.dataset.photo = state.photo;
   portfolio.dataset.typography = state.typography;
-  designOptions.hidden = !experimental;
+  designOptions.hidden = false;
+  designOptions.querySelector(`[name="layout"][value="${state.design}"]`).checked = true;
+  designOptions.querySelector(`[name="photo"][value="${state.photo}"]`).checked = true;
+  designOptions.querySelector('[name="evidence"]').checked = state.evidence;
+  document.querySelector('#cv-experiments').hidden = state.design !== 'cv-abstract';
   designOptions.querySelector(`[value="${state.typography}"]`).checked = true;
-  portfolio.querySelector('.prompt b').textContent = experimental ? '$' : '❯';
-  portfolio.querySelector('.dos-themes').hidden = experimental;
   const themeToggle = document.querySelector('#theme-toggle');
   const nextTheme = theme === 'dark' ? 'light' : 'dark';
-  themeToggle.hidden = !experimental;
+  themeToggle.hidden = false;
   themeToggle.dataset.color = nextTheme;
   themeToggle.textContent = nextTheme === 'light' ? 'Light' : 'Dark';
   themeToggle.setAttribute('aria-label', `Use ${nextTheme} theme`);
   themeToggle.setAttribute('title', `Switch to ${nextTheme} theme`);
-  outlineToggle.textContent = experimental ? 'Explorer' : 'Outline';
-  document.querySelector('#outline-close').hidden = !experimental;
-  helpToggle.hidden = !experimental;
-  for (const note of help.querySelectorAll('.experiment-help')) note.hidden = !experimental;
+  outlineToggle.textContent = 'Explorer';
+  document.querySelector('#outline-close').hidden = false;
+  helpToggle.hidden = false;
+  for (const note of help.querySelectorAll('.experiment-help')) note.hidden = false;
   const compactTabs = portfolio.querySelectorAll('.tab-short');
-  for (const label of compactTabs) label.hidden = !experimental;
+  for (const label of compactTabs) label.hidden = false;
   updateSearchPrompt();
-  main.querySelector('.views').hidden = experimental || !!detail;
   const documentTools = main.querySelector('.document-tools');
-  documentTools.hidden = !experimental || !!detail;
+  documentTools.hidden = !!detail;
   if (detail) perspectiveMenu.open = false;
   const titleRow = heading.parentElement;
-  if (experimental && !home && documentTools.parentElement !== titleRow) titleRow.append(documentTools);
+  if (!home && documentTools.parentElement !== titleRow) titleRow.append(documentTools);
   if (home && documentTools.parentElement !== main) main.insertBefore(documentTools, document.querySelector('#back-to-projects'));
-  main.querySelector('.dossier-profile').hidden = !experimental || !home;
-  portfolio.querySelector('.experiment-shortcuts').hidden = !experimental;
+  main.querySelector('.dossier-profile').hidden = !home;
+  portfolio.querySelector('.experiment-shortcuts').hidden = false;
   document.querySelector('#document-identifier').textContent = home ? '00 / Profile' : '';
   document.querySelector('#document-identifier').hidden = !home;
   document.querySelector('#active-perspective').textContent = view.heading;
@@ -400,22 +474,22 @@ function render() {
   for (const button of main.querySelectorAll('[data-perspective]')) {
     button.setAttribute('aria-pressed', button.dataset.perspective === role);
   }
-  for (const button of portfolio.querySelectorAll('.dos-themes [data-color]')) {
-    button.setAttribute('aria-pressed', button.dataset.color === theme);
-  }
   hero.toggleAttribute('data-home', home);
   document.querySelector('#portrait').hidden = !home;
-  main.querySelector('.hero-actions').hidden = !home;
+  main.querySelector('.hero-actions').hidden = !home || cvHomeActive;
   const title = home ? profileName : detail?.title ?? sectionNames[page];
   heading.textContent = title;
   const introduction = hero.querySelector('.intro');
-  introduction.hidden = experimental && page === 'contact';
+  introduction.hidden = page === 'contact';
   introduction.textContent = home ? view.intro : detail?.meta ?? pageIntros[page];
+  if (cvHomeActive && role === 'general') introduction.textContent = profile.abstract;
   document.querySelector('#back-to-projects').hidden = !detail;
+  renderCvProfile(cvHomeActive);
 
   const content = document.querySelector('#section-content');
   const detailsOpen = detail && content.dataset.project === detail.id && content.querySelector('details')?.open;
-  if (home) content.innerHTML = homeContent();
+  if (cvHomeActive) content.innerHTML = cvHome();
+  else if (home) content.innerHTML = homeContent();
   else if (detail) content.innerHTML = projectDetail(detail);
   else if (listing) content.innerHTML = projectIndex(visibleProjects);
   else if (page === 'contact') content.innerHTML = contactContent();
@@ -427,7 +501,7 @@ function render() {
   renderOutline(detail, listing ? visibleProjects : null);
   document.querySelector('#status-path').textContent = breadcrumb;
   statusText = listing ? `${matches}${filter ? ` · tag: ${technologies[filter]}` : ''}` : role === 'general' ? 'Ready' : `View: ${view.heading}`;
-  status.textContent = experimental && !panel.hidden ? 'Search' : statusText;
+  status.textContent = !panel.hidden ? 'Search' : statusText;
   document.title = home ? profileName : `${title} · ${profileName}`;
 }
 
@@ -453,7 +527,7 @@ function currentPath() {
 
 function fitPromptPath() {
   promptPath.textContent = displayedPath;
-  if (state.design === 'experimental' && compactCommandBar.matches &&
+  if (compactCommandBar.matches &&
       displayedPath.endsWith('.md') && promptPath.scrollWidth > promptPath.clientWidth) {
     promptPath.textContent = displayedPath.slice(0, -3);
   }
@@ -479,48 +553,30 @@ function stopTyping() {
 const experimentalTiming = { min: 600, max: 880, msPerCharacter: 11, hold: 600, sqlHold: 750, settle: 180 };
 commandBar.style.setProperty('--command-settle', `${experimentalTiming.settle}ms`);
 
-function typeCommand(text, oldPath = currentPath(), duration = 350, resolved = '') {
+function typeCommand(text, oldPath = currentPath(), sql = false) {
   if (reducedMotion.matches || search.value || document.activeElement === search) return;
   setPromptPath(oldPath);
   feedback.hidden = false;
   feedback.setAttribute('data-typing', '');
   const started = performance.now();
-  const typingTime = duration * .72;
-  const historical = state.design === 'experimental';
   const { min, max, msPerCharacter, hold, sqlHold, settle } = experimentalTiming;
   const typeTime = Math.min(max, min + text.length * msPerCharacter);
-  const holdUntil = typeTime + (resolved ? sqlHold : hold);
+  const holdUntil = typeTime + (sql ? sqlHold : hold);
 
   function tick(now) {
     const elapsed = now - started;
-    if (historical) {
-      if (elapsed >= holdUntil + settle || reducedMotion.matches) {
-        stopTyping();
-        return;
-      }
-      if (elapsed >= typeTime) {
-        if (feedback.textContent !== text) feedback.textContent = text;
-        feedback.removeAttribute('data-typing');
-        feedback.toggleAttribute('data-hold', elapsed < holdUntil);
-        feedback.toggleAttribute('data-returning', elapsed >= holdUntil);
-        if (elapsed >= holdUntil) setPromptPath(currentPath());
-      } else {
-        feedback.textContent = text.slice(0, Math.floor(Math.max(0, elapsed) / typeTime * text.length));
-      }
-      animationFrame = requestAnimationFrame(tick);
-      return;
-    }
-    if (elapsed >= duration + (resolved ? 420 : 0) || reducedMotion.matches) {
+    if (elapsed >= holdUntil + settle || reducedMotion.matches) {
       stopTyping();
       return;
     }
-    if (elapsed >= duration) {
+    if (elapsed >= typeTime) {
+      if (feedback.textContent !== text) feedback.textContent = text;
       feedback.removeAttribute('data-typing');
-      feedback.textContent = resolved;
+      feedback.toggleAttribute('data-hold', elapsed < holdUntil);
+      feedback.toggleAttribute('data-returning', elapsed >= holdUntil);
+      if (elapsed >= holdUntil) setPromptPath(currentPath());
     } else {
-      const length = Math.floor(Math.max(0, elapsed) / typingTime * text.length);
-      const typed = text.slice(0, length);
-      if (feedback.textContent !== typed) feedback.textContent = typed;
+      feedback.textContent = text.slice(0, Math.floor(Math.max(0, elapsed) / typeTime * text.length));
     }
     animationFrame = requestAnimationFrame(tick);
   }
@@ -536,14 +592,13 @@ function notify(message) {
 function renderOutline(detail, listing) {
   const sections = [...main.querySelectorAll('[data-outline]')].map(part =>
     `<a href="#${part.id}" data-jump="${part.id}">${part.dataset.outline || part.textContent}</a>`);
-  const links = listing ? listing.map(project => projectLink(project,
-    state.design === 'experimental' ? project.title : `${project.id}.md`)) : sections;
+  const links = listing ? listing.map(project => projectLink(project)) : sections;
   document.querySelector('#outline-path').textContent = detail ? `${detail.id}/` : `${state.page}/`;
   document.querySelector('#outline-links').innerHTML = links.map(link => `<li>${link}</li>`).join('');
   outlineToggle.hidden = !links.length;
   document.querySelector('#inspector-shortcut').hidden = !links.length;
   const metadata = document.querySelector('#inspector-meta');
-  metadata.hidden = state.design !== 'experimental' || !detail;
+  metadata.hidden = !detail;
   if (detail && !metadata.hidden) {
     metadata.innerHTML = `<p class="meta">Document</p><strong>${detail.title}</strong><p>${detail.meta}</p>`;
   }
@@ -556,7 +611,7 @@ function setOutline(open) {
   if (!open && outline.contains(document.activeElement)) outlineToggle.focus({ preventScroll: true });
   outline.hidden = !open;
   outlineToggle.setAttribute('aria-expanded', open);
-  if (open && state.design === 'experimental' && narrowLayout.matches) {
+  if (open && narrowLayout.matches) {
     outline.querySelector('#outline-close').focus({ preventScroll: true });
   }
 }
@@ -594,7 +649,7 @@ function changePerspective(role) {
   go({ ...state, role }, { anchor: location.hash.slice(1) });
   const table = state.page === 'home' ? 'portfolio' : state.page;
   const query = role === 'general' ? `SELECT * FROM ${table};` : `SELECT * FROM ${table} WHERE focus = '${roles[role].focus}';`;
-  typeCommand(query, currentPath(), 650, roles[role].heading);
+  typeCommand(query, currentPath(), true);
   notify(`View: ${roles[role].heading}`);
 }
 
@@ -674,7 +729,7 @@ function renderSearch() {
   const query = search.value.toLowerCase().trim();
   const command = explicitCommand(query);
   const terms = query.split(/\s+/);
-  const grouped = !query && state.design === 'experimental';
+  const grouped = !query;
   const verbs = { Page: 'cd', Project: 'open', Perspective: 'view', Tag: 'filter' };
   matches = command ? [command] : query ? searchItems.map(item => {
     const label = item.label.toLowerCase();
@@ -728,14 +783,12 @@ function openSearch() {
   panel.hidden = false;
   search.setAttribute('aria-expanded', 'true');
   renderSearch();
-  if (state.design === 'experimental') {
-    clearTimeout(statusTimer);
-    status.textContent = 'Search';
-  }
+  clearTimeout(statusTimer);
+  status.textContent = 'Search';
 }
 
 function closeSearch() {
-  if (!panel.hidden && state.design === 'experimental') status.textContent = statusText;
+  if (!panel.hidden) status.textContent = statusText;
   panel.hidden = true;
   helpToggle.setAttribute('aria-expanded', 'false');
   search.setAttribute('aria-expanded', 'false');
@@ -769,27 +822,32 @@ function runMatch(item) {
   else if (item.type === 'Page') navigate(item.id);
   else if (item.type === 'Perspective') {
     changePerspective(item.id);
-    const control = state.project ? heading : state.design === 'experimental'
-      ? perspectiveMenu.querySelector('summary') : main.querySelector(`[data-perspective="${item.id}"]`);
+    const control = state.project ? heading : perspectiveMenu.querySelector('summary');
     control.focus({ preventScroll: true });
   } else if (item.type === 'Tag') changeFilter(item.id);
   else navigate(item.page || 'skills', '', item.id);
 }
 
 function updateSearchPrompt() {
-  search.placeholder = state.design === 'classic' ? 'Search projects, pages, or commands…'
-    : compactCommandBar.matches ? 'Search or command…' : 'Search or type a command…';
+  search.placeholder = compactCommandBar.matches ? 'Search or command…' : 'Search or type a command…';
   fitPromptPath();
 }
 compactCommandBar.addEventListener('change', updateSearchPrompt);
 new ResizeObserver(fitPromptPath).observe(search.form);
 document.fonts.ready.then(fitPromptPath);
 designOptions.addEventListener('change', event => {
-  if (event.target.name !== 'typography') return;
-  const typography = event.target.value;
-  try { localStorage.setItem('portfolio-typography', typography); }
-  catch {}
-  go({ ...state, typography }, { replace: true, anchor: location.hash.slice(1) });
+  const { name, value, checked } = event.target;
+  const next = { ...state };
+  if (name === 'typography') {
+    next.typography = value;
+    try { localStorage.setItem('portfolio-typography', value); }
+    catch {}
+  } else if (name === 'layout') next.design = value;
+  else if (name === 'photo') next.photo = value;
+  else if (name === 'evidence') next.evidence = checked;
+  else return;
+  const anchor = name === 'layout' && state.page === 'home' ? '' : location.hash.slice(1);
+  go(next, { replace: name !== 'layout', anchor });
 });
 
 outlineToggle.addEventListener('click', () => setOutline(outline.hidden));
@@ -841,7 +899,7 @@ commandBar.addEventListener('focusout', event => {
 document.addEventListener('pointerdown', event => {
   if (!commandBar.contains(event.target) && !panel.hidden) closeSearch();
   if (perspectiveMenu.open && !perspectiveMenu.contains(event.target)) perspectiveMenu.open = false;
-  if (state.design === 'experimental' && narrowLayout.matches && !outline.hidden &&
+  if (narrowLayout.matches && !outline.hidden &&
       !outline.contains(event.target) && !outlineToggle.contains(event.target)) setOutline(false);
 });
 document.addEventListener('keydown', event => {
@@ -861,6 +919,9 @@ document.addEventListener('keydown', event => {
   } else if (key === 'escape' && !panel.hidden) {
     event.preventDefault();
     closeSearch();
+  } else if (key === 'escape' && cvPreview.matches(':popover-open')) {
+    cvPreview.hidePopover();
+    cvPreviewTrigger.focus({ preventScroll: true });
   } else if (key === 'escape' && perspectiveMenu.open) {
     perspectiveMenu.open = false;
     perspectiveMenu.querySelector('summary').focus();
@@ -873,6 +934,12 @@ document.addEventListener('keydown', event => {
 });
 
 portfolio.addEventListener('click', async event => {
+  const cvTrigger = event.target.closest('[data-cv-preview]');
+  if (cvTrigger) {
+    event.preventDefault();
+    showCvPreview(cvTrigger);
+    return;
+  }
   const themeButton = event.target.closest('[data-color]');
   if (themeButton && themeButton.dataset.color !== state.theme) {
     go({ ...state, theme: themeButton.dataset.color }, { replace: true, anchor: location.hash.slice(1) });
@@ -894,16 +961,15 @@ portfolio.addEventListener('click', async event => {
     return;
   }
   if (event.target.closest('#copy-email')) {
-    const email = contact.email;
-    if (!email) return;
+    const address = document.querySelector('#email-address');
+    const feedback = document.querySelector('#email-copy-status');
     try {
-      await navigator.clipboard.writeText(email);
-      notify('Email copied');
+      await navigator.clipboard.writeText(address.textContent);
+      feedback.textContent = 'Email copied.';
     } catch {
-      const address = document.querySelector('#email-address');
       const selection = window.getSelection();
-      if (address && selection) selection.selectAllChildren(address);
-      notify(address && selection ? 'Clipboard unavailable. Copy the selected address.' : 'Clipboard unavailable.');
+      selection?.selectAllChildren(address);
+      feedback.textContent = selection ? 'Address selected. Copy it manually.' : 'Could not copy. Select the address to copy it.';
     }
     return;
   }

@@ -4,6 +4,7 @@ const portfolioContent = {
     "role": "MSc Artificial Intelligence student",
     "affiliation": "University of Groningen",
     "description": "I build reliable and interpretable ML systems spanning generative AI, computer vision, time-series modeling, and LLM automation. I also have experience in teaching, project coordination, and student-organization leadership.",
+    "abstract": "I work on reliable, interpretable AI and build practical software. My experience also spans tutoring and student association leadership.",
     "languages": [
       {
         "language": "Polish",
@@ -94,6 +95,8 @@ const portfolioContent = {
     {
       "id": "psag-president",
       "title": "President",
+      "shortTitle": "President · PSAG",
+      "abstract": "Led an approximately 150-member association and coordinated its board, partnerships, and events.",
       "organization": "Polish Student Association Groningen (PSAG)",
       "start": "2025-06",
       "end": "2026-06",
@@ -121,6 +124,7 @@ const portfolioContent = {
     {
       "id": "tdj-camp",
       "title": "Activities Instructor & Co-organizer",
+      "abstract": "Designed and led educational activities using games and tabletop role-playing.",
       "organization": "TDJ Foundation — Wakacje z Pasją",
       "start": "2024-08",
       "end": "2025-08",
@@ -134,6 +138,7 @@ const portfolioContent = {
     {
       "id": "private-tutoring",
       "title": "Private Tutor",
+      "abstract": "Tutored mathematics, physics, programming, and humanities one-to-one.",
       "organization": "Individual tutoring",
       "start": null,
       "end": null,
@@ -189,6 +194,8 @@ const portfolioContent = {
     {
       "id": "diffgate",
       "title": "DiffGate — Training-Free Uncertainty for Image Generation",
+      "shortTitle": "DiffGate",
+      "abstract": "Estimates when AI-generated images may be unreliable, without retraining the model.",
       "kind": "BSc thesis / Python library and CLI",
       "start": null,
       "end": null,
@@ -209,6 +216,8 @@ const portfolioContent = {
     {
       "id": "forescan",
       "title": "FORESCAN — Early Cognitive Overload Forecasting",
+      "shortTitle": "FORESCAN",
+      "abstract": "Tested whether changes in pupil size can predict cognitive overload.",
       "kind": "Time-series ML research",
       "start": null,
       "end": null,
@@ -228,6 +237,7 @@ const portfolioContent = {
     {
       "id": "xai-face-clustering",
       "title": "XAI Face Clustering",
+      "abstract": "Built a tool to group real and AI-generated faces and explain the groupings.",
       "kind": "Computer vision & explainability",
       "start": null,
       "end": null,
@@ -300,6 +310,7 @@ const portfolioContent = {
     {
       "id": "pana",
       "title": "PANA",
+      "abstract": "Polish-language chatbot project for students navigating study and life in the Netherlands.",
       "kind": "Student support · Chatbot project",
       "tags": [
         "education",
