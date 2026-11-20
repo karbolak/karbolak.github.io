@@ -1,5 +1,6 @@
-const profileName = 'Kajetan Karbowski';
-const github = 'https://github.com/karbolak';
+const { profile, education, experience } = portfolioContent;
+const profileName = profile.name;
+const github = profile.github;
 const sectionNames = {
   home: 'Home',
   projects: 'Projects',
@@ -14,14 +15,14 @@ const roles = {
     label: 'General',
     heading: 'General',
     focus: 'all',
-    intro: 'I’m an MSc Artificial Intelligence student at the University of Groningen, interested in AI research, software engineering, and education.',
+    intro: profile.description,
     start: 'home',
   },
   research: {
     label: 'AI / Research',
     heading: 'AI & Research',
     focus: 'ai',
-    intro: 'I study Artificial Intelligence at the University of Groningen. My interests include machine learning, algorithmic fairness, and multi-agent systems.',
+    intro: 'I study Artificial Intelligence at the University of Groningen. My research projects span generative AI, computer vision, and time-series forecasting.',
     start: 'projects',
   },
   engineering: {
@@ -41,54 +42,42 @@ const roles = {
 };
 
 const entries = {
-  experience: [
-    ['Private tutoring', 'Teaching', 'One-to-one tutoring in mathematics, physics, and programming.', 'teaching'],
-    ['Educational camp instructor', 'Education', '', 'teaching'],
-  ],
-  education: [
-    ['MSc Artificial Intelligence', 'University of Groningen', 'Current master’s studies.'],
-    ['BSc Artificial Intelligence', 'Undergraduate study', 'Bachelor’s thesis on early quality prediction in text-to-image diffusion.'],
-    ['HTSM Honours Master', 'Honours education', 'High Tech Systems and Materials.'],
-  ],
+  experience: experience.map(item => [item.title, item.organization, item.details, item.tags, item]),
+  education: education.map(item => [item.title, item.institution, item.details, item.tags, item]),
   skills: [
-    ['Machine learning', 'AI / Research', 'Model training and evaluation, with experience in time-series forecasting and diffusion models.', 'research'],
-    ['Multi-agent systems', 'AI / Research', '', 'research'],
-    ['Programming', 'Software Engineering', 'Python, machine learning tooling, and web development.', 'engineering'],
-    ['Tutoring and instruction', 'Teaching / Education', 'Mathematics, physics, and programming.', 'teaching'],
+    ...portfolioContent.skills.map(({ category, items }) => [category, '', items.join(' · ')]),
+    ['Languages', '', profile.languages.map(({ language, level }) => `${language} (${level})`).join(' · ')],
   ],
 };
 
-const projects = [
-  {
-    id: 'psag', title: 'PSAG Platform', meta: 'Layout example', tags: ['Sample project', 'Metadata placeholder'],
-    description: 'A sample project preview showing where an overview, screenshot, and technical notes would appear.',
-  },
-  {
-    id: 'diffgate', title: 'DiffGate', meta: 'Bachelor’s thesis · Python', tags: ['Python', 'Machine learning'],
-    description: 'A research prototype that uses early denoising signals to assess image quality while a diffusion model is still generating.',
-    role: 'engineering', repository: 'DiffGate',
-  },
-  {
-    id: 'forescan', title: 'FORESCAN', meta: 'Machine learning research', tags: ['Machine learning'],
-    description: 'Explores whether changes in pupil size can predict cognitive overload early enough to trigger an alert.',
-    role: 'research', repository: 'FORESCAN',
-  },
-  {
-    id: 'pana', title: 'PANA', meta: 'Student support · Chatbot project', tags: ['Student support'],
-    description: 'A Polish-language chatbot project for students navigating admissions, academic life, and everyday questions in the Netherlands.',
-    role: 'teaching', repository: 'PANA',
-  },
-];
-
-const technologies = { python: 'Python', 'machine-learning': 'Machine learning', 'student-support': 'Student support' };
+const draftTags = {
+  python: 'Python', 'machine-learning': 'Machine learning', 'generative-ai': 'Generative AI', timeseries: 'Time-series',
+  'computer-vision': 'Computer vision', llm: 'LLM', automation: 'Automation', 'student-support': 'Student support',
+};
+const projects = portfolioContent.projects.map(project => ({
+  ...project,
+  meta: project.kind,
+  description: project.summary,
+  role: project.tags,
+  tags: [
+    ...project.tags.filter(tag => Object.hasOwn(draftTags, tag)).map(tag => draftTags[tag]),
+    ...(project.tags.includes('research') || project.id === 'autoop' ? [draftTags['machine-learning']] : []),
+  ],
+}));
+const technologies = Object.fromEntries(Object.values(draftTags).map(label => [slug(label), label]));
+const perspectiveTags = {
+  research: ['research'],
+  engineering: ['software'],
+  teaching: ['education'],
+};
 const pageIntros = {
   projects: 'Selected work across research, software, and education.',
-  experience: 'Tutoring and education experience.',
+  experience: 'Student-organization leadership, education, and tutoring.',
   education: 'Academic background and honours studies.',
   skills: 'Areas of experience across research, software, and teaching.',
-  contact: 'Find me on GitHub or see the contact and CV placements below.',
+  contact: 'Professional profiles and contact information.',
 };
-const exampleEmail = 'hello@example.com';
+const contact = { email: '', linkedin: '', cvs: [] };
 const portfolio = document.querySelector('.portfolio');
 const main = document.querySelector('#main');
 const hero = main.querySelector('.hero');
@@ -101,11 +90,17 @@ const panel = document.querySelector('#search-panel');
 const results = document.querySelector('#command-results');
 const preview = document.querySelector('#search-preview');
 const help = document.querySelector('#command-help');
+const helpToggle = document.querySelector('#help-toggle');
 const outline = document.querySelector('#outline');
 const outlineToggle = document.querySelector('#outline-toggle');
+const perspectiveMenu = document.querySelector('#perspective-menu');
+const profileDegree = document.querySelector('.dossier-degree');
+profileDegree.firstChild.nodeValue = profile.role;
+profileDegree.querySelector('span').textContent = profile.affiliation;
 const status = document.querySelector('#status');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const narrowLayout = matchMedia('(max-width: 760px)');
+const compactCommandBar = matchMedia('(max-width: 520px)');
 let animationFrame;
 let statusTimer;
 let statusText;
@@ -115,19 +110,21 @@ let selection = 0;
 function readLocation() {
   const params = new URLSearchParams(location.search);
   const role = Object.hasOwn(roles, params.get('role')) ? params.get('role') : 'general';
-  const id = projects.find(project => project.id === params.get('project'))?.id ?? '';
+  const id = projects.find(project => project.id === (params.get('project') === 'psag-platform' ? 'psag' : params.get('project')))?.id ?? '';
   const page = Object.hasOwn(sectionNames, params.get('section')) ? params.get('section') : id ? 'projects' : roles[role].start;
   return {
     page, role,
     project: page === 'projects' ? id : '',
     filter: Object.hasOwn(technologies, params.get('filter')) ? params.get('filter') : '',
     theme: params.get('theme') === 'dark' ? 'dark' : 'light',
+    design: params.get('design') === 'classic' ? 'classic' : 'experimental',
   };
 }
 let state = readLocation();
 
 function urlFor(next, anchor = '') {
   const params = new URLSearchParams();
+  if (next.design === 'classic') params.set('design', 'classic');
   if (next.role !== 'general') params.set('role', next.role);
   if (next.page !== roles[next.role].start) params.set('section', next.page);
   if (next.project) params.set('project', next.project);
@@ -165,12 +162,54 @@ function tags(project, interactive = false) {
 }
 
 function ordered(items, roleOf) {
-  return [...items].sort((a, b) => Number(roleOf(b) === state.role) - Number(roleOf(a) === state.role));
+  return [...items].sort((a, b) => Number(relevantToView(roleOf(b))) - Number(relevantToView(roleOf(a))));
+}
+
+function relevantToView(tags) {
+  if (!Array.isArray(tags)) return tags === state.role;
+  return (perspectiveTags[state.role] ?? []).some(tag => tags.includes(tag));
+}
+
+function chronological(items) {
+  function latest(item) {
+    const date = item.end || item.date || item.start;
+    return date && (item.ongoing || item.date_label?.endsWith('Present')) ? '9999' : date || '';
+  }
+  return [...items].sort((first, second) =>
+    Number(Boolean(second.pinned)) - Number(Boolean(first.pinned)) || latest(second).localeCompare(latest(first)));
+}
+
+function listingDate({ date, start, end, ongoing, date_label }) {
+  if (date_label) return `<p class="listing-date">${date_label}</p>`;
+  const first = start || date || end;
+  if (!first) return '';
+  const last = ongoing ? 'Present' : end && end !== first ? `<time datetime="${end}">${end}</time>` : '';
+  return `<p class="listing-date"><time datetime="${first}">${first}</time>${last ? `–${last}` : ''}</p>`;
+}
+
+function listingEmphasis(role) {
+  return state.design === 'experimental' && state.role !== 'general' && relevantToView(role) ? ' data-relevant' : '';
 }
 
 function homeContent() {
-  const featured = projects[0];
-  const highlights = ordered(projects.slice(1), project => project.role).slice(0, 2);
+  const featured = projects.find(project => project.pinned) ?? projects[0];
+  const highlights = ordered(projects.filter(project => project !== featured), project => project.role).slice(0, 2);
+  if (state.design === 'experimental') {
+    return `<section class="dossier-work" aria-labelledby="featured">
+      <h2 id="featured" data-outline><span>01 /</span> Selected work</h2>
+      <div class="dossier-feature">
+        <div>
+          <p class="meta">Featured</p>
+          <h3>${projectLink(featured)}</h3>
+          <p>${featured.description}</p>
+        </div>
+        ${projectLink(featured, '<span>Screenshot placeholder</span>', 'media-placeholder dossier-image')}
+      </div>
+      <ul class="dossier-index">${highlights.map(project => `<li>
+        <h3>${projectLink(project)}</h3><p class="meta">${project.meta}</p>${listingDate(project)}
+      </li>`).join('')}</ul>
+    </section>`;
+  }
   return `<section class="home-section" aria-labelledby="featured">
     <h2 id="featured" data-outline>Featured project</h2>
     <div class="featured">
@@ -194,18 +233,22 @@ function homeContent() {
 
 function projectIndex(items) {
   if (!items.length) return '<p class="empty">No projects match this filter.</p>';
-  return `<ul class="project-list">${items.map(project => `<li>
+  const experimental = state.design === 'experimental';
+  return `<ul class="project-list">${items.map(project => `<li${listingEmphasis(project.role)}>
     <div class="project-copy">
-      <p class="meta">${project.meta}</p>
+      <p class="meta">${experimental && project.pinned ? 'Featured · ' : ''}${project.meta}</p>
       <h2>${projectLink(project)}</h2>
       <p>${project.description}</p>
       ${tags(project, true)}
     </div>
-    ${projectLink(project, 'View project', 'text-action')}
+    ${experimental ? `<div class="listing-aside">${listingDate(project)}${projectLink(project, 'View project', 'text-action')}</div>` : projectLink(project, 'View project', 'text-action')}
   </li>`).join('')}</ul>`;
 }
 
 function projectDetail(project) {
+  const related = state.design === 'experimental'
+    ? ordered(projects.filter(item => item.id !== project.id), item => item.role).slice(0, 2)
+    : [];
   return `<div class="project-detail">
     <nav class="document-index" aria-label="Project sections"></nav>
     <div class="media-placeholder detail-image"><span>Screenshot placeholder</span></div>
@@ -220,38 +263,71 @@ function projectDetail(project) {
         ${project.repository ? `<a href="${github}/${project.repository}">View repository on GitHub</a>` : '<p>Project links and materials placeholder.</p>'}
       </section>
       <details id="technical" data-outline="Technical details"><summary>Technical details</summary>
-        <p>Implementation notes placeholder.</p>
+        <p>${project.details || 'Implementation notes pending.'}</p>
       </details>
+      ${related.length ? `<nav class="related-documents" aria-label="Related projects">
+        <span>Related projects</span>
+        ${related.map(item => projectLink(item)).join('')}
+      </nav>` : ''}
     </div>
   </div>`;
 }
 
 function contactContent() {
+  if (state.design === 'experimental') {
+    const { email, linkedin, cvs } = contact;
+    return `<div class="contact-document">
+      <section aria-labelledby="email-heading">
+        <p class="meta">00 / Contact</p>
+        <h2 id="email-heading" data-outline>Email</h2>
+        <div class="contact-record">
+          ${email ? `<a id="email-address" href="mailto:${email}">${email}</a>
+            <span class="contact-links"><button type="button" id="copy-email">Copy email</button><a href="mailto:${email}">Compose</a></span>`
+            : '<p class="contact-pending">Email address pending</p>'}
+        </div>
+      </section>
+      <section aria-labelledby="links-heading">
+        <p class="meta">01 / Profiles</p>
+        <h2 id="links-heading" data-outline>Professional profiles</h2>
+        <div class="contact-record"><a href="${github}">GitHub</a></div>
+        <div class="contact-record">${linkedin ? `<a href="${linkedin}">LinkedIn</a>` : '<span>LinkedIn</span><span class="contact-pending">Profile link pending</span>'}</div>
+      </section>
+      <section id="cv" tabindex="-1" aria-labelledby="cv-heading">
+        <p class="meta">02 / Documents</p>
+        <h2 id="cv-heading" data-outline>Curriculum vitae</h2>
+        ${cvs.length ? ordered(cvs, item => item.role).map(({ title, url }) =>
+          `<div class="contact-record"><span>${title}</span><span class="contact-links"><a href="${url}" aria-label="View ${title}">View</a> <a href="${url}" download aria-label="Download ${title}">Download</a></span></div>`).join('')
+          : '<div class="contact-record"><p class="contact-pending">CV download pending</p></div>'}
+      </section>
+    </div>`;
+  }
   return `<div class="contact-grid">
     <section aria-labelledby="email-heading">
       <h2 id="email-heading" data-outline>Email</h2>
-      <p class="meta">Example address</p>
-      <p><code id="email-address">${exampleEmail}</code></p>
-      <div class="contact-actions">
-        <a class="button" href="mailto:${exampleEmail}">Open example draft</a>
-        <button type="button" id="copy-email">Copy example email</button>
-      </div>
+      ${contact.email ? `<p><a id="email-address" href="mailto:${contact.email}">${contact.email}</a></p>
+        <div class="contact-actions"><button type="button" id="copy-email">Copy email</button></div>`
+        : '<p>Email address pending</p>'}
     </section>
     <section aria-labelledby="links-heading">
-      <h2 id="links-heading" data-outline>Profiles</h2>
+      <h2 id="links-heading" data-outline>Professional profiles</h2>
       <p><a href="${github}">GitHub</a></p>
-      <p class="meta">LinkedIn link pending</p>
+      ${contact.linkedin ? `<p><a href="${contact.linkedin}">LinkedIn</a></p>` : '<p class="meta">LinkedIn link pending</p>'}
     </section>
     <section id="cv" tabindex="-1" aria-labelledby="cv-heading">
       <h2 id="cv-heading" data-outline>CV</h2>
-      <p>CV download pending.</p>
+      ${contact.cvs.length ? ordered(contact.cvs, item => item.role).map(({ title, url }) =>
+        `<p><a href="${url}">${title}</a> · <a href="${url}" download aria-label="Download ${title}">Download</a></p>`).join('')
+        : '<p>CV download pending.</p>'}
     </section>
   </div>`;
 }
 
 function entryList(items) {
-  return `<ul class="entries">${items.map(([title, meta, description]) => `<li>
-    <p class="meta">${meta}</p><h2 id="${slug(title)}" data-outline>${title}</h2>${description ? `<p>${description}</p>` : ''}
+  const records = items.map(([title, meta, description, role, dates]) => ({ title, meta, description, role, ...dates }));
+  return `<ul class="entries">${chronological(records).map(item => `<li${listingEmphasis(item.role)}>
+    <div class="entry-heading"><h2 id="${item.id || slug(item.title)}" data-outline>${item.title}</h2>${listingDate(item)}</div>
+    ${item.meta ? `<p class="meta">${item.meta}</p>` : ''}
+    ${item.id ? `<details><summary aria-label="Details for ${item.title}">Details</summary><p>${item.description}</p></details>` : `<p>${item.description}</p>`}
   </li>`).join('')}</ul>`;
 }
 
@@ -262,13 +338,45 @@ function render() {
   const view = roles[role];
   const detail = projects.find(item => item.id === project);
   const home = page === 'home';
+  const experimental = state.design === 'experimental';
   const listing = page === 'projects' && !detail;
   const breadcrumb = currentPath();
-  const visibleProjects = listing ? ordered(projects, item => item.role)
+  const visibleProjects = listing ? chronological(projects)
     .filter(item => !filter || item.tags.includes(technologies[filter])) : [];
   const matches = `${visibleProjects.length} ${visibleProjects.length === 1 ? 'match' : 'matches'}`;
 
   portfolio.dataset.theme = theme;
+  portfolio.dataset.design = state.design;
+  portfolio.querySelector('.prompt b').textContent = experimental ? '$' : '❯';
+  portfolio.querySelector('.dos-themes').hidden = experimental;
+  const themeToggle = document.querySelector('#theme-toggle');
+  const nextTheme = theme === 'dark' ? 'light' : 'dark';
+  themeToggle.hidden = !experimental;
+  themeToggle.dataset.color = nextTheme;
+  themeToggle.textContent = nextTheme === 'light' ? 'Light' : 'Dark';
+  themeToggle.setAttribute('aria-label', `Use ${nextTheme} theme`);
+  themeToggle.setAttribute('title', `Switch to ${nextTheme} theme`);
+  outlineToggle.textContent = experimental ? 'Explorer' : 'Outline';
+  document.querySelector('#outline-close').hidden = !experimental;
+  helpToggle.hidden = !experimental;
+  for (const note of help.querySelectorAll('.experiment-help')) note.hidden = !experimental;
+  const compactTabs = portfolio.querySelectorAll('.tab-short');
+  for (const label of compactTabs) label.hidden = !experimental;
+  updateSearchPrompt();
+  main.querySelector('.views').hidden = experimental || !!detail;
+  const documentTools = main.querySelector('.document-tools');
+  documentTools.hidden = !experimental || !!detail;
+  if (detail) perspectiveMenu.open = false;
+  const titleRow = heading.parentElement;
+  if (experimental && !home && documentTools.parentElement !== titleRow) titleRow.append(documentTools);
+  if (home && documentTools.parentElement !== main) main.insertBefore(documentTools, document.querySelector('#back-to-projects'));
+  main.querySelector('.dossier-profile').hidden = !experimental || !home;
+  portfolio.querySelector('.experiment-shortcuts').hidden = !experimental;
+  document.querySelector('#document-identifier').textContent = home ? '00 / Profile' : '';
+  document.querySelector('#document-identifier').hidden = !home;
+  document.querySelector('#active-perspective').textContent = view.heading;
+  document.querySelector('#compact-perspective').textContent = perspectiveMenu.querySelector(`[data-perspective="${role}"]`).textContent;
+  perspectiveMenu.querySelector('summary').setAttribute('aria-label', `Perspective: ${view.heading}`);
   document.querySelector('#filters').hidden = !listing || !filter;
   if (filter) {
     const clear = document.querySelector('#clear-filter');
@@ -279,7 +387,7 @@ function render() {
   for (const button of main.querySelectorAll('[data-perspective]')) {
     button.setAttribute('aria-pressed', button.dataset.perspective === role);
   }
-  for (const button of portfolio.querySelectorAll('[data-color]')) {
+  for (const button of portfolio.querySelectorAll('.dos-themes [data-color]')) {
     button.setAttribute('aria-pressed', button.dataset.color === theme);
   }
   hero.toggleAttribute('data-home', home);
@@ -287,7 +395,9 @@ function render() {
   main.querySelector('.hero-actions').hidden = !home;
   const title = home ? profileName : detail?.title ?? sectionNames[page];
   heading.textContent = title;
-  hero.querySelector('.intro').textContent = home ? view.intro : detail?.meta ?? pageIntros[page];
+  const introduction = hero.querySelector('.intro');
+  introduction.hidden = experimental && page === 'contact';
+  introduction.textContent = home ? view.intro : detail?.meta ?? pageIntros[page];
   document.querySelector('#back-to-projects').hidden = !detail;
 
   const content = document.querySelector('#section-content');
@@ -296,7 +406,7 @@ function render() {
   else if (detail) content.innerHTML = projectDetail(detail);
   else if (listing) content.innerHTML = projectIndex(visibleProjects);
   else if (page === 'contact') content.innerHTML = contactContent();
-  else content.innerHTML = entryList(ordered(entries[page], item => item[3]));
+  else content.innerHTML = entryList(entries[page]);
   content.dataset.project = detail?.id ?? '';
   if (detailsOpen) content.querySelector('details').open = true;
 
@@ -304,7 +414,7 @@ function render() {
   renderOutline(detail, listing ? visibleProjects : null);
   document.querySelector('#status-path').textContent = breadcrumb;
   statusText = listing ? `${matches}${filter ? ` · tag: ${technologies[filter]}` : ''}` : role === 'general' ? 'Ready' : `View: ${view.heading}`;
-  status.textContent = statusText;
+  status.textContent = experimental && !panel.hidden ? 'Search' : statusText;
   document.title = home ? profileName : `${title} · ${profileName}`;
 }
 
@@ -319,18 +429,27 @@ function renderLinks() {
   }
 }
 
+function portfolioPath(page, project = '') {
+  if (project) return `~/projects/${project}.md`;
+  return page === 'home' ? '~' : `~/${page}`;
+}
+
 function currentPath() {
-  if (state.project) return `~/portfolio/projects/${state.project}.md`;
-  return state.page === 'home' ? '~/portfolio' : `~/portfolio/${state.page}`;
+  return portfolioPath(state.page, state.project);
 }
 
 function stopTyping() {
   cancelAnimationFrame(animationFrame);
   feedback.hidden = true;
   feedback.removeAttribute('data-typing');
+  feedback.removeAttribute('data-hold');
+  feedback.removeAttribute('data-returning');
   feedback.textContent = '';
   promptPath.textContent = currentPath();
 }
+
+const experimentalTiming = { min: 600, max: 880, msPerCharacter: 11, hold: 1200, sqlHold: 1500, settle: 180 };
+commandBar.style.setProperty('--command-settle', `${experimentalTiming.settle}ms`);
 
 function typeCommand(text, oldPath = currentPath(), duration = 350, resolved = '') {
   if (reducedMotion.matches || search.value || document.activeElement === search) return;
@@ -339,9 +458,30 @@ function typeCommand(text, oldPath = currentPath(), duration = 350, resolved = '
   feedback.setAttribute('data-typing', '');
   const started = performance.now();
   const typingTime = duration * .72;
+  const historical = state.design === 'experimental';
+  const { min, max, msPerCharacter, hold, sqlHold, settle } = experimentalTiming;
+  const typeTime = Math.min(max, min + text.length * msPerCharacter);
+  const holdUntil = typeTime + (resolved ? sqlHold : hold);
 
   function tick(now) {
     const elapsed = now - started;
+    if (historical) {
+      if (elapsed >= holdUntil + settle || reducedMotion.matches) {
+        stopTyping();
+        return;
+      }
+      if (elapsed >= typeTime) {
+        if (feedback.textContent !== text) feedback.textContent = text;
+        feedback.removeAttribute('data-typing');
+        feedback.toggleAttribute('data-hold', elapsed < holdUntil);
+        feedback.toggleAttribute('data-returning', elapsed >= holdUntil);
+        if (elapsed >= holdUntil) promptPath.textContent = currentPath();
+      } else {
+        feedback.textContent = text.slice(0, Math.floor(Math.max(0, elapsed) / typeTime * text.length));
+      }
+      animationFrame = requestAnimationFrame(tick);
+      return;
+    }
     if (elapsed >= duration + (resolved ? 420 : 0) || reducedMotion.matches) {
       stopTyping();
       return;
@@ -368,18 +508,29 @@ function notify(message) {
 function renderOutline(detail, listing) {
   const sections = [...main.querySelectorAll('[data-outline]')].map(part =>
     `<a href="#${part.id}" data-jump="${part.id}">${part.dataset.outline || part.textContent}</a>`);
-  const links = listing ? listing.map(project => projectLink(project, `${project.id}.md`)) : sections;
+  const links = listing ? listing.map(project => projectLink(project,
+    state.design === 'experimental' ? project.title : `${project.id}.md`)) : sections;
   document.querySelector('#outline-path').textContent = detail ? `${detail.id}/` : `${state.page}/`;
   document.querySelector('#outline-links').innerHTML = links.map(link => `<li>${link}</li>`).join('');
   outlineToggle.hidden = !links.length;
+  document.querySelector('#inspector-shortcut').hidden = !links.length;
+  const metadata = document.querySelector('#inspector-meta');
+  metadata.hidden = state.design !== 'experimental' || !detail;
+  if (detail && !metadata.hidden) {
+    metadata.innerHTML = `<p class="meta">Document</p><strong>${detail.title}</strong><p>${detail.meta}</p>`;
+  }
   if (!links.length) setOutline(false);
   const documentIndex = main.querySelector('.document-index');
   if (documentIndex) documentIndex.innerHTML = sections.join('');
 }
 
 function setOutline(open) {
+  if (!open && outline.contains(document.activeElement)) outlineToggle.focus({ preventScroll: true });
   outline.hidden = !open;
   outlineToggle.setAttribute('aria-expanded', open);
+  if (open && state.design === 'experimental' && narrowLayout.matches) {
+    outline.querySelector('#outline-close').focus({ preventScroll: true });
+  }
 }
 
 function focusDestination(anchor = '') {
@@ -388,9 +539,13 @@ function focusDestination(anchor = '') {
     const destination = document.getElementById(anchor);
     if (!destination) return;
     if (destination instanceof HTMLDetailsElement) destination.open = true;
+    const block = destination.closest('li, section, details') ?? destination;
+    const entryDetails = block.matches('.entries > li') ? block.querySelector('details') : null;
+    if (entryDetails) entryDetails.open = true;
     destination.tabIndex = -1;
     destination.focus({ preventScroll: true });
-    destination.scrollIntoView({ block: 'nearest' });
+    const fits = block.getBoundingClientRect().height <= document.documentElement.clientHeight;
+    block.scrollIntoView({ block: fits ? 'nearest' : 'start' });
   } else {
     heading.focus({ preventScroll: true });
     scrollTo(0, 0);
@@ -425,10 +580,10 @@ function changeFilter(filter) {
 
 const searchItems = [
   ...Object.entries(sectionNames).map(([id, label]) => ({
-    type: 'Page', id, label, path: `~/portfolio/${id}`, description: pageIntros[id] || roles.general.intro,
+    type: 'Page', id, label, path: portfolioPath(id), description: pageIntros[id] || roles.general.intro,
   })),
   ...projects.map(project => ({
-    type: 'Project', id: project.id, label: project.title, path: `~/portfolio/projects/${project.id}.md`,
+    type: 'Project', id: project.id, label: project.title, path: portfolioPath('projects', project.id),
     description: project.description, meta: project.meta, tags: project.tags,
   })),
   ...Object.entries(roles).map(([id, view]) => ({
@@ -438,9 +593,27 @@ const searchItems = [
     type: 'Tag', id, label, path: `filter --tag ${id}`, description: `Show projects tagged ${label}.`,
   })),
   ...entries.skills.map(([label, meta, description]) => ({
-    type: 'Skill', id: slug(label), label, meta, description, path: `~/portfolio/skills#${slug(label)}`,
+    type: 'Skill', id: slug(label), label, meta, description, path: `${portfolioPath('skills')}#${slug(label)}`,
   })),
+  ...['experience', 'education'].flatMap(page => entries[page].map(([label, meta, description, , record]) => ({
+    type: sectionNames[page], page, id: record.id, label, meta, description,
+    path: `${portfolioPath(page)}#${record.id}`,
+  }))),
   { type: 'Help', id: 'help', label: 'Command help', path: 'help', description: 'Show the available commands and keyboard shortcuts.' },
+];
+
+const searchSuggestions = [
+  ['Quick actions', [
+    { type: 'Action', label: 'Search projects', query: 'project', description: 'Find project titles, descriptions and technology tags.' },
+    { type: 'Action', label: 'Change perspective', query: 'view', description: 'Find and apply a research, software or teaching perspective.' },
+    { type: 'Page', id: 'projects', label: 'Browse work', path: portfolioPath('projects'), description: 'Open the full project list.' },
+  ]],
+  ['Pages', searchItems.filter(item => item.type === 'Page').slice(0, 3)],
+  ['Commands', [
+    { type: 'Command', label: 'help', command: 'help', description: 'Show available commands and keyboard shortcuts.' },
+    { type: 'Command', label: 'view research', command: 'view research', description: 'Select AI & Research while keeping the current page open.' },
+    { type: 'Command', label: 'cd projects', command: 'cd projects', description: 'Navigate to the project listing.' },
+  ]],
 ];
 
 function fuzzyScore(term, text) {
@@ -461,7 +634,7 @@ function fuzzyScore(term, text) {
 function explicitCommand(value) {
   if (value === 'help') return searchItems.at(-1);
   const [verb, id, tag, extra] = value.split(/\s+/);
-  const aliases = { ai: 'research', software: 'engineering', education: 'teaching', general: 'general' };
+  const aliases = { ai: 'research', research: 'research', software: 'engineering', education: 'teaching', general: 'general' };
   if (verb === 'cd' && id && !tag) return searchItems.find(item => item.type === 'Page' && item.id === id);
   if (verb === 'open' && id && !tag) return searchItems.find(item => item.type === 'Project' && item.id === id.replace(/^(projects\/)|\.md$/g, ''));
   if (verb === 'view' && id && !tag) return searchItems.find(item => item.type === 'Perspective' && item.id === aliases[id]);
@@ -473,6 +646,7 @@ function renderSearch() {
   const query = search.value.toLowerCase().trim();
   const command = explicitCommand(query);
   const terms = query.split(/\s+/);
+  const grouped = !query && state.design === 'experimental';
   const verbs = { Page: 'cd', Project: 'open', Perspective: 'view', Tag: 'filter' };
   matches = command ? [command] : query ? searchItems.map(item => {
     const label = item.label.toLowerCase();
@@ -482,14 +656,20 @@ function renderSearch() {
       fuzzyScore(term, label), 20 + fuzzyScore(term, keywords), summary.includes(term) ? 50 : Infinity,
     ), 0);
     return { item, score };
-  }).filter(result => Number.isFinite(result.score)).sort((a, b) => a.score - b.score).map(result => result.item) : searchItems;
+  }).filter(result => Number.isFinite(result.score)).sort((a, b) => a.score - b.score).map(result => result.item)
+    : grouped ? searchSuggestions.flatMap(([, items]) => items) : searchItems;
 
   help.hidden = true;
+  helpToggle.setAttribute('aria-expanded', 'false');
   document.querySelector('#search-results').hidden = false;
-  results.innerHTML = matches.map((item, index) =>
-    `<li id="match-${index}" role="option" aria-selected="false" data-match="${index}"><span>${item.label}</span><small>${item.type}</small></li>`).join('');
+  const option = (item, index) =>
+    `<li id="match-${index}" role="option" aria-selected="false" data-match="${index}"><span>${item.label}</span><small>${item.type}</small></li>`;
+  results.innerHTML = grouped ? searchSuggestions.map(([label, items]) =>
+    `<li class="command-group" role="group" aria-label="${label}"><p aria-hidden="true">${label}</p>
+      <ul role="presentation">${items.map(item => option(item, matches.indexOf(item))).join('')}</ul></li>`).join('')
+    : matches.map(option).join('');
   document.querySelector('#search-empty').hidden = !!matches.length;
-  document.querySelector('#search-count').textContent = `${matches.length} ${matches.length === 1 ? 'match' : 'matches'}`;
+  document.querySelector('#search-count').textContent = grouped ? 'Suggestions' : `${matches.length} ${matches.length === 1 ? 'match' : 'matches'}`;
   results.scrollTop = 0;
   selectMatch(0);
 }
@@ -497,17 +677,18 @@ function renderSearch() {
 function selectMatch(index, scroll = false) {
   selection = index;
   const item = matches[index];
-  for (const option of results.children) option.setAttribute('aria-selected', Number(option.dataset.match) === index);
+  const options = results.querySelectorAll('[data-match]');
+  for (const option of options) option.setAttribute('aria-selected', Number(option.dataset.match) === index);
   preview.hidden = !item;
   if (!item) {
     search.removeAttribute('aria-activedescendant');
     return;
   }
-  const option = results.children[index];
+  const option = options[index];
   search.setAttribute('aria-activedescendant', option.id);
   if (scroll) option.scrollIntoView({ block: 'nearest' });
   preview.innerHTML = `<p class="search-caption">Preview</p>
-    <p class="preview-type">${item.type}</p><h2>${item.label}</h2><code>${item.path}</code>
+    <p class="preview-type">${item.type}</p><h2>${item.label}</h2>${item.path ? `<code>${item.path}</code>` : ''}
     ${item.description ? `<p>${item.description}</p>` : ''}
     ${item.meta ? `<p class="meta">${item.meta}</p>` : ''}
     ${item.tags?.length ? `<p class="meta">${item.tags.join(' · ')}</p>` : ''}`;
@@ -519,18 +700,34 @@ function openSearch() {
   panel.hidden = false;
   search.setAttribute('aria-expanded', 'true');
   renderSearch();
+  if (state.design === 'experimental') {
+    clearTimeout(statusTimer);
+    status.textContent = 'Search';
+  }
 }
 
 function closeSearch() {
+  if (!panel.hidden && state.design === 'experimental') status.textContent = statusText;
   panel.hidden = true;
+  helpToggle.setAttribute('aria-expanded', 'false');
   search.setAttribute('aria-expanded', 'false');
   search.removeAttribute('aria-activedescendant');
 }
 
 function runMatch(item) {
   if (!item) return;
+  if (item.type === 'Command') {
+    runMatch(explicitCommand(item.command));
+    return;
+  }
+  if (item.type === 'Action') {
+    search.value = item.query;
+    renderSearch();
+    return;
+  }
   if (item.type === 'Help') {
     help.hidden = false;
+    helpToggle.setAttribute('aria-expanded', 'true');
     document.querySelector('#search-results').hidden = true;
     preview.hidden = true;
     search.removeAttribute('aria-activedescendant');
@@ -544,12 +741,31 @@ function runMatch(item) {
   else if (item.type === 'Page') navigate(item.id);
   else if (item.type === 'Perspective') {
     changePerspective(item.id);
-    main.querySelector(`[data-perspective="${item.id}"]`).focus({ preventScroll: true });
+    const control = state.project ? heading : state.design === 'experimental'
+      ? perspectiveMenu.querySelector('summary') : main.querySelector(`[data-perspective="${item.id}"]`);
+    control.focus({ preventScroll: true });
   } else if (item.type === 'Tag') changeFilter(item.id);
-  else navigate('skills', '', item.id);
+  else navigate(item.page || 'skills', '', item.id);
 }
 
+function updateSearchPrompt() {
+  search.placeholder = state.design === 'classic' ? 'Search projects, pages, or commands…'
+    : compactCommandBar.matches ? 'Search or command…' : 'Search or type a command…';
+}
+compactCommandBar.addEventListener('change', updateSearchPrompt);
+
 outlineToggle.addEventListener('click', () => setOutline(outline.hidden));
+outline.querySelector('#outline-close').addEventListener('click', () => setOutline(false));
+function toggleHelp() {
+  if (!panel.hidden && !help.hidden) {
+    closeSearch();
+    return;
+  }
+  search.focus({ preventScroll: true });
+  openSearch();
+  runMatch(explicitCommand('help'));
+}
+helpToggle.addEventListener('click', toggleHelp);
 search.addEventListener('focus', openSearch);
 search.addEventListener('click', openSearch);
 search.addEventListener('input', () => {
@@ -586,18 +802,31 @@ commandBar.addEventListener('focusout', event => {
 });
 document.addEventListener('pointerdown', event => {
   if (!commandBar.contains(event.target) && !panel.hidden) closeSearch();
+  if (perspectiveMenu.open && !perspectiveMenu.contains(event.target)) perspectiveMenu.open = false;
+  if (state.design === 'experimental' && narrowLayout.matches && !outline.hidden &&
+      !outline.contains(event.target) && !outlineToggle.contains(event.target)) setOutline(false);
 });
 document.addEventListener('keydown', event => {
   const key = event.key.toLowerCase();
   if ((event.ctrlKey || event.metaKey) && !event.altKey && key === 'k') {
     event.preventDefault();
-    search.focus();
-    openSearch();
+    if (event.repeat) return;
+    if (!panel.hidden) closeSearch();
+    else {
+      search.focus();
+      openSearch();
+    }
+  } else if (key === '?' && !event.ctrlKey && !event.altKey && !event.metaKey &&
+      (event.target === search || !event.target.closest('input, textarea, select, [contenteditable]'))) {
+    event.preventDefault();
+    if (!event.repeat) toggleHelp();
   } else if (key === 'escape' && !panel.hidden) {
     event.preventDefault();
     closeSearch();
+  } else if (key === 'escape' && perspectiveMenu.open) {
+    perspectiveMenu.open = false;
+    perspectiveMenu.querySelector('summary').focus();
   } else if (key === 'escape' && !outline.hidden) {
-    if (outline.contains(document.activeElement)) outlineToggle.focus();
     setOutline(false);
   } else if (key === 'e' && !event.repeat && !event.ctrlKey && !event.altKey && !event.metaKey &&
       !outlineToggle.hidden && !event.target.closest('input, textarea, select, [contenteditable]')) {
@@ -614,6 +843,10 @@ portfolio.addEventListener('click', async event => {
   }
   const perspectiveButton = event.target.closest('[data-perspective]');
   if (perspectiveButton) {
+    if (perspectiveMenu.contains(perspectiveButton)) {
+      perspectiveMenu.open = false;
+      perspectiveMenu.querySelector('summary').focus({ preventScroll: true });
+    }
     changePerspective(perspectiveButton.dataset.perspective);
     return;
   }
@@ -623,9 +856,11 @@ portfolio.addEventListener('click', async event => {
     return;
   }
   if (event.target.closest('#copy-email')) {
+    const email = contact.email;
+    if (!email) return;
     try {
-      await navigator.clipboard.writeText(exampleEmail);
-      notify('Example email copied');
+      await navigator.clipboard.writeText(email);
+      notify('Email copied');
     } catch {
       const address = document.querySelector('#email-address');
       const selection = window.getSelection();
