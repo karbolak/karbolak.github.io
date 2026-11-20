@@ -6,10 +6,12 @@
   <meta name="description" content="Kajetan Karbowski, MSc Artificial Intelligence student at the University of Groningen.">
   <title>Kajetan Karbowski</title>
   <link rel="stylesheet" href="portfolio.css">
+  <link rel="stylesheet" href="experiment.css">
+  <script src="portfolio-content.js" defer></script>
   <script src="portfolio.js" defer></script>
 </head>
 <body>
-  <div class="portfolio" data-theme="light">
+  <div class="portfolio" data-design="experimental" data-theme="light">
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="sheet dos-window">
       <header class="site-header">
@@ -21,24 +23,26 @@
               <button type="button" data-color="light" aria-label="Light theme" aria-pressed="true">Light</button>
               <button type="button" data-color="dark" aria-label="Dark theme" aria-pressed="false">Dark</button>
             </div>
+            <button type="button" id="theme-toggle" data-color="dark" aria-label="Use dark theme" hidden>Dark</button>
           </div>
         </div>
         <nav class="dos-tabs" aria-label="Primary">
           <a href="./" data-page="home" aria-current="page">Home</a>
-          <a href="?section=projects" data-page="projects">Projects</a>
-          <a href="?section=experience" data-page="experience">Experience</a>
-          <a href="?section=education" data-page="education">Education</a>
+          <a href="?section=projects" data-page="projects" aria-label="Projects">Projects</a>
+          <a href="?section=experience" data-page="experience" aria-label="Experience"><span class="tab-full">Experience</span><span class="tab-short" aria-hidden="true" hidden>Exper.</span></a>
+          <a href="?section=education" data-page="education" aria-label="Education"><span class="tab-full">Education</span><span class="tab-short" aria-hidden="true" hidden>Educ.</span></a>
           <a href="?section=skills" data-page="skills">Skills</a>
           <a href="?section=contact" data-page="contact">Contact</a>
         </nav>
         <div class="command-bar" id="command-bar">
           <form class="command-line" id="command-form" role="search">
-            <span class="prompt" aria-hidden="true"><span id="prompt-path">~/portfolio</span> <b>❯</b></span>
+            <span class="prompt" aria-hidden="true"><span id="prompt-path">~</span> <b>❯</b></span>
             <div class="command-field">
-              <input id="command-input" type="search" role="combobox" aria-label="Search projects, pages, or commands" aria-controls="command-results" aria-autocomplete="list" aria-expanded="false" aria-keyshortcuts="Control+K Meta+K" autocomplete="off" spellcheck="false" placeholder="Search projects, pages, or commands…">
+              <input id="command-input" type="search" role="combobox" aria-label="Search projects, pages, or commands" aria-controls="command-results" aria-autocomplete="list" aria-expanded="false" aria-keyshortcuts="Control+K Meta+K" autocomplete="off" spellcheck="false" placeholder="Search or type a command…">
               <span id="command-feedback" class="command-feedback" aria-hidden="true" hidden></span>
             </div>
             <kbd class="command-key" aria-hidden="true">Ctrl / ⌘ K</kbd>
+            <button type="button" id="help-toggle" aria-label="Command help" aria-keyshortcuts="?" aria-controls="command-help" aria-expanded="false" hidden>? Help</button>
           </form>
           <div id="search-panel" class="search-panel" hidden>
             <div class="search-results" id="search-results">
@@ -55,6 +59,7 @@
                 <dt>Open a project</dt><dd><code>open psag</code></dd>
                 <dt>Change view</dt><dd><code>view ai</code>, <code>view software</code>, <code>view education</code>, <code>view general</code></dd>
                 <dt>Filter projects</dt><dd><code>filter --tag python</code>, <code>filter --clear</code></dd>
+                <dt class="experiment-help" hidden>Shortcuts</dt><dd class="experiment-help" hidden><kbd>Ctrl/Cmd+K</kbd> toggles search, <kbd>?</kbd> toggles Help, and <kbd>E</kbd> toggles Explorer outside the search field.</dd>
               </dl>
             </div>
             <div class="search-footer"><span id="search-count" aria-live="polite"></span><span>↑ ↓ Move · Enter Open · Esc Close</span></div>
@@ -64,10 +69,12 @@
 
       <div class="dos-workspace">
         <aside class="outline" id="outline" hidden>
+          <button type="button" id="outline-close" aria-label="Close Explorer" hidden>Close</button>
           <nav aria-label="Page outline">
-            <p id="outline-path">portfolio/</p>
+            <p id="outline-path">~/</p>
             <ul id="outline-links"></ul>
           </nav>
+          <div id="inspector-meta" hidden></div>
         </aside>
         <main class="dos-content" id="main" tabindex="-1">
           <div class="views" role="group" aria-label="Perspective">
@@ -77,11 +84,27 @@
             <button type="button" data-perspective="engineering" aria-pressed="false">Software</button>
             <button type="button" data-perspective="teaching" aria-pressed="false">Education</button>
           </div>
+          <div class="document-tools" hidden>
+            <span id="document-identifier">00 / Profile</span>
+            <details id="perspective-menu">
+              <summary><span class="perspective-label">Perspective</span> <span id="active-perspective">General</span><span id="compact-perspective" aria-hidden="true">General</span> <span aria-hidden="true">▾</span></summary>
+              <div role="group" aria-label="Perspective">
+                <button type="button" data-perspective="general" aria-pressed="true">General</button>
+                <button type="button" data-perspective="research" aria-pressed="false">Research</button>
+                <button type="button" data-perspective="engineering" aria-pressed="false">Software</button>
+                <button type="button" data-perspective="teaching" aria-pressed="false">Education</button>
+              </div>
+            </details>
+          </div>
 
           <a class="back-link" id="back-to-projects" href="?section=projects" data-page="projects" hidden>← Back to projects</a>
           <header class="hero" data-home>
             <div class="hero-copy">
-              <h1 tabindex="-1">Kajetan Karbowski</h1>
+              <div class="heading-row"><h1 tabindex="-1">Kajetan Karbowski</h1></div>
+              <div class="dossier-profile" hidden>
+                <p class="dossier-fields">Artificial Intelligence · Engineering · Education</p>
+                <p class="dossier-degree">MSc Artificial Intelligence <span>University of Groningen</span></p>
+              </div>
               <p class="intro">I’m an MSc Artificial Intelligence student at the University of Groningen, interested in AI research, software engineering, and education.</p>
               <div class="hero-actions">
                 <a class="button primary" href="?section=projects" data-page="projects">Browse projects</a>
@@ -89,7 +112,10 @@
                 <a class="button" href="?section=contact" data-page="contact">Contact</a>
               </div>
             </div>
-            <div class="media-placeholder portrait" id="portrait"><span>Portrait placeholder</span></div>
+            <picture class="portrait profile-portrait" id="portrait">
+              <source srcset="assets/profile_portrait_web.webp" type="image/webp">
+              <img src="assets/profile_portrait_web.jpg" width="1122" height="1402" alt="Kajetan Karbowski">
+            </picture>
           </header>
 
           <div class="filters" id="filters" hidden>
@@ -103,7 +129,8 @@
 
       <footer class="dos-status">
         <span id="status" role="status" aria-live="polite" aria-atomic="true">Ready</span>
-        <span id="status-path" aria-hidden="true">~/portfolio</span>
+        <span id="status-path" aria-hidden="true">~</span>
+        <span class="experiment-shortcuts" hidden><kbd>Ctrl/⌘ K</kbd> Search <span id="inspector-shortcut">· <kbd>E</kbd> Explorer</span></span>
       </footer>
     </div>
 
