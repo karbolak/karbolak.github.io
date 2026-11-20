@@ -7,6 +7,7 @@
   <title>Kajetan Karbowski</title>
   <link rel="stylesheet" href="portfolio.css">
   <link rel="stylesheet" href="experiment.css">
+  <noscript><style>#cv-glance[hidden] { display: block !important; }</style></noscript>
   <script src="portfolio-content.js" defer></script>
   <script src="portfolio.js" defer></script>
 </head>
@@ -19,10 +20,6 @@
           <a class="wordmark" href="./" data-page="home">Kajetan Karbowski <small>/ Portfolio</small></a>
           <div class="header-tools">
             <button type="button" id="outline-toggle" aria-controls="outline" aria-expanded="false" aria-keyshortcuts="E">Outline</button>
-            <div class="dos-themes" role="group" aria-label="Color theme">
-              <button type="button" data-color="light" aria-label="Light theme" aria-pressed="true">Light</button>
-              <button type="button" data-color="dark" aria-label="Dark theme" aria-pressed="false">Dark</button>
-            </div>
             <button type="button" id="theme-toggle" data-color="dark" aria-label="Use dark theme" hidden>Dark</button>
           </div>
         </div>
@@ -36,7 +33,7 @@
         </nav>
         <div class="command-bar" id="command-bar">
           <form class="command-line" id="command-form" role="search">
-            <span class="prompt" aria-hidden="true"><span id="prompt-path">~</span> <b>❯</b></span>
+            <span class="prompt" aria-hidden="true"><span id="prompt-path">~</span> <b>$</b></span>
             <div class="command-field">
               <input id="command-input" type="search" role="combobox" aria-label="Search projects, pages, or commands" aria-controls="command-results" aria-autocomplete="list" aria-expanded="false" aria-keyshortcuts="Control+K Meta+K" autocomplete="off" spellcheck="false" placeholder="Search or type a command…">
               <span id="command-feedback" class="command-feedback" aria-hidden="true" hidden></span>
@@ -77,13 +74,6 @@
           <div id="inspector-meta" hidden></div>
         </aside>
         <main class="dos-content" id="main" tabindex="-1">
-          <div class="views" role="group" aria-label="Perspective">
-            <span class="view-label" aria-hidden="true">View</span>
-            <button type="button" data-perspective="general" aria-pressed="true">All</button>
-            <button type="button" data-perspective="research" aria-pressed="false">Research</button>
-            <button type="button" data-perspective="engineering" aria-pressed="false">Software</button>
-            <button type="button" data-perspective="teaching" aria-pressed="false">Education</button>
-          </div>
           <div class="document-tools" hidden>
             <span id="document-identifier">00 / Profile</span>
             <details id="perspective-menu">
@@ -111,6 +101,7 @@
                 <a class="button" href="?section=contact#cv" data-page="contact" data-anchor="cv">CV information</a>
                 <a class="button" href="?section=contact" data-page="contact">Contact</a>
               </div>
+              <nav id="cv-actions" aria-label="Professional links" hidden></nav>
             </div>
             <picture class="portrait profile-portrait" id="portrait">
               <source srcset="assets/profile_portrait_web.webp" type="image/webp">
@@ -118,12 +109,29 @@
             </picture>
           </header>
 
+          <section id="cv-glance" class="cv-section" aria-labelledby="cv-glance-title" hidden>
+            <header class="cv-section-heading">
+              <h2 id="cv-glance-title"><span>01 /</span> At a glance</h2>
+              <nav aria-label="Academic and skills details">
+                <a href="?section=education" data-page="education">Education</a>
+                <a href="?section=skills" data-page="skills">Skills</a>
+              </nav>
+            </header>
+            <dl class="cv-facts">
+              <div><dt>Academic</dt><dd><span data-cv-source="education:msc-ai">MSc AI</span> · <span data-cv-source="education:bsc-ai">BSc AI</span> · <span data-cv-source="education:htsm">HTSM Honours</span></dd></div>
+              <div><dt>Research</dt><dd><span data-cv-source="project:llm-poetry">Generative AI</span> · <span data-cv-source="project:diffgate">Uncertainty estimation</span> · <span data-cv-source="project:xai-face-clustering">Explainable AI</span></dd></div>
+              <div><dt>Engineering</dt><dd><span data-cv-source="project:diffgate">Python</span> · <span data-cv-source="project:autoop">ML tooling</span> · <span data-cv-source="project:ai-intake-automation">APIs and automation</span></dd></div>
+              <div><dt>Education &amp; leadership</dt><dd><span data-cv-source="experience:private-tutoring">Tutoring</span> · <span data-cv-source="experience:tdj-camp">Educational activity design</span> · <span data-cv-source="experience:psag-president">Student association leadership</span></dd></div>
+            </dl>
+          </section>
+
           <div class="filters" id="filters" hidden>
             <span>Filter</span>
             <button type="button" id="clear-filter">Clear filter</button>
             <span id="filter-count"></span>
           </div>
           <div id="section-content"></div>
+          <div id="cv-preview" popover role="region" aria-labelledby="cv-preview-title"></div>
         </main>
       </div>
 
@@ -135,10 +143,25 @@
       <details id="design-options" class="design-options" hidden>
         <summary>Design options</summary>
         <fieldset>
+          <legend>Layout</legend>
+          <label><input type="radio" name="layout" value="current" checked> Current (locked)</label>
+          <label><input type="radio" name="layout" value="cv-abstract"> CV Abstract</label>
+        </fieldset>
+        <fieldset>
+          <legend>Photograph</legend>
+          <label><input type="radio" name="photo" value="colour" checked> Colour</label>
+          <label><input type="radio" name="photo" value="bw"> Black &amp; White</label>
+          <label><input type="radio" name="photo" value="site"> Site palette</label>
+        </fieldset>
+        <fieldset>
           <legend>Typography</legend>
           <label><input type="radio" name="typography" value="mono" checked> <span>Mono <small>JetBrains Mono throughout</small></span></label>
           <label><input type="radio" name="typography" value="mixed"> <span>Mixed <small>Mono headings and controls, sans-serif prose</small></span></label>
           <label><input type="radio" name="typography" value="reading"> <span>Reading <small>Sans-serif headings and prose, with roomier text</small></span></label>
+        </fieldset>
+        <fieldset id="cv-experiments" hidden>
+          <legend>Experiments</legend>
+          <label><input type="checkbox" name="evidence" checked> Inline previews</label>
         </fieldset>
       </details>
     </div>
