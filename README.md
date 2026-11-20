@@ -20,13 +20,13 @@ The bar also accepts `cd projects`, `cd experience`, `cd education`, `cd contact
 
 Use the current address to share a page, project, perspective, or project filter. For example, `?section=projects&role=teaching` opens Projects with the teaching perspective, and `?section=projects&project=psag` opens the sample project.
 
-Home uses the supplied WebP portrait with a JPEG fallback. The original PNG is retained in `assets/`. Project screenshots and PSAG Platform implementation details are pending, as are the CV file and contact links awaiting approval.
+Home uses the supplied WebP portrait with a JPEG fallback. The original PNG is retained in `assets/`. Project screenshots and PSAG Platform implementation details are pending, as are the CV file and email address.
 
 ## Portfolio interface
 
-The default portfolio uses JetBrains Mono at 400 for prose and 550 for headings. The grey theme uses `#70736F` behind the `#626662` document, with `#686D68` raised surfaces and `#F6F4ED` text. Older Classic links with `?design=classic` still work.
+The default portfolio uses JetBrains Mono at 400 for prose and 550 for headings. The grey theme uses `#70736F` behind the `#626662` document, with `#686D68` raised surfaces and `#F6F4ED` text. **Design options** at the bottom lets you compare Mono, Mixed, and Reading typography. The choice is remembered locally. Add `?type=mixed` or `?type=reading` to share a variation. Older Classic links with `?design=classic` still work.
 
-Click **? Help** or press `?` to toggle the guide to navigation, perspectives, and shortcuts. The command bar uses `~` as the portfolio root. The `$` prompt types for 600–880 ms, holds for 1.2 seconds or 1.5 seconds for SQL, and fades to idle in 180 ms. Input interrupts the effect and reduced motion skips it. **E** opens the contextual Explorer and **Esc** closes it. Explorer opens as a drawer on narrow screens.
+Click **? Help** or press `?` to toggle the guide to navigation, perspectives, and shortcuts. The command bar uses `~` as the portfolio root. The `$` prompt types for 600–880 ms, holds for 600 ms or 750 ms for SQL, and fades to idle in 180 ms. Input interrupts the effect and reduced motion skips it. **E** opens the contextual Explorer and **Esc** closes it. Explorer opens as a drawer on narrow screens.
 
 Listings support optional `pinned`, `date`, `start`, `end`, and `ongoing` fields in `portfolio-content.js`. Use ISO values such as `YYYY` or `YYYY-MM-DD`. An optional `date_label` preserves the wording of dates supplied in the CV. The BSc entry uses the confirmed 8.4/10 final grade. The `contact` record in `portfolio.js` can hold an approved email address, a LinkedIn URL and CV records with a `title`, `url` and optional `role`.
 

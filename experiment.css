@@ -372,3 +372,49 @@ body:has(> .portfolio[data-design="experimental"]:not([hidden])) {
   .portfolio[data-design="experimental"] .hero[data-home] .hero-actions { grid-area: actions; margin-top: 0; }
   .portfolio[data-design="experimental"] .portrait.profile-portrait { grid-area: portrait; width: 100%; margin: 0; }
 }
+
+.design-options {
+  border-top: 1px solid var(--rule);
+  padding: 5px 12px;
+  background: var(--trim);
+  color: var(--muted);
+  font: .73rem/1.5 var(--mono);
+}
+.design-options summary { width: fit-content; padding: 4px 0; color: var(--accent); }
+.design-options fieldset { display: grid; gap: 4px; margin: 5px 0; padding: 6px 10px; border: 1px solid var(--rule); }
+.design-options label { display: flex; align-items: baseline; gap: 5px; padding: 3px 0; }
+.design-options input { accent-color: var(--accent); }
+.design-options small { display: block; color: var(--muted); font: inherit; }
+
+.portfolio[data-design="experimental"]:is([data-typography="mixed"], [data-typography="reading"]) {
+  --prose: "IBM Plex Sans", system-ui, sans-serif;
+}
+.portfolio[data-design="experimental"]:not([data-typography="mono"]) :is(
+  .intro, .dossier-fields, .dossier-degree, .project-copy > p:not(.meta),
+  .feature-copy > p:not(.meta), .dossier-feature p:not(.meta), .detail-body p:not(.meta),
+  .entries li > p:not(.meta), .entries details p, .contact-record,
+  .search-preview p:not(.search-caption, .preview-type, .meta), .search-help p
+) { font-family: var(--prose); }
+.portfolio[data-design="experimental"][data-typography="reading"] :is(main h1, main h2, main h3, .search-preview h2) {
+  font-family: var(--prose);
+}
+.portfolio[data-design="experimental"][data-typography="reading"] .intro {
+  max-width: 64ch;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 520px) {
+  .portfolio[data-design="experimental"] .dos-banner {
+    flex-wrap: nowrap;
+    gap: 6px;
+    padding-inline: 8px;
+  }
+  .portfolio[data-design="experimental"] .wordmark {
+    font-size: clamp(.76rem, 3.5vw, .9rem);
+    white-space: nowrap;
+  }
+  .portfolio[data-design="experimental"] .wordmark small { display: none; }
+  .portfolio[data-design="experimental"] .header-tools { flex-wrap: nowrap; gap: 4px; }
+  .portfolio[data-design="experimental"] .header-tools button { padding-inline: 6px; font-size: .72rem; }
+}

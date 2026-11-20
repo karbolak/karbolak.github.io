@@ -77,9 +77,11 @@ const pageIntros = {
   skills: 'Areas of experience across research, software, and teaching.',
   contact: 'Professional profiles and contact information.',
 };
-const contact = { email: '', linkedin: '', cvs: [] };
+const contact = { email: '', linkedin: 'https://www.linkedin.com/in/kajetan-karbowski/', cvs: [] };
 const portfolio = document.querySelector('.portfolio');
 const main = document.querySelector('#main');
+const designOptions = document.querySelector('#design-options');
+const typographyOptions = ['mono', 'mixed', 'reading'];
 const hero = main.querySelector('.hero');
 const heading = hero.querySelector('h1');
 const commandBar = document.querySelector('#command-bar');
@@ -109,6 +111,11 @@ let selection = 0;
 
 function readLocation() {
   const params = new URLSearchParams(location.search);
+  let typography = params.get('type');
+  if (!typographyOptions.includes(typography)) {
+    try { typography = localStorage.getItem('portfolio-typography'); }
+    catch { typography = null; }
+  }
   const role = Object.hasOwn(roles, params.get('role')) ? params.get('role') : 'general';
   const id = projects.find(project => project.id === (params.get('project') === 'psag-platform' ? 'psag' : params.get('project')))?.id ?? '';
   const page = Object.hasOwn(sectionNames, params.get('section')) ? params.get('section') : id ? 'projects' : roles[role].start;
@@ -118,6 +125,7 @@ function readLocation() {
     filter: Object.hasOwn(technologies, params.get('filter')) ? params.get('filter') : '',
     theme: params.get('theme') === 'dark' ? 'dark' : 'light',
     design: params.get('design') === 'classic' ? 'classic' : 'experimental',
+    typography: typographyOptions.includes(typography) ? typography : 'mono',
   };
 }
 let state = readLocation();
@@ -125,6 +133,7 @@ let state = readLocation();
 function urlFor(next, anchor = '') {
   const params = new URLSearchParams();
   if (next.design === 'classic') params.set('design', 'classic');
+  if (next.typography !== 'mono') params.set('type', next.typography);
   if (next.role !== 'general') params.set('role', next.role);
   if (next.page !== roles[next.role].start) params.set('section', next.page);
   if (next.project) params.set('project', next.project);
@@ -347,6 +356,9 @@ function render() {
 
   portfolio.dataset.theme = theme;
   portfolio.dataset.design = state.design;
+  portfolio.dataset.typography = state.typography;
+  designOptions.hidden = !experimental;
+  designOptions.querySelector(`[value="${state.typography}"]`).checked = true;
   portfolio.querySelector('.prompt b').textContent = experimental ? '$' : '❯';
   portfolio.querySelector('.dos-themes').hidden = experimental;
   const themeToggle = document.querySelector('#theme-toggle');
@@ -448,7 +460,7 @@ function stopTyping() {
   promptPath.textContent = currentPath();
 }
 
-const experimentalTiming = { min: 600, max: 880, msPerCharacter: 11, hold: 1200, sqlHold: 1500, settle: 180 };
+const experimentalTiming = { min: 600, max: 880, msPerCharacter: 11, hold: 600, sqlHold: 750, settle: 180 };
 commandBar.style.setProperty('--command-settle', `${experimentalTiming.settle}ms`);
 
 function typeCommand(text, oldPath = currentPath(), duration = 350, resolved = '') {
@@ -753,6 +765,13 @@ function updateSearchPrompt() {
     : compactCommandBar.matches ? 'Search or command…' : 'Search or type a command…';
 }
 compactCommandBar.addEventListener('change', updateSearchPrompt);
+designOptions.addEventListener('change', event => {
+  if (event.target.name !== 'typography') return;
+  const typography = event.target.value;
+  try { localStorage.setItem('portfolio-typography', typography); }
+  catch {}
+  go({ ...state, typography }, { replace: true, anchor: location.hash.slice(1) });
+});
 
 outlineToggle.addEventListener('click', () => setOutline(outline.hidden));
 outline.querySelector('#outline-close').addEventListener('click', () => setOutline(false));
