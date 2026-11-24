@@ -87,6 +87,7 @@ const photoOptions = ['colour', 'bw', 'site', 'halftone'];
 const hero = main.querySelector('.hero');
 const heading = hero.querySelector('h1');
 const profileVisual = hero.querySelector('.profile-visual');
+const profileToolbar = main.querySelector('.profile-toolbar');
 const commandBar = document.querySelector('#command-bar');
 const search = document.querySelector('#command-input');
 const searchToggle = document.querySelector('#search-toggle');
@@ -288,7 +289,7 @@ function cvHome() {
 
   return `<section id="cv-work" class="cv-section" aria-labelledby="cv-work-title" data-outline="Selected work">
     <header class="cv-section-heading">
-      <h2 id="cv-work-title">Selected work</h2>
+      <h2 id="cv-work-title"><span class="section-number" aria-hidden="true">02 /</span> Selected work</h2>
       <a href="?section=projects" data-page="projects">View all projects</a>
     </header>
     <ul class="cv-rows">${work.map(item => `<li>
@@ -299,7 +300,7 @@ function cvHome() {
   </section>
   <section id="cv-experience" class="cv-section" aria-labelledby="cv-experience-title" data-outline="Selected experience">
     <header class="cv-section-heading">
-      <h2 id="cv-experience-title">Selected experience</h2>
+      <h2 id="cv-experience-title"><span class="section-number" aria-hidden="true">03 /</span> Selected experience</h2>
       <a href="?section=experience" data-page="experience">Full history</a>
     </header>
     <ul class="cv-rows">${history.map(item => `<li>
@@ -310,7 +311,7 @@ function cvHome() {
   </section>
   <section id="cv-skills" class="cv-section" aria-labelledby="cv-skills-title" data-outline="Key skills">
     <header class="cv-section-heading">
-      <h2 id="cv-skills-title">Key skills</h2>
+      <h2 id="cv-skills-title"><span class="section-number" aria-hidden="true">04 /</span> Key skills</h2>
       <a href="?section=skills" data-page="skills">All skills</a>
     </header>
     <ul class="tags">${portfolioContent.keySkills.map(skill => `<li><span>${skill}</span></li>`).join('')}</ul>
@@ -454,6 +455,9 @@ function render() {
   searchToggle.hidden = false;
   updateSearchPrompt();
   const documentTools = main.querySelector('.document-tools');
+  const toolsParent = home ? profileToolbar : heading.parentElement;
+  if (documentTools.parentElement !== toolsParent) toolsParent.append(documentTools);
+  profileToolbar.hidden = !home;
   documentTools.hidden = !!detail;
   if (detail) perspectiveMenu.open = false;
   main.querySelector('.dossier-profile').hidden = !home;
@@ -594,6 +598,7 @@ function renderOutline(detail, listing) {
   document.querySelector('#outline-path').textContent = detail ? `${detail.id}/` : `${state.page}/`;
   document.querySelector('#outline-links').innerHTML = links.map(link => `<li>${link}</li>`).join('');
   outlineToggle.hidden = !links.length;
+  document.querySelector('#explorer-shortcut').hidden = !links.length;
   const metadata = document.querySelector('#inspector-meta');
   metadata.hidden = !detail;
   if (detail && !metadata.hidden) {

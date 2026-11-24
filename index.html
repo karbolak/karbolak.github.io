@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Kajetan Karbowski, MSc Artificial Intelligence student at the University of Groningen.">
   <title>Kajetan Karbowski</title>
-  <link rel="stylesheet" href="portfolio.css?v=cv-abstract-6">
-  <link rel="stylesheet" href="experiment.css?v=cv-abstract-6">
-  <script src="portfolio-content.js?v=cv-abstract-6" defer></script>
-  <script src="portfolio.js?v=cv-abstract-6" defer></script>
+  <link rel="stylesheet" href="portfolio.css?v=cv-abstract-7">
+  <link rel="stylesheet" href="experiment.css?v=cv-abstract-7">
+  <script src="portfolio-content.js?v=cv-abstract-7" defer></script>
+  <script src="portfolio.js?v=cv-abstract-7" defer></script>
 </head>
 <body>
   <div class="portfolio" data-design="experimental" data-theme="light" data-cv-home>
@@ -76,21 +76,24 @@
             <a class="back-link" href="./" data-page="home"><span aria-hidden="true">←</span> Back to home</a>
             <a class="back-link" id="back-to-projects" href="?section=projects" data-page="projects" hidden>Back to projects</a>
           </nav>
+          <div class="profile-toolbar">
+            <span class="profile-label">00 / Profile</span>
+            <div class="document-tools" hidden>
+              <details id="perspective-menu">
+                <summary><span class="perspective-label">Perspective</span> <span id="active-perspective">General</span> <span aria-hidden="true">▾</span></summary>
+                <div role="group" aria-label="Perspective">
+                  <button type="button" data-perspective="general" aria-pressed="true">General</button>
+                  <button type="button" data-perspective="research" aria-pressed="false">Research</button>
+                  <button type="button" data-perspective="engineering" aria-pressed="false">Software</button>
+                  <button type="button" data-perspective="teaching" aria-pressed="false">Education</button>
+                </div>
+              </details>
+            </div>
+          </div>
           <header class="hero" data-home>
             <div class="hero-copy">
               <div class="heading-row">
                 <h1 id="cv-profile" tabindex="-1">Kajetan Karbowski</h1>
-                <div class="document-tools" hidden>
-                  <details id="perspective-menu">
-                    <summary><span class="perspective-label">Perspective</span> <span id="active-perspective">General</span> <span aria-hidden="true">▾</span></summary>
-                    <div role="group" aria-label="Perspective">
-                      <button type="button" data-perspective="general" aria-pressed="true">General</button>
-                      <button type="button" data-perspective="research" aria-pressed="false">Research</button>
-                      <button type="button" data-perspective="engineering" aria-pressed="false">Software</button>
-                      <button type="button" data-perspective="teaching" aria-pressed="false">Education</button>
-                    </div>
-                  </details>
-                </div>
               </div>
               <div class="dossier-profile">
                 <p class="dossier-degree">MSc Artificial Intelligence student <span>University of Groningen</span></p>
@@ -117,10 +120,10 @@
 
           <section id="cv-glance" class="cv-section" aria-labelledby="cv-glance-title" data-outline="At a glance">
             <header class="cv-section-heading">
-              <h2 id="cv-glance-title">At a glance</h2>
-              <p id="cv-preview-hint" class="cv-preview-hint" hidden><span><span aria-hidden="true">▤</span> Preview</span><span><span aria-hidden="true">↗</span> External link</span></p>
+              <h2 id="cv-glance-title"><span class="section-number" aria-hidden="true">01 /</span> At a glance</h2>
+              <p id="cv-preview-hint" class="cv-preview-hint" hidden><span><span aria-hidden="true">▤</span> Preview</span><span><span aria-hidden="true">↗</span> External<span class="glance-full"> link</span></span></p>
               <nav aria-label="Academic and skills details">
-                <a href="?section=education" data-page="education">Education</a>
+                <a href="?section=education" data-page="education" aria-label="Education"><span class="glance-full">Education</span><span class="glance-short" aria-hidden="true">Edu.</span></a>
                 <a href="?section=skills" data-page="skills">Skills</a>
               </nav>
             </header>
@@ -145,6 +148,7 @@
       <footer class="dos-status">
         <span id="status" role="status" aria-live="polite" aria-atomic="true">Ready</span>
         <span id="status-path" aria-hidden="true">~</span>
+        <span class="status-shortcuts"><span><kbd>Ctrl/⌘ K</kbd> Search</span><span id="explorer-shortcut" hidden><kbd>E</kbd> Explorer</span></span>
       </footer>
     </div>
 
