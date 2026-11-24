@@ -1,80 +1,153 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kajtkowa strona</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            height: 100vh;
-            background: #010B25;
-            color: #E7D6B5;
-            overflow: hidden;
-        }
-        .gif {
-            width: 150px;
-            height: 150px;
-            animation: float 5s infinite alternate;
-        }
-        @keyframes float {
-            from {
-                transform: translateY(0);
-            }
-            to {
-                transform: translateY(-20px);
-            }
-        }
-        .container {
-            text-align: center;
-        }
-        .title img {
-            max-width: 100%;
-            height: auto;
-        }
-        .button {
-            background-color: #E7D6B5;
-            color: #010B25;
-            border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            cursor: pointer;
-            border-radius: 5px;
-            margin-top: 20px;
-            text-decoration: none;
-            display: inline-block;
-            position: relative;
-            z-index: 10;
-        }
-        .button:hover {
-            background-color: #d4c1a0;
-        }
-        .gif-lower {
-            margin-top: 50px; /* Pushes the second GIF further down */
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Kajetan Karbowski, MSc Artificial Intelligence student at the University of Groningen.">
+  <title>Kajetan Karbowski</title>
+  <link rel="stylesheet" href="portfolio.css?v=cv-abstract-6">
+  <link rel="stylesheet" href="experiment.css?v=cv-abstract-6">
+  <script src="portfolio-content.js?v=cv-abstract-6" defer></script>
+  <script src="portfolio.js?v=cv-abstract-6" defer></script>
 </head>
 <body>
-    <!-- GIF above the title -->
-    <img class="gif" src="attachments/dog.gif" alt="GIF 1">
-    
-    <!-- Title section -->
-    <div class="container">
-        <div class="title">
-            <img src="attachments/title_text.png" alt="Website Title">
+  <div class="portfolio" data-design="experimental" data-theme="light" data-cv-home>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="sheet dos-window">
+      <header class="site-header">
+        <div class="dos-banner">
+          <a class="wordmark" href="./" data-page="home">Kajetan Karbowski</a>
+          <div class="header-tools">
+            <button type="button" id="outline-toggle" aria-controls="outline" aria-expanded="false" aria-keyshortcuts="E">Outline</button>
+            <button type="button" id="theme-toggle" data-color="dark" aria-label="Use dark theme" hidden>Dark</button>
+          </div>
         </div>
-        
-        <!-- Button -->
-        <a class="button" href="utilities.html">Utilities</a>
+        <nav class="dos-tabs" aria-label="Primary">
+          <a href="./" data-page="home" aria-current="page">Home</a>
+          <a href="?section=projects" data-page="projects" aria-label="Projects">Projects</a>
+          <a href="?section=experience" data-page="experience" aria-label="Experience"><span class="tab-full">Experience</span><span class="tab-short" aria-hidden="true">Exper.</span></a>
+          <a href="?section=education" data-page="education" aria-label="Education"><span class="tab-full">Education</span><span class="tab-short" aria-hidden="true">Educ.</span></a>
+          <a href="?section=skills" data-page="skills">Skills</a>
+          <a href="?section=contact" data-page="contact">Contact</a>
+        </nav>
+        <div class="command-bar" id="command-bar">
+          <form class="command-line" id="command-form" role="search">
+            <span class="prompt" aria-hidden="true"><span id="prompt-path">~</span> <b>$</b></span>
+            <div class="command-field">
+              <input id="command-input" type="search" role="combobox" aria-label="Search projects, pages, or commands" aria-controls="command-results" aria-autocomplete="list" aria-expanded="false" aria-keyshortcuts="Control+K Meta+K" autocomplete="off" spellcheck="false" placeholder="Search or type a command…">
+              <span id="command-feedback" class="command-feedback" aria-hidden="true" hidden></span>
+            </div>
+            <button type="button" class="command-key" id="search-toggle" aria-label="Toggle search" aria-controls="search-panel" aria-expanded="false" aria-keyshortcuts="Control+K Meta+K" hidden>Ctrl / ⌘ K</button>
+            <button type="button" id="help-toggle" aria-label="Command help" aria-keyshortcuts="?" aria-controls="command-help" aria-expanded="false" hidden>? Help</button>
+          </form>
+          <div id="search-panel" class="search-panel" hidden>
+            <div class="search-results" id="search-results">
+              <p class="search-caption">Results</p>
+              <ul id="command-results" role="listbox" aria-label="Search results"></ul>
+              <p id="search-empty" hidden>No matches.</p>
+            </div>
+            <div class="search-preview" id="search-preview"></div>
+            <div class="search-help" id="command-help" hidden>
+              <h2>Command help</h2>
+              <p>Type a name to search. Use ↑ ↓ to move, Enter to open, and Escape to close.</p>
+              <dl>
+                <dt>Navigate</dt><dd><code>cd projects</code>, <code>cd experience</code>, <code>cd education</code>, <code>cd contact</code></dd>
+                <dt>Open a project</dt><dd><code>open psag</code></dd>
+                <dt>Change view</dt><dd><code>view ai</code>, <code>view software</code>, <code>view education</code>, <code>view general</code></dd>
+                <dt>Filter projects</dt><dd><code>filter --tag python</code>, <code>filter --clear</code></dd>
+                <dt>Shortcuts</dt><dd><kbd>Ctrl/Cmd+K</kbd> toggles search, <kbd>?</kbd> toggles Help, and <kbd>E</kbd> toggles Explorer outside the search field.</dd>
+              </dl>
+            </div>
+            <div class="search-footer"><span id="search-count" aria-live="polite"></span><span>↑ ↓ Move · Enter Open · Esc Close</span></div>
+          </div>
+        </div>
+      </header>
+
+      <div class="dos-workspace">
+        <aside class="outline" id="outline" hidden>
+          <nav aria-label="Page outline">
+            <p id="outline-path">~/</p>
+            <ul id="outline-links"></ul>
+          </nav>
+          <div id="inspector-meta" hidden></div>
+        </aside>
+        <main class="dos-content" id="main" tabindex="-1">
+          <nav class="return-links" aria-label="Return links" hidden>
+            <a class="back-link" href="./" data-page="home"><span aria-hidden="true">←</span> Back to home</a>
+            <a class="back-link" id="back-to-projects" href="?section=projects" data-page="projects" hidden>Back to projects</a>
+          </nav>
+          <header class="hero" data-home>
+            <div class="hero-copy">
+              <div class="heading-row">
+                <h1 id="cv-profile" tabindex="-1">Kajetan Karbowski</h1>
+                <div class="document-tools" hidden>
+                  <details id="perspective-menu">
+                    <summary><span class="perspective-label">Perspective</span> <span id="active-perspective">General</span> <span aria-hidden="true">▾</span></summary>
+                    <div role="group" aria-label="Perspective">
+                      <button type="button" data-perspective="general" aria-pressed="true">General</button>
+                      <button type="button" data-perspective="research" aria-pressed="false">Research</button>
+                      <button type="button" data-perspective="engineering" aria-pressed="false">Software</button>
+                      <button type="button" data-perspective="teaching" aria-pressed="false">Education</button>
+                    </div>
+                  </details>
+                </div>
+              </div>
+              <div class="dossier-profile">
+                <p class="dossier-degree">MSc Artificial Intelligence student <span>University of Groningen</span></p>
+              </div>
+              <p class="intro">I work on reliable, interpretable AI and build practical software. My experience also spans tutoring and student association leadership.</p>
+              <nav id="cv-actions" aria-label="Professional links" hidden></nav>
+            </div>
+            <div class="profile-visual">
+              <picture class="portrait profile-portrait" id="portrait">
+                <source srcset="assets/profile_portrait_web.webp" type="image/webp">
+                <img src="assets/profile_portrait_web.jpg" width="1122" height="1402" alt="Kajetan Karbowski">
+              </picture>
+              <details class="portrait-options" id="portrait-options" hidden>
+                <summary>Portrait style</summary>
+                <fieldset aria-label="Portrait style">
+                  <label><input type="radio" name="photo" value="colour" checked> Colour</label>
+                  <label><input type="radio" name="photo" value="bw"> Black &amp; white</label>
+                  <label><input type="radio" name="photo" value="site"> Site palette</label>
+                  <label><input type="radio" name="photo" value="halftone"> Print halftone</label>
+                </fieldset>
+              </details>
+            </div>
+          </header>
+
+          <section id="cv-glance" class="cv-section" aria-labelledby="cv-glance-title" data-outline="At a glance">
+            <header class="cv-section-heading">
+              <h2 id="cv-glance-title">At a glance</h2>
+              <p id="cv-preview-hint" class="cv-preview-hint" hidden><span><span aria-hidden="true">▤</span> Preview</span><span><span aria-hidden="true">↗</span> External link</span></p>
+              <nav aria-label="Academic and skills details">
+                <a href="?section=education" data-page="education">Education</a>
+                <a href="?section=skills" data-page="skills">Skills</a>
+              </nav>
+            </header>
+            <dl class="cv-facts">
+              <div><dt>Academic</dt><dd><span data-cv-source="education:msc-ai">MSc AI</span> · <span data-cv-source="education:bsc-ai">BSc AI</span> · <span data-cv-source="education:htsm">HTSM Honours</span></dd></div>
+              <div><dt>Research</dt><dd><span data-cv-source="project:llm-poetry">Generative AI</span> · <span data-cv-source="project:diffgate">Uncertainty estimation</span> · <span data-cv-source="project:xai-face-clustering">Explainable AI</span></dd></div>
+              <div><dt>Engineering</dt><dd><span data-cv-source="project:diffgate">Python</span> · <span data-cv-source="project:autoop">ML tooling</span> · <span data-cv-source="project:ai-intake-automation">APIs and automation</span></dd></div>
+              <div><dt>Education &amp; leadership</dt><dd><span data-cv-source="experience:private-tutoring">Tutoring</span> · <span data-cv-source="experience:tdj-camp">Educational activity design</span> · <span data-cv-source="experience:psag-president">Student association leadership</span></dd></div>
+            </dl>
+          </section>
+
+          <div class="filters" id="filters" hidden>
+            <span>Filter</span>
+            <button type="button" id="clear-filter">Clear filter</button>
+            <span id="filter-count"></span>
+          </div>
+          <div id="section-content"></div>
+          <div id="cv-preview" popover hidden role="region" aria-labelledby="cv-preview-title"></div>
+        </main>
+      </div>
+
+      <footer class="dos-status">
+        <span id="status" role="status" aria-live="polite" aria-atomic="true">Ready</span>
+        <span id="status-path" aria-hidden="true">~</span>
+      </footer>
     </div>
 
-    <!-- GIF below the title -->
-    <img class="gif gif-lower" src="attachments/cat.gif" alt="GIF 2">
+  </div>
 </body>
 </html>
