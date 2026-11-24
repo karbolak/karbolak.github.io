@@ -11,10 +11,11 @@ Open [localhost:8000](http://localhost:8000). The site uses plain HTML, CSS, and
 - `index.html` contains the site shell, navigation, controls, and Home introduction.
 - `portfolio.css` contains the responsive layout and cream and gray themes, with a muted rust accent.
 - `portfolio.js` contains the entries, page and perspective state, search, and transitions.
-- `portfolio-content.js` contains the editable profile, projects, education, experience, and skills shared by the layouts.
+- `portfolio-content.js` contains the editable profile, projects, education, experience, and skills.
+- `psag-demo.html` contains the client-facing PSAG Platform demo. Replace the Product walkthrough placeholder with screenshots, a video, or a guided walkthrough.
 - `fonts/` contains the locally served IBM Plex Sans and IBM Plex Mono files and their license.
 
-Click the command bar to search, or press `Ctrl+K` / `Cmd+K` to toggle search. Use the arrow keys to select a result, Enter to open it, and Escape to close the panel. **Explorer** or `E` opens the project directory or the current page’s section index.
+Click the command bar to search. The **Ctrl / ⌘ K** button and the `Ctrl+K` / `Cmd+K` shortcuts toggle search. Use the arrow keys to select a result, Enter to open it, and Escape to close the panel. **Explorer** or `E` opens the project directory or the current page’s section index.
 
 The bar also accepts `cd projects`, `cd experience`, `cd education`, `cd contact`, `open psag`, `view ai`, `view software`, `view education`, `view general`, and `help`. Click a project tag or use `filter --tag python` to filter. Use the active filter chip or `filter --clear` to clear it.
 
@@ -24,11 +25,13 @@ Home uses the supplied WebP portrait with a JPEG fallback. The original PNG is r
 
 ## Portfolio interface
 
-The default portfolio uses JetBrains Mono at 400 for prose and 550 for headings. The grey theme uses `#70736F` behind the `#626662` document, with `#686D68` raised surfaces and `#F6F4ED` text.
+CV Abstract is the default homepage. IBM Plex Sans is used for reading content. JetBrains Mono is used for page headings, tabs, Perspective, Explorer, Copy email, and the command bar. The alternate theme uses silver panels, a muted teal backdrop, and a navy active tab.
 
-Open **Design options** below the status strip to switch between Current (`?design=current`, also the default) and CV Abstract (`?design=cv-abstract`). Layout switches keep the current page, perspective, and theme. Colour is the default portrait treatment. Add `photo=bw` for black and white or `photo=site` for a portrait tinted with the active light or dark palette. CV Abstract previews appear on the terms and entries themselves. Clear **Inline previews** or add `evidence=0` to hide them. These choices travel with the URL. Mono, Mixed, and Reading typography are still available, with the selection remembered locally. Add `type=mixed` or `type=reading` to share a variation.
+Open **Portrait style** under the photo. Colour is the default. The other treatments are Black & White (`photo=bw`), Site palette (`photo=site`), and Print halftone (`photo=halftone`). The portrait choice travels with the URL. Dotted terms with a preview icon open inline previews. Links marked ↗ go to external websites.
 
-CV Abstract reuses the existing portrait and contact information, highlights three projects, and links selected roles directly to the Experience timeline. At a glance is rendered in HTML so the summary is readable without JavaScript. The CV link opens the existing documents section until a CV file is configured.
+Home highlights three projects, selected roles, and key skills. The project and experience titles open the full entries. At a glance is rendered in HTML so the summary is readable without JavaScript. **CV details & Contact** opens the contact page. The Phone disclosure directs readers to the configured CV download.
+
+In Projects, Experience, Education, and Skills, the selected Perspective shows matching entries first and collapses the rest at the bottom. Pinned entries stay at the top without a badge.
 
 Click **? Help** or press `?` to toggle the guide to navigation, perspectives, and shortcuts. The command bar uses `~` as the portfolio root. The `$` prompt types for 600–880 ms, holds for 600 ms or 750 ms for SQL, and fades to idle in 180 ms. Input interrupts the effect and reduced motion skips it. **E** opens the contextual Explorer and **Esc** closes it. Explorer opens as a drawer on narrow screens.
 

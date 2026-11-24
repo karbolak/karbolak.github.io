@@ -196,7 +196,7 @@ const portfolioContent = {
       "title": "DiffGate — Training-Free Uncertainty for Image Generation",
       "shortTitle": "DiffGate",
       "abstract": "Estimates when AI-generated images may be unreliable, without retraining the model.",
-      "kind": "BSc thesis / Python library and CLI",
+      "kind": "BSc thesis / Python library and CLI tool",
       "start": null,
       "end": null,
       "date_label": null,
@@ -209,7 +209,7 @@ const portfolioContent = {
         "python",
         "generative-ai"
       ],
-      "summary": "A Python library and CLI for estimating when generated images may be unreliable using signals from diffusion-generation trajectories, without retraining the model.",
+      "summary": "A Python library and CLI tool for estimating when generated images may be unreliable using signals from diffusion-generation trajectories, without retraining the model.",
       "details": "Built reusable uncertainty estimation tooling and reproducible evaluation to support early stopping of potentially unreliable runs. BSc project grade: 9.0/10.",
       "repository": "DiffGate"
     },
@@ -320,9 +320,11 @@ const portfolioContent = {
       "repository": "PANA"
     }
   ],
+  "keySkills": ["Python", "PyTorch", "scikit-learn", "SQL", "FastAPI", "Docker", "LLM evaluation", "Educational activity design"],
   "skills": [
     {
       "category": "ML and modeling",
+      "tags": ["research", "software"],
       "items": [
         "PyTorch",
         "scikit-learn",
@@ -336,6 +338,7 @@ const portfolioContent = {
     },
     {
       "category": "Generative AI and LLMs",
+      "tags": ["research", "software"],
       "items": [
         "Transformers",
         "LoRA/QLoRA",
@@ -347,6 +350,7 @@ const portfolioContent = {
     },
     {
       "category": "Engineering",
+      "tags": ["software"],
       "items": [
         "Python",
         "FastAPI",
@@ -363,6 +367,7 @@ const portfolioContent = {
     },
     {
       "category": "Data",
+      "tags": ["research", "software"],
       "items": [
         "NumPy",
         "pandas",
@@ -375,6 +380,7 @@ const portfolioContent = {
     },
     {
       "category": "Education and leadership",
+      "tags": ["education"],
       "items": [
         "Private tutoring",
         "gamification",

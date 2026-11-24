@@ -14,7 +14,8 @@
 }
 :root {
   --mono: "IBM Plex Mono", ui-monospace, 'Cascadia Mono', Consolas, 'Liberation Mono', monospace;
-  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  --prose: "IBM Plex Sans", system-ui, sans-serif;
+  font-family: var(--prose);
 }
 *, *::before, *::after { box-sizing: border-box; }
 body, h1, h2, h3, p, ul { margin: 0; }
@@ -87,7 +88,6 @@ a { color: inherit; text-underline-offset: .23em; }
   border-bottom: 1px solid var(--rule);
 }
 .wordmark { font-size: .9rem; font-weight: 700; text-decoration: none; }
-.wordmark small { font: .72rem var(--mono); color: var(--muted); }
 .header-tools, .dos-themes { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .dos-themes { gap: 3px; }
 
@@ -98,7 +98,7 @@ button, .button, select, input {
 }
 button, .button, select { padding: 8px 11px; min-height: 36px; font-size: .82rem; }
 .header-tools button, .dos-tabs a {
-  font: .76rem/1.2 var(--mono);
+  font: .83rem/1.2 var(--prose);
   box-shadow: inset 0 1px 0 var(--rim), inset 0 -1px 0 var(--bevel);
 }
 .header-tools button { min-height: 34px; padding: 6px 9px; }
@@ -167,7 +167,7 @@ button[aria-expanded="true"], button[aria-pressed="true"] { background: var(--se
 }
 .command-feedback[data-typing]::after { content: '▍'; }
 .command-key, .search-caption, .preview-type, .search-footer { color: var(--muted); font: .71rem/1.35 var(--mono); }
-.command-key { border: 1px solid var(--rule); padding: 3px 6px; white-space: nowrap; }
+.command-key { min-height: 27px; border: 1px solid var(--line); padding: 3px 6px; background: transparent; white-space: nowrap; }
 .search-panel {
   display: grid;
   grid-template-columns: minmax(0, .9fr) minmax(0, 1.45fr);
@@ -192,18 +192,17 @@ button[aria-expanded="true"], button[aria-pressed="true"] { background: var(--se
 #command-results small { color: var(--muted); font-size: .7rem; }
 #search-empty { padding: 8px 0; color: var(--muted); }
 .search-preview { background: var(--command-surface); }
-.search-preview h2 { margin: 4px 0 7px; font-size: 1.35rem; font-family: "IBM Plex Sans", system-ui, sans-serif; }
+.search-preview h2 { margin: 4px 0 7px; font-size: 1.35rem; }
 .search-preview code { color: var(--accent); font: .76rem/1.5 var(--mono); overflow-wrap: anywhere; }
-.search-preview p:not(.search-caption, .preview-type, .meta), .search-help p { max-width: 62ch; margin-top: 13px; color: var(--muted); font: .94rem/1.5 "IBM Plex Sans", system-ui, sans-serif; }
+.search-preview p:not(.search-caption, .preview-type, .meta), .search-help p { max-width: 62ch; margin-top: 13px; color: var(--muted); font: .94rem/1.5 var(--prose); }
 .search-preview .meta { margin-top: 7px; }
 .search-help { grid-column: 1 / -1; }
-.search-help h2 { font-family: "IBM Plex Sans", system-ui, sans-serif; }
 .search-help dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 13px; margin-bottom: 3px; }
 .search-help dd { margin: 0; overflow-wrap: anywhere; }
 .search-footer { grid-column: 1 / -1; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px 15px; padding: 7px 15px; border-top: 1px solid var(--rule); }
 .dos-workspace { display: grid; grid-template-columns: minmax(0, 1fr); }
 .dos-workspace:has(.outline:not([hidden])) { grid-template-columns: minmax(158px, 15%) minmax(0, 1fr); }
-.outline { background: var(--trim); border-right: 1px solid var(--rule); padding: 23px 13px; font: .78rem/1.45 var(--mono); }
+.outline { background: var(--trim); border-right: 1px solid var(--rule); padding: 23px 13px; font-size: .84rem; }
 .outline p { margin: 0 6px 8px; color: var(--accent); font-weight: 600; }
 .outline ul { list-style: none; padding: 0 0 0 8px; margin-left: 9px; border-left: 1px solid var(--line); }
 .outline a { display: block; padding: 8px 7px; text-decoration: none; overflow-wrap: anywhere; }
@@ -283,9 +282,8 @@ h3 { font-size: 1.12rem; line-height: 1.22; letter-spacing: -.025em; }
   margin-bottom: 14px;
   background: var(--command-surface);
   color: var(--accent);
-  font: .78rem/1.45 var(--mono);
+  font-size: .84rem;
 }
-.detail-image { min-height: clamp(185px, 24vw, 365px); border: 1px solid var(--rule); }
 .detail-body { max-width: 73ch; }
 .detail-body section, .detail-body details, .contact-grid section { border-top: 1px solid var(--rule); padding-block: 16px; }
 .detail-body section:first-child { margin-top: 24px; }
@@ -319,7 +317,6 @@ h3 { font-size: 1.12rem; line-height: 1.22; letter-spacing: -.025em; }
   .prompt { overflow: hidden; text-overflow: ellipsis; font-size: .73rem; }
   .command-field input { min-height: 37px; font-size: .76rem; }
   .command-feedback { font-size: .71rem; }
-  .command-key { display: none; }
   .search-footer span:last-child { display: none; }
   .search-help dl { grid-template-columns: minmax(0, 1fr); }
   .search-help dt:not(:first-of-type) { margin-top: 5px; }
