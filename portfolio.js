@@ -176,6 +176,12 @@ let matches = [];
 let selection = 0;
 let cvPreviewTrigger;
 
+function highlightIds(value, items, aliases = {}) {
+  const ids = (value ?? '').split(',').map(id => id.trim())
+    .map(id => Object.hasOwn(aliases, id) ? aliases[id] : id);
+  return [...new Set(ids)].filter(id => items.some(item => item.id === id));
+}
+
 function readLocation() {
   const url = new URL(location.href);
   const params = url.searchParams;
@@ -207,6 +213,8 @@ function readLocation() {
   const filter = requestedFilter ? tagId(requestedFilter) : '';
   return {
     page, role,
+    highlightedProjects: highlightIds(params.get('highlight-projects'), projects, projectAliases),
+    highlightedExperience: highlightIds(params.get('highlight-experience'), experience),
     project: page === 'projects' ? id : '',
     filter: Object.hasOwn(technologies, filter) ? filter : '',
     theme: params.get('theme') === 'dark' ? 'dark' : 'light',
@@ -218,6 +226,8 @@ let state = readLocation();
 function urlFor(next, anchor = '', path = location.pathname) {
   const params = new URLSearchParams();
   if (next.role !== 'general') params.set('role', next.role);
+  if (next.highlightedProjects.length) params.set('highlight-projects', next.highlightedProjects.join(','));
+  if (next.highlightedExperience.length) params.set('highlight-experience', next.highlightedExperience.join(','));
   if (next.page !== 'home') params.set('section', next.page);
   if (next.project) params.set('project', next.project);
   if (next.page === 'projects' && next.filter) params.set('filter', next.filter);
@@ -283,7 +293,7 @@ function chronological(items) {
 }
 
 function prioritise(items, ids) {
-  const ranked = ids.map(id => items.find(item => item.id === id)).filter(Boolean);
+  const ranked = [...new Set(ids)].map(id => items.find(item => item.id === id)).filter(Boolean);
   return [...ranked, ...items.filter(item => !ranked.includes(item))];
 }
 
@@ -295,18 +305,20 @@ function listingDate({ date, start, end, ongoing, date_label }) {
   return `<p class="listing-date"><time datetime="${first}">${first}</time>${last ? `–${last}` : ''}</p>`;
 }
 
-function perspectiveGroups(items, belongs, priorities = []) {
+function perspectiveGroups(items, belongs, priorities = [], highlights = []) {
   const primary = [];
   const other = [];
   const archive = [];
   for (const item of items) {
-    if (item.archived) {
+    if (highlights.includes(item.id)) {
+      primary.push(item);
+    } else if (item.archived) {
       if (state.role === 'general' || belongs(item) || location.hash === `#${item.id}`) archive.push(item);
     } else {
       (belongs(item) ? primary : other).push(item);
     }
   }
-  return { primary: prioritise(primary, priorities), other, archive };
+  return { primary: prioritise(primary, [...highlights, ...priorities]), other, archive };
 }
 
 function renderPerspectiveList({ primary, other, archive }, label, renderList) {
@@ -374,8 +386,10 @@ for (const term of cvGlance.querySelectorAll('[data-cv-source]')) {
 
 function cvHome() {
   const view = roles[state.role];
-  const work = view.projects.slice(0, 3).map(id => projects.find(item => item.id === id));
-  const history = view.experience.map(id => experience.find(item => item.id === id));
+  const workIds = new Set([...state.highlightedProjects, ...view.projects.slice(0, 3)]);
+  const historyIds = new Set([...state.highlightedExperience, ...view.experience]);
+  const work = [...workIds].map(id => projects.find(item => item.id === id));
+  const history = [...historyIds].map(id => experience.find(item => item.id === id));
 
   return `<section id="cv-work" class="cv-section" aria-labelledby="cv-work-title" data-outline="Selected work">
     <header class="cv-section-heading">
@@ -630,17 +644,21 @@ function render() {
   stopTyping();
   closeCvPreview();
   clearTimeout(statusTimer);
-  const { page, role, project, filter, theme } = state;
+  const { page, role, project, filter, theme, highlightedProjects, highlightedExperience } = state;
   const view = roles[role];
+  const custom = Boolean(highlightedProjects.length || highlightedExperience.length);
+  const viewLabel = custom ? `Custom · ${view.heading}` : view.heading;
   const detail = projects.find(item => item.id === project);
   const home = page === 'home';
   const listing = page === 'projects' && !detail;
   const breadcrumb = currentPath();
   const visibleProjects = listing ? chronological(projects)
     .filter(item => !filter || item.tags.some(tag => tagId(tag) === filter)) : [];
-  const filteredProjects = filter ? prioritise(visibleProjects, view.projects) : visibleProjects;
+  const filteredProjects = filter
+    ? prioritise(visibleProjects, [...highlightedProjects, ...view.projects]) : visibleProjects;
   const projectGroups = listing && !filter ? perspectiveGroups(visibleProjects, item =>
-    role === 'general' ? view.projects.includes(item.id) : relevantToView(item.role), view.projects) : null;
+    role === 'general' ? view.projects.includes(item.id) : relevantToView(item.role),
+    view.projects, highlightedProjects) : null;
   const matchCount = projectGroups ? projectGroups.primary.length + projectGroups.other.length + projectGroups.archive.length : visibleProjects.length;
   const matches = `${matchCount} ${matchCount === 1 ? 'match' : 'matches'}`;
 
@@ -663,8 +681,9 @@ function render() {
   documentTools.hidden = !!detail;
   if (documentTools.hidden) perspectiveMenu.open = false;
   main.querySelector('.dossier-profile').hidden = !home;
-  document.querySelector('#active-perspective').textContent = perspectiveMenu.querySelector(`[data-perspective="${role}"]`).textContent;
-  perspectiveMenu.querySelector('summary').setAttribute('aria-label', `Perspective: ${view.heading}`);
+  document.querySelector('#active-perspective').textContent = custom ? 'Custom' :
+    perspectiveMenu.querySelector(`[data-perspective="${role}"]`).textContent;
+  perspectiveMenu.querySelector('summary').setAttribute('aria-label', `Perspective: ${viewLabel}`);
   document.querySelector('#filters').hidden = !listing || !filter;
   if (filter) {
     const clear = document.querySelector('#clear-filter');
@@ -673,7 +692,7 @@ function render() {
     document.querySelector('#filter-count').textContent = matches;
   }
   for (const button of main.querySelectorAll('[data-perspective]')) {
-    button.setAttribute('aria-pressed', button.dataset.perspective === role);
+    button.setAttribute('aria-pressed', !custom && button.dataset.perspective === role);
   }
   hero.toggleAttribute('data-home', home);
   profileVisual.hidden = !home;
@@ -699,14 +718,16 @@ function render() {
     const records = chronological(entries[page]);
     const groups = perspectiveGroups(records, item => role === 'general' ||
       (page === 'education' && role === 'teaching') || relevantToView(item.tags),
-      page === 'experience' ? view.experience : role === 'teaching' ? ['ta-training'] : []);
+      page === 'experience' ? view.experience : role === 'teaching' ? ['ta-training'] : [],
+      page === 'experience' ? highlightedExperience : []);
     content.innerHTML = renderPerspectiveList(groups, page, entryList);
   }
 
   renderLinks();
   renderOutline(detail, listing ? projectGroups?.primary ?? filteredProjects : null);
   document.querySelector('#status-path').textContent = breadcrumb;
-  statusText = listing ? `${matches}${filter ? ` · tag: ${technologies[filter]}` : ''}` : role === 'general' ? 'Ready' : `View: ${view.heading}`;
+  statusText = listing ? `${matches}${filter ? ` · tag: ${technologies[filter]}` : ''}`
+    : role === 'general' && !custom ? 'Ready' : `View: ${viewLabel}`;
   status.textContent = !panel.hidden ? 'Search' : statusText;
   document.title = home ? profileName : `${title} · ${profileName}`;
 }
@@ -851,8 +872,8 @@ function navigate(page, project = '', anchor = '') {
 }
 
 function changePerspective(role) {
-  if (role === state.role) return;
-  go({ ...state, role }, { anchor: location.hash.slice(1) });
+  if (role === state.role && !state.highlightedProjects.length && !state.highlightedExperience.length) return;
+  go({ ...state, role, highlightedProjects: [], highlightedExperience: [] }, { anchor: location.hash.slice(1) });
   const table = state.page === 'home' ? 'portfolio' : state.page;
   const query = role === 'general' ? `SELECT * FROM ${table};` : `SELECT * FROM ${table} WHERE focus = '${roles[role].focus}';`;
   typeCommand(query, currentPath(), true);

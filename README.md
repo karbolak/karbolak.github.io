@@ -12,6 +12,16 @@ I study Artificial Intelligence at the University of Groningen. This portfolio d
 
 The selected perspective prioritises relevant work across the site. Search and Explorer provide keyboard navigation. The interface is responsive and has light and dark themes.
 
+## Custom perspective links
+
+Use `role` to choose a base perspective (`general`, `ai-ml`, `research`, `engineering` or `teaching`). Omit it to use General. Add `highlight-projects` and/or `highlight-experience` with comma-separated IDs from [portfolio-content.js](portfolio-content.js).
+
+```text
+/?role=research&highlight-projects=amp,autoop&highlight-experience=camp-counsellor
+```
+
+Highlights appear first in the order given, followed by the base perspective’s selections. Archived entries can be highlighted, and duplicate or unknown IDs are ignored. The link keeps its highlights as you navigate. Selecting a predefined perspective clears them. The PDF CV still follows the base perspective.
+
 ## Local preview
 
 Run from the repository root, then open [localhost:8000](http://localhost:8000/).

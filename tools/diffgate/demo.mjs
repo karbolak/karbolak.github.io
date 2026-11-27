@@ -4,7 +4,7 @@ const view = new URLSearchParams(location.search);
 document.querySelector('.portfolio').dataset.theme = view.get('theme') === 'dark' ? 'dark' : 'light';
 for (const link of document.querySelectorAll('[data-return]')) {
   const destination = new URL(link.href);
-  for (const key of ['role', 'theme', 'photo']) {
+  for (const key of ['role', 'theme', 'photo', 'highlight-projects', 'highlight-experience']) {
     if (view.has(key)) destination.searchParams.set(key, view.get(key));
   }
   link.href = destination;
