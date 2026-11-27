@@ -140,7 +140,7 @@ const portfolioContent = {
       "tags": [
         "leadership"
       ],
-      "project": "psag"
+      "project": "amp"
     },
     {
       "id": "psag-external",
@@ -214,6 +214,7 @@ const portfolioContent = {
   "projects": [
     {
       "id": "diffgate",
+      "related": ["xai-face-clustering"],
       "title": "DiffGate — Early Signals Predict Quality in Image Generation",
       "shortTitle": "DiffGate",
       "kind": "Completed thesis · Released Python library and CLI",
@@ -240,14 +241,43 @@ const portfolioContent = {
           "heading": "Approach",
           "paragraphs": [
             "My University of Groningen BSc thesis (9.0/10), supervised by Ivo de Jong, tested whether early denoising signals could guide abort decisions. I generated 36,600 images with Stable Diffusion 3.5 Large across 7,320 prompts and five seeds per prompt. Prefix features tracked latent movement and stability, denoiser predictions, classifier-free guidance and update consistency.",
-            "I compared a hand-designed training-free health score with a supervised logistic-regression classifier fitted on labelled generations. DiffGate packages prefix analysis and abort decisions in a Python library and CLI with a generator wrapper, reproducible evaluation and tests."
+            "Step five was the checkpoint in a 25-step run. At that point, 20 denoising steps remained. I compared a hand-designed training-free health score with a supervised logistic-regression classifier fitted on labelled generations. DiffGate packages prefix analysis and abort decisions in a Python library and CLI with a generator wrapper, reproducible evaluation and tests."
           ]
+        },
+        {
+          "heading": "From prefix features to a CLI score",
+          "paragraphs": [
+            "After the first few denoising steps, DiffGate summarises the recorded signals into numeric features. The CLI can score a saved feature file without running the generator. Below, the default training-free scorer evaluates the three-feature input from DiffGate’s unit test. The score is an uncalibrated diagnostic."
+          ],
+          "example": {
+            "caption": "Saved input and actual CLI output",
+            "lines": [
+              "$ cat features.json",
+              "{",
+              "  \"latent_volatility_rms_mean\": 0.5,",
+              "  \"denoising_update_pred_cosine_mean\": 0.8,",
+              "  \"denoising_consistency_residual_mean\": 0.2",
+              "}",
+              "$ diffgate score-features --features features.json",
+              "{",
+              "  \"health_score\": 57.2509653064879",
+              "}"
+            ]
+          }
         },
         {
           "heading": "Global detection and seed ranking",
           "paragraphs": [
             "Five of 25 steps retained most of the supervised signal for predicting above-median scorer values across prompts. The handcrafted score reached approximately 0.58–0.60 ROC-AUC. About 79–84% of variation was between prompts. Within a prompt, the supervised HPSv2 model ranked seed pairs correctly 59.1% of the time and recovered 29.1% of the available best-of-five oracle gain. The handcrafted score did not reliably rank seeds."
           ],
+          "figure": {
+            "src": "assets/research/diffgate/global-quality.png",
+            "width": 2048,
+            "height": 1979,
+            "alt": "Grouped bars compare the handcrafted and supervised scores on global prediction. The supervised score has higher ROC-AUC on CLIP, HPSv2 and ImageReward.",
+            "caption": "Global quality prediction from the five-step prefix. The learned model had its clearest advantage on HPSv2. Figure from the BSc thesis defence.",
+            "fullSize": true
+          },
           "table": {
             "caption": "Prefix-five results and matched simulated abort",
             "columns": [
@@ -266,14 +296,23 @@ const portfolioContent = {
         {
           "heading": "Early-abort trade-off",
           "paragraphs": [
-            "In the matched offline simulation, both policies dropped 31% of trajectories after step five, saving about 24.8% of simulated sampling steps. The table reports changes in automatic scores among retained images. The study used one fixed generator and measured neither human ratings nor wall-clock savings."
-          ]
+            "In the matched offline simulation, both policies dropped 31% of trajectories after step five, saving about 24.8% of simulated sampling steps. The figure compares automatic scores among retained images at that matched abort rate. The study used one fixed generator and measured neither human ratings nor wall-clock savings."
+          ],
+          "figure": {
+            "src": "assets/research/diffgate/matched-abort.png",
+            "width": 2048,
+            "height": 1332,
+            "alt": "Grouped bars compare changes in CLIP, HPSv2 and ImageReward for the handcrafted and learned policies at a matched 31% simulated abort rate. ImageReward has the largest lift.",
+            "caption": "Offline abort simulation from the BSc thesis defence. Bars show the change in mean automatic score for retained images. The 24.8% figure counts simulated sampling steps.",
+            "fullSize": true
+          }
         }
       ],
       "repository": "DiffGate"
     },
     {
       "id": "vlf-antenna",
+      "related": ["forescan"],
       "title": "Physics-Informed Surrogate-Assisted VLF Antenna Optimisation",
       "shortTitle": "VLF Antenna Optimisation",
       "kind": "Ongoing academic research · Computational benchmark completed",
@@ -296,11 +335,41 @@ const portfolioContent = {
       "summary": "Benchmarked five search methods under matched FEM budgets and shortlisted two compact VLF antenna designs for physical testing.",
       "sections": [
         {
+          "heading": "The antenna designs",
+          "paragraphs": [
+            "A compact ferrite core concentrates the incoming magnetic flux through a copper winding. I shortlisted a shaped core and a conventional rod to test how much receive sensitivity each can retain under the same size, mass and turn limits."
+          ],
+          "figure": {
+            "src": "assets/research/vlf/antenna-geometry.png",
+            "width": 1785,
+            "height": 462,
+            "alt": "Simulated ferrite cores at the same scale. R2 is cylindrical and P1 tapers and flares. Each has four copper turns.",
+            "caption": "Same-scale renderings of the conventional R2 rod (32.14 mm) and the P1 taper/flare candidate (32.24 mm), reconstructed from their simulated geometries. Both are proposed for calibrated bench testing.",
+            "fullSize": true,
+            "source": "https://github.com/karbolak/vlf-antenna-public/blob/main/assets/antenna-geometry.png"
+          }
+        },
+        {
           "heading": "Research question and implementation",
           "paragraphs": [
             "How much receive sensitivity can a smaller magnetic antenna retain, and can a physics-informed model improve the search under a fixed simulation budget? The intended use is to monitor changes in received VLF transmitter signals caused by ionospheric disturbances. I developed the computational framework within the University of Groningen HTSM Honours Master in collaboration with ASTRON.",
             "The framework combines analytical air-core and ferrite-core models, axisymmetric harmonic Gmsh/GetDP simulations, and ngspice circuit cross-checks. It reconstructs effective area, inductance, losses, loaded sensitivity and instrumental noise-equivalent magnetic field (NEMF). A Matérn Gaussian process learns residuals around an analytical equal-volume rod prior with demagnetisation and winding-coupling corrections. The adaptive arm uses gain, uncertainty and design-space coverage to choose coarse FEM evaluations and refits on the new responses."
           ]
+        },
+        {
+          "heading": "Finite-element evaluation",
+          "paragraphs": [
+            "The axisymmetric mesh resolves individual wire cross-sections and the surrounding air. The harmonic receive and driven-coil solutions feed a circuit model that estimates sensitivity and the instrumental noise floor."
+          ],
+          "figure": {
+            "src": "assets/research/vlf/fem-mesh.svg",
+            "width": 816,
+            "height": 293,
+            "alt": "Archived finite-element verification mesh, with a wide air domain and a magnified view showing three wire cross-sections beside a ferrite rod.",
+            "caption": "Archived verification mesh and winding detail. This three-turn verification case illustrates the numerical model used in the study.",
+            "fullSize": true,
+            "source": "https://github.com/karbolak/vlf-antenna-public/blob/f88b71c6c370231ebce99d316a49d88a486fccd9/assets/fem-mesh.svg"
+          }
         },
         {
           "heading": "Benchmark and numerical validation",
@@ -320,7 +389,8 @@ const portfolioContent = {
             "height": 499,
             "alt": "Four plots comparing median hypervolume gain across five search methods for cold and warm starts and the two objective formulations.",
             "caption": "Median hypervolume gain over paired seeds, with interquartile ranges. The grey interval marks the fine-mesh confirmation allocation.",
-            "source": "https://github.com/karbolak/vlf-antenna-public/blob/main/assets/convergence.svg"
+            "fullSize": true,
+            "source": "https://github.com/karbolak/vlf-antenna-public/blob/f88b71c6c370231ebce99d316a49d88a486fccd9/assets/convergence.svg"
           }
         },
         {
@@ -329,12 +399,13 @@ const portfolioContent = {
             "Both compact designs use four turns and meet limits of 2.50 g active mass and 33 mm maximum active dimension. On fine meshes, P1 gave 12.9% higher minimum loaded sensitivity and 11.4% lower worst instrumental NEMF than R2. The complete designs differ in core and winding geometry."
           ],
           "figure": {
-            "src": "assets/research/vlf/antenna-geometry.png",
-            "width": 1785,
-            "height": 462,
-            "alt": "Simulated ferrite cores at the same scale. R2 is cylindrical and P1 tapers and flares. Each has four copper turns.",
-            "caption": "R2 and P1 renderings show the active parts of the two simulated designs selected for bench testing.",
-            "source": "https://github.com/karbolak/vlf-antenna-public/blob/main/assets/antenna-geometry.png"
+            "src": "assets/research/vlf/fine-pareto.svg",
+            "width": 816,
+            "height": 350,
+            "alt": "Legacy and receiver-objective Pareto projections using fine-mesh results, with P1 on the receiver front and R2 marked for comparison.",
+            "caption": "Fine-confirmed design trade-offs. P1 lies on the pooled receiver front. R2 is the compact cylindrical reference, and colour encodes the third objective in each panel.",
+            "fullSize": true,
+            "source": "https://github.com/karbolak/vlf-antenna-public/blob/f88b71c6c370231ebce99d316a49d88a486fccd9/assets/fine-pareto.svg"
           },
           "table": {
             "caption": "Fine-mesh predictions across the frequency grid",
@@ -346,6 +417,7 @@ const portfolioContent = {
             "rows": [
               ["Min. sensitivity (V/T)", "1515.72", "1710.94"],
               ["Worst NEMF (pT/√Hz)", "19.13", "16.95"],
+              ["NEMF at 23.4 kHz (pT/√Hz)", "8.18", "7.24"],
               ["Active mass (g)", "2.145", "2.469"],
               ["Max. dimension (mm)", "32.14", "32.24"]
             ]
@@ -375,25 +447,32 @@ const portfolioContent = {
       ]
     },
     {
-      "id": "psag",
+      "id": "amp",
       "title": "Association Management Platform",
       "kind": "In production · First client: PSAG",
       "tags": [
         "software",
         "TypeScript",
         "React",
-        "PostgreSQL",
         "Docker Compose",
         "Caddy"
       ],
-      "summary": "I created, develop and maintain the Association Management Platform (AMP), an independent product that integrates a student association’s public website, administration and email operations. The Polish Student Association Groningen (PSAG) is its first client and production deployment.",
+      "summary": "I designed and developed the Association Management Platform (AMP) and continue to maintain it. It integrates a student association’s public website, administration and email operations. The Polish Student Association Groningen (PSAG) is its first client and production deployment.",
       "action": { "label": "View client deployment", "url": "https://psag.nl/" },
       "sections": [
         {
           "heading": "Production and maintenance",
           "paragraphs": [
-            "I built the product with TypeScript, React and PostgreSQL. I maintain the Docker Compose web, admin and email-worker services, Caddy and TLS, health checks and backups."
-          ]
+            "I built the platform with TypeScript and React. It brings public content, member and event administration, and email operations into one product. I maintain the release process, health checks and backups."
+          ],
+          "figure": {
+            "src": "assets/research/amp/workflow.svg",
+            "width": 640,
+            "height": 236,
+            "alt": "Association administration manages content, members and events. It publishes pages and events to the public website and queues event emails.",
+            "caption": "A functional overview of the public publishing and email workflows supported by the platform.",
+            "fullSize": true
+          }
         },
         {
           "heading": "Next steps",
@@ -441,6 +520,7 @@ const portfolioContent = {
     },
     {
       "id": "xai-face-clustering",
+      "related": ["diffgate"],
       "title": "Explainable Face Clustering",
       "kind": "Completed computer vision application",
       "start": "2025-04",
@@ -469,7 +549,17 @@ const portfolioContent = {
           "heading": "Pipeline",
           "paragraphs": [
             "We compared clustering methods on FaceNet embeddings using roughly 9,600 labelled images and a stratified 80/20 split. PCA reduced 512 features to 475 at 95% explained variance. The main pipeline used a Gaussian mixture model and a sigmoid-kernel SVM surrogate. The baseline used spectral clustering and logistic regression. The application includes a FastAPI service, Streamlit interface, Docker packaging and component tests."
-          ]
+          ],
+          "figure": {
+            "src": "assets/research/xai/surrogate-pipeline.svg",
+            "width": 640,
+            "height": 228,
+            "alt": "FaceNet embeddings feed PCA and a Gaussian mixture model. An SVM learns the resulting cluster labels and SHAP explains the SVM’s predictions.",
+            "caption": "The explanation follows the clustering surrogate. True real/AI labels are a separate evaluation target.",
+            "fullSize": true,
+            "source": "https://github.com/karbolak/xai-face-clustering/blob/a2faa29b75f6f5e1a55fc07ad4898ae4571e794a/README.md",
+            "sourceLabel": "Implementation"
+          }
         },
         {
           "heading": "Fidelity and generalisation",
@@ -503,6 +593,7 @@ const portfolioContent = {
     },
     {
       "id": "doces",
+      "related": ["wildfire"],
       "title": "DOCES — Producer Activity, Content Adaptation and Relative Exposure",
       "shortTitle": "DOCES Exposure Study",
       "kind": "Completed multi-agent research",
@@ -529,7 +620,17 @@ const portfolioContent = {
           "heading": "Relative exposure",
           "paragraphs": [
             "Relative exposure is the synthetic share of feed receipts minus the synthetic share of production. In single-item feeds, a small excess at moderate activity attenuated at 15× activity across tested prevalences. At 10% prevalence and 10× activity, adaptation raised production share from 52.57% to 56.19% and receipt share from 51.00% to 53.53%. Relative exposure fell by 1.09 percentage points (pointwise paired 95% CI −1.75 to −0.42 pp, Holm-adjusted p = 0.029). Six of 16 main-grid comparisons stayed significant after correction across 24 contrasts."
-          ]
+          ],
+          "figure": {
+            "src": "assets/research/doces/relative-exposure.png",
+            "width": 1200,
+            "height": 637,
+            "alt": "Lines for three producer prevalences start near zero, rise slightly at moderate activity, and fall below zero at high activity.",
+            "caption": "Relative exposure at three selected prevalences in the 10,000-world activity sweep. Shading shows pointwise 95% confidence intervals.",
+            "fullSize": true,
+            "source": "https://github.com/karbolak/dmas-ai-slop/blob/39c7d3f6e27965b620ad3273800f00a85f51fe40/results/volume_sweep_big/final_analysis/condition_summary.csv",
+            "sourceLabel": "Source data"
+          }
         },
         {
           "heading": "Scope",
@@ -557,6 +658,7 @@ const portfolioContent = {
     },
     {
       "id": "wildfire",
+      "related": ["doces"],
       "title": "Learning to Contain Wildfires with Distributed Sensors",
       "shortTitle": "Distributed Wildfire Containment",
       "kind": "Completed control-policy study · Interactive replay tool",
@@ -596,7 +698,15 @@ const portfolioContent = {
           "heading": "Interactive replay",
           "paragraphs": [
             "I built a replay tool for inspecting the true grid alongside a sensor’s private view, stepping through decisions and comparing policies on the same seed. The static explorer contains 45 selected genuine held-out episodes. They illustrate individual outcomes from the wider evaluation."
-          ]
+          ],
+          "figure": {
+            "src": "assets/research/wildfire/reactive-sensor-5.webp",
+            "width": 938,
+            "height": 502,
+            "alt": "Two grids from the explorer. The full grid shows burning cells and a suppressed fire. Sensor 5’s private grid shows 25 known cells, with the remaining cells marked unknown.",
+            "caption": "Reactive policy, seed 50000, spread probability 0.30, at the first suppression shown in the replay. Sensor 5 holds a local snapshot while the full environment reflects the intervention.",
+            "fullSize": true
+          }
         }
       ],
       "references": [
@@ -609,6 +719,7 @@ const portfolioContent = {
     },
     {
       "id": "forescan",
+      "related": ["n1-sleep"],
       "title": "FORESCAN — Predicting Cognitive Overload from Pupillometry",
       "shortTitle": "FORESCAN",
       "kind": "Completed offline signal-modelling study",
@@ -643,6 +754,16 @@ const portfolioContent = {
           "paragraphs": [
             "Mean AUC-PR was 0.297 for logistic regression, 0.180 for the TCN and 0.099 for the reactive slope baseline. Threshold alerts used a nominal six-per-minute budget and a ten-second cooldown. Stricter alerting could save triggers while missing more events."
           ],
+          "figure": {
+            "src": "assets/research/forescan/auc-pr-by-participant.png",
+            "width": 1200,
+            "height": 600,
+            "alt": "AUC-PR for the reactive baseline, temporal convolutional network and logistic regression on each of three held-out participants. Logistic regression scores highest on each.",
+            "caption": "Forecasting results by held-out participant. The groups show how predictive performance varied across participants and models.",
+            "fullSize": true,
+            "source": "https://github.com/karbolak/FORESCAN/blob/b507bb80aaf9061a0650d3a6bae1af92d7c43751/results/reported_auc_pr_by_subject.csv",
+            "sourceLabel": "Source data"
+          },
           "table": {
             "caption": "Mean alert outcomes on held-out subjects",
             "columns": [
@@ -688,6 +809,7 @@ const portfolioContent = {
     },
     {
       "id": "n1-sleep",
+      "related": ["forescan"],
       "title": "N1 Sleep Detection from EEG",
       "kind": "Completed signal-classification study",
       "start": "2026-02",
@@ -913,14 +1035,15 @@ const portfolioContent = {
         "CSS",
         "JavaScript"
       ],
-      "summary": "Built this static portfolio with URL-based perspectives, keyboard navigation, contextual search, and a catalogue of usable tools."
+      "summary": "Built this static portfolio with URL-based perspectives, keyboard navigation, contextual search, and a catalogue of usable tools.",
+      "repository": "karbolak.github.io"
     }
   ],
   "tools": [
     {
-      "id": "psag",
+      "id": "amp",
       "category": "Product",
-      "project": "psag",
+      "project": "amp",
       "projectLabel": "View project",
       "perspectives": { "research": 10, "ai-ml": 10, "engineering": 30, "teaching": 10 },
       "priority": 30
@@ -938,6 +1061,7 @@ const portfolioContent = {
         "description": "Score saved features after installing DiffGate from the repository.",
         "command": "diffgate score-features --features outputs/example/features.json"
       },
+      "primaryAction": { "label": "Launch demo", "url": "./tools/diffgate/", "preserveView": true },
       "secondaryActions": [{ "label": "View repository", "url": "https://github.com/karbolak/DiffGate" }],
       "project": "diffgate",
       "projectLabel": "View research project",

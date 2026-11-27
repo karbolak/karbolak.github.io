@@ -17,7 +17,7 @@ const roles = {
     focus: 'all',
     headline: profile.role,
     intro: profile.abstract,
-    projects: ['diffgate', 'vlf-antenna', 'psag', 'ai-intake-automation', 'xai-face-clustering', 'wildfire', 'forescan'],
+    projects: ['diffgate', 'vlf-antenna', 'amp', 'ai-intake-automation', 'xai-face-clustering', 'wildfire', 'forescan'],
     experience: ['htsm-research', 'psag-president'],
     skills: ['Python', 'Model evaluation', 'Gaussian processes', 'API integrations', 'Educational activity design'],
   },
@@ -47,7 +47,7 @@ const roles = {
     focus: 'software',
     headline: 'Software engineering · MSc AI',
     intro: 'I develop and maintain software for student associations. I also build Python libraries, command-line tools and web applications, and test workflows through deployment or reproducible evaluation.',
-    projects: ['psag', 'diffgate', 'ai-intake-automation', 'xai-face-clustering', 'wildfire'],
+    projects: ['amp', 'diffgate', 'ai-intake-automation', 'xai-face-clustering', 'wildfire'],
     experience: ['htsm-research', 'psag-president'],
     skills: ['Python', 'FastAPI', 'Docker', 'pytest', 'Git', 'n8n'],
   },
@@ -109,7 +109,8 @@ const technologies = Object.fromEntries([
   ...tools.flatMap(tool => tool.technologies),
   ...projects.flatMap(project => project.tags),
 ].map(label => [tagId(label), label]));
-const projectAliases = { 'psag-platform': 'psag', 'poetry-fusion': 'llm-poetry' };
+const ampAliases = { psag: 'amp', 'psag-platform': 'amp' };
+const projectAliases = { ...ampAliases, 'poetry-fusion': 'llm-poetry' };
 const perspectiveTags = {
   'ai-ml': ['ai'],
   research: ['research'],
@@ -178,8 +179,15 @@ let cvPreviewTrigger;
 function readLocation() {
   const url = new URL(location.href);
   const params = url.searchParams;
-  for (const option of ['design', 'type', 'evidence', 'photo']) {
+  for (const option of ['design', 'type', 'evidence']) {
     if (params.has(option)) params.delete(option);
+  }
+  if (url.hash.startsWith('#tool-')) {
+    const tool = url.hash.slice(6);
+    if (Object.hasOwn(ampAliases, tool)) url.hash = 'tool-amp';
+    if (!params.has('section') && tools.some(item => url.hash === `#tool-${item.id}`)) {
+      params.set('section', 'tools');
+    }
   }
   if (params.get('section') === 'skills') {
     params.set('section', 'tools');
@@ -202,6 +210,7 @@ function readLocation() {
     project: page === 'projects' ? id : '',
     filter: Object.hasOwn(technologies, filter) ? filter : '',
     theme: params.get('theme') === 'dark' ? 'dark' : 'light',
+    photo: params.get('photo'),
   };
 }
 let state = readLocation();
@@ -213,6 +222,7 @@ function urlFor(next, anchor = '', path = location.pathname) {
   if (next.project) params.set('project', next.project);
   if (next.page === 'projects' && next.filter) params.set('filter', next.filter);
   if (next.theme === 'dark') params.set('theme', next.theme);
+  if (next.photo !== null) params.set('photo', next.photo);
   return `${path}${params.size ? `?${params}` : ''}${anchor ? `#${anchor}` : ''}`;
 }
 
@@ -240,7 +250,7 @@ function toolLink(tool, label = tool.title) {
 
 function externalLink(url, label, id = '', classes = '') {
   const destination = url.startsWith('mailto:') ? 'opens email app' : 'external website';
-  return `<a ${id ? `id="${id}" ` : ''}class="external-link${classes ? ` ${classes}` : ''}" href="${url}" aria-label="${label} (${destination})">${label}<span aria-hidden="true"> ↗</span></a>`;
+  return `<a ${id ? `id="${id}" ` : ''}class="external-link${classes ? ` ${classes}` : ''}" href="${url}" aria-label="${label} (${destination})">${label} <svg class="external-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 12 12 4M5 4h7v7"/></svg></a>`;
 }
 
 function slug(text) {
@@ -415,7 +425,7 @@ function renderCvProfile(active) {
   heading.toggleAttribute('data-outline', active);
   if (!active) return;
   actions.innerHTML = [
-    cvDownload(state.role, true),
+    cvActions(state.role),
     contact.email && externalLink(`mailto:${contact.email}`, 'Email'),
     github && externalLink(github, 'GitHub'),
     contact.linkedin && externalLink(contact.linkedin, 'LinkedIn'),
@@ -438,7 +448,7 @@ function projectIndex(items) {
 }
 
 function projectDetail(project) {
-  const related = ordered(projects.filter(item => item.id !== project.id && !item.archived), item => item.role).slice(0, 2);
+  const related = (project.related ?? []).map(id => projects.find(item => item.id === id)).filter(Boolean);
   const relatedTools = tools.filter(tool => tool.project === project.id);
   const action = project.action ?? relatedTools.find(tool => tool.primaryAction && actionAvailable(tool.primaryAction))?.primaryAction;
   const [featuredReference, ...otherReferences] = project.references ?? [];
@@ -460,14 +470,21 @@ function projectDetail(project) {
         ${tagList(project.tags)}
         ${overviewActions.length ? `<div class="tool-actions"${hasSources ? '' : ' id="materials"'}>${overviewActions.join('')}</div>` : ''}
       </section>
-      ${(project.sections ?? []).map(({ heading, paragraphs, table, figure }, index) => {
+      ${(project.sections ?? []).map(({ heading, paragraphs, table, figure, example }, index) => {
         const id = index === 0 ? 'technical' : slug(heading);
         return `<section aria-labelledby="${id}">
           <h2 id="${id}" data-outline>${heading}</h2>
           ${paragraphs.map(paragraph => `<p>${paragraph}</p>`).join('')}
           ${figure ? `<figure class="research-figure">
             <img src="${figure.src}" width="${figure.width}" height="${figure.height}" alt="${figure.alt}" loading="lazy">
-            <figcaption>${figure.caption} ${externalLink(figure.source, 'Source figure')}</figcaption>
+            <figcaption>${figure.caption}
+              ${figure.fullSize ? `<a href="${figure.src}" target="_blank" rel="noopener" aria-label="Open full-size figure: ${heading} (new tab)">Full size</a>` : ''}
+              ${figure.source ? externalLink(figure.source, figure.sourceLabel ?? 'Source figure') : ''}
+            </figcaption>
+          </figure>` : ''}
+          ${example ? `<figure class="research-figure project-example">
+            <pre tabindex="0" aria-label="${example.caption}"><code>${example.lines.join('\n')}</code></pre>
+            <figcaption>${example.caption}</figcaption>
           </figure>` : ''}
           ${table ? `<div class="result-table">
             <table>
@@ -541,9 +558,13 @@ function toolsContent(skillsOpen) {
   </details>`;
 }
 
-function cvDownload(role, primary = false) {
+function cvActions(role, selected = true) {
   const label = roles[role].heading;
-  return `<a href="./assets/cv/${cvFiles[role]}" download${primary ? ' class="button primary"' : ''}>Download CV — ${label} (PDF)</a>`;
+  const href = `./assets/cv/${cvFiles[role]}`;
+  return `<a href="${href}" target="_blank" rel="noopener"${selected ? ' class="button cv-view"' : ''}
+      aria-label="View CV — ${label} (PDF, new tab)">View CV</a>
+    <a href="${href}" download${selected ? ' class="button"' : ''}
+      aria-label="Download CV — ${label} (PDF)">Download CV</a>`;
 }
 
 function contactContent() {
@@ -568,11 +589,21 @@ function contactContent() {
     </section>
     <section id="cv" tabindex="-1" aria-labelledby="cv-heading">
       <h2 id="cv-heading" data-outline>Curriculum vitae</h2>
-      ${[state.role, ...otherRoles].map(role => `
-        <div class="contact-record cv-download-row">
-          ${cvDownload(role, role === state.role)}
-          <a href="./assets/cv/${cvFiles[role]}" aria-label="Open CV — ${roles[role].heading} (PDF)">Open PDF</a>
-        </div>`).join('')}
+      <div class="contact-record cv-download-row contact-cv-selected">
+        <div>
+          <p class="meta">Selected CV</p>
+          <h3>${roles[state.role].heading}</h3>
+        </div>
+        <div class="contact-cv-actions">${cvActions(state.role)}</div>
+      </div>
+      <details class="other-cvs">
+        <summary>Other CVs</summary>
+        ${otherRoles.map(role => `
+          <div class="contact-record cv-download-row">
+            <span>${roles[role].heading}</span>
+            <div class="contact-cv-actions">${cvActions(role, false)}</div>
+          </div>`).join('')}
+      </details>
     </section>
   </div>`;
 }
@@ -842,14 +873,14 @@ const searchItems = [
     type: 'Page', id, label, path: portfolioPath(id), description: pageIntros[id] || roles.general.intro,
   })),
   ...projects.map(project => ({
-    type: 'Project', id: project.id, label: project.title, path: portfolioPath('projects', project.id),
+    type: 'Project', id: project.id, searchId: project.id, label: project.title, path: portfolioPath('projects', project.id),
     description: project.description, meta: project.meta,
     tags: [...project.tags, ...Object.keys(projectAliases).filter(alias => projectAliases[alias] === project.id)],
   })),
   ...tools.map(tool => ({
-    type: 'Tool', page: 'tools', id: `tool-${tool.id}`, label: tool.title,
+    type: 'Tool', page: 'tools', id: `tool-${tool.id}`, searchId: tool.id, label: tool.title,
     path: `${portfolioPath('tools')}/${tool.id}`, description: tool.description,
-    meta: `${tool.category} · ${tool.status}`, tags: tool.technologies,
+    meta: `${tool.category} · ${tool.status}`, tags: [...tool.technologies, ...Object.keys(ampAliases).filter(alias => ampAliases[alias] === tool.id)],
   })),
   ...Object.entries(roles).map(([id, view]) => ({
     type: 'Perspective', id, label: view.label, path: `view ${view.focus}`, description: view.intro,
@@ -907,13 +938,15 @@ function fuzzyScore(term, text) {
 function explicitCommand(value) {
   if (value === 'help') return searchItems.at(-1);
   const [verb, id, tag, extra] = value.split(/\s+/);
-  const aliases = { ai: 'research', software: 'engineering', education: 'teaching' };
+  const aliases = { ai: 'ai-ml', software: 'engineering', education: 'teaching' };
   if (verb === 'cd' && id && !tag) return searchItems.find(item => item.type === 'Page' && item.id === (id === 'skills' ? 'tools' : id));
-  if (verb === 'open' && id?.startsWith('tools/') && !tag) {
-    return searchItems.find(item => item.type === 'Tool' && item.id === `tool-${id.slice(6)}`);
+  const path = id?.replace(/^~?\//, '');
+  if (verb === 'open' && path?.startsWith('tools/') && !tag) {
+    const tool = path.slice(6);
+    return searchItems.find(item => item.type === 'Tool' && item.searchId === (ampAliases[tool] ?? tool));
   }
   if (verb === 'open' && id && !tag) {
-    const project = id.replace(/^(projects\/)|\.md$/g, '');
+    const project = path.replace(/^projects\/|\.md$/g, '');
     return searchItems.find(item => item.type === 'Project' && item.id === (projectAliases[project] ?? project));
   }
   if (verb === 'view' && id && !tag) return searchItems.find(item => item.type === 'Perspective' && item.id === (aliases[id] ?? id));
@@ -931,7 +964,7 @@ function renderSearch() {
     const label = item.label.toLowerCase();
     const keywords = [verbs[item.type], item.type, item.path, item.meta, ...(item.tags ?? [])].join(' ').toLowerCase();
     const summary = item.description?.toLowerCase() ?? '';
-    const score = terms.reduce((sum, term) => sum + Math.min(
+    const score = query === item.searchId ? -1 : terms.reduce((sum, term) => sum + Math.min(
       fuzzyScore(term, label), 20 + fuzzyScore(term, keywords), summary.includes(term) ? 50 : Infinity,
     ), 0);
     return { item, score };

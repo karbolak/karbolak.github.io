@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 228" width="640" height="228">
+  <rect width="640" height="228" fill="#f8fafb"/>
+  <defs>
+    <marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+      <path d="m0 0 7 3.5L0 7Z" fill="#395b70"/>
+    </marker>
+  </defs>
+  <g fill="#e8f0f4" stroke="#395b70">
+    <rect x="24" y="25" width="174" height="62" rx="6"/>
+    <rect x="233" y="25" width="174" height="62" rx="6"/>
+    <rect x="442" y="25" width="174" height="62" rx="6"/>
+    <rect x="233" y="138" width="174" height="62" rx="6"/>
+    <rect x="442" y="138" width="174" height="62" rx="6"/>
+  </g>
+  <g fill="none" stroke="#395b70" stroke-width="2" marker-end="url(#arrow)">
+    <path d="M198 56h30"/>
+    <path d="M407 56h30"/>
+    <path d="M529 87v46"/>
+    <path d="M442 169h-30"/>
+  </g>
+  <g fill="#263a49" font-family="system-ui,sans-serif" font-size="19" font-weight="600" text-anchor="middle">
+    <text x="111" y="62">FaceNet features</text>
+    <text x="320" y="62">PCA</text>
+    <text x="529" y="62">GMM clusters</text>
+    <text x="529" y="175">SVM surrogate</text>
+    <text x="320" y="175">SHAP explanation</text>
+  </g>
+</svg>

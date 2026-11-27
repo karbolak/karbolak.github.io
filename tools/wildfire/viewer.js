@@ -378,7 +378,7 @@ async function init() {
   const view = new URLSearchParams(location.search);
   const back = $('portfolio-return');
   const destination = new URL(back.href);
-  for (const key of ['role', 'theme']) {
+  for (const key of ['role', 'theme', 'photo']) {
     if (view.has(key)) destination.searchParams.set(key, view.get(key));
   }
   back.href = destination;

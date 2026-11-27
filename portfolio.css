@@ -332,6 +332,7 @@ h3 { font-size: 1.12rem; line-height: 1.22; letter-spacing: -.025em; }
 .detail-body section p + p { margin-top: 10px; }
 .research-figure { margin: 12px 0; }
 .research-figure img {
+  display: block;
   width: 100%;
   height: auto;
   background: #fff;
@@ -339,6 +340,15 @@ h3 { font-size: 1.12rem; line-height: 1.22; letter-spacing: -.025em; }
 }
 .research-figure figcaption { margin-top: 6px; color: var(--muted); font-size: .9rem; }
 .research-figure figcaption a { display: inline-block; }
+.research-figure figcaption a + a { margin-inline-start: .35em; }
+.project-example pre {
+  margin: 0;
+  overflow-x: auto;
+  padding: 10px;
+  border: 1px solid var(--rule);
+  background: var(--raised);
+  font-size: .84rem;
+}
 .result-table { margin-block: 12px 2px; }
 .result-table table {
   width: 100%;
