@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Score early diffusion trajectory features with DiffGate’s default training-free rule.">
+  <title>DiffGate Score Demo · Kajetan Karbowski</title>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../portfolio.css?v=maintenance-1">
+  <link rel="stylesheet" href="../../experiment.css?v=maintenance-1">
+  <link rel="stylesheet" href="demo.css?v=prompt-outcome">
+  <script type="module" src="demo.mjs?v=prompt-outcome"></script>
+</head>
+<body>
+  <div class="portfolio" data-design="experimental" data-theme="light">
+    <main class="demo dos-window">
+      <nav class="demo-nav" aria-label="DiffGate links">
+        <a href="../../?section=tools#tool-diffgate" data-return>Back to portfolio tools</a>
+        <a href="../../?section=projects&amp;project=diffgate" data-return>Research case study</a>
+        <a href="https://github.com/karbolak/DiffGate">DiffGate on GitHub</a>
+      </nav>
+      <h1>DiffGate score demo</h1>
+      <p>DiffGate scores the trajectory at step five of 25. A score below the threshold stops the run. Change the example or threshold to see the outcome, then replay it step by step.</p>
+      <form id="scoring">
+        <div class="scoring-controls">
+          <label for="example">Example
+            <select id="example" disabled></select>
+          </label>
+          <label for="threshold">Abort threshold
+            <input id="threshold" type="number" min="0" max="100" value="50" step="any" required>
+          </label>
+          <button type="submit" disabled>Replay run</button>
+        </div>
+        <section class="demo-prompt" aria-labelledby="example-prompt-heading">
+          <h2 id="example-prompt-heading">Example prompt</h2>
+          <p>A medieval knight riding a corgi through misty forest at sunrise, highly detailed fantasy illustration.</p>
+        </section>
+        <div id="terminal" class="demo-terminal" role="group" aria-label="DiffGate CLI walkthrough">
+          <p class="terminal-bar">diffgate / score-features</p>
+          <div class="terminal-body">
+            <code id="terminal-command" aria-hidden="true">$ diffgate score-features --features features.json</code>
+            <output id="result" for="features threshold" aria-live="polite"><span id="cli-output"></span><span id="terminal-decision"></span></output>
+          </div>
+        </div>
+        <div class="demo-steps">
+          <div class="step-labels" aria-hidden="true"><span>Steps 1–5 · Score</span><span>Steps 6–25</span></div>
+          <div id="step-strip" aria-hidden="true"></div>
+          <p id="step-summary"></p>
+        </div>
+        <section id="replay-outcome" class="demo-outcome" aria-label="Replay outcome" hidden>
+          <div id="replay-abort" hidden>
+            <h2>Aborted at step 5</h2>
+            <p>The score fell below the quality threshold. Try another example or lower the threshold.</p>
+          </div>
+          <figure id="replay-image" hidden>
+            <h2>Run completed</h2>
+            <img src="../../assets/research/diffgate/knight-and-corgi.webp" width="760" height="760" loading="lazy" alt="An armoured knight rides a corgi through a misty forest in warm sunrise light.">
+            <figcaption>Illustrative output from the BSc thesis defence slides.</figcaption>
+          </figure>
+        </section>
+        <details id="feature-editor">
+          <summary>Edit feature JSON</summary>
+          <label for="features">Prefix features (JSON)</label>
+          <textarea id="features" rows="7" maxlength="16000" spellcheck="false"></textarea>
+        </details>
+      </form>
+      <p class="demo-note">The browser runs the default uncalibrated scorer on example features. The replay illustrates its stop decision without running an image model.</p>
+      <p class="demo-next">Want to try DiffGate on your own image generations? <a href="https://github.com/karbolak/DiffGate">Download DiffGate from GitHub</a> and follow the setup instructions in the README.</p>
+    </main>
+  </div>
+</body>
+</html>

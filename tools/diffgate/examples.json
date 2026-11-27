@@ -1,0 +1,34 @@
+[
+  {
+    "label": "Three signals (upstream unit test)",
+    "features": {
+      "latent_volatility_rms_mean": 0.5,
+      "denoising_update_pred_cosine_mean": 0.8,
+      "denoising_consistency_residual_mean": 0.2
+    },
+    "cli": {
+      "health_score": 57.2509653064879
+    }
+  },
+  {
+    "label": "Consistency penalty (illustrative)",
+    "features": {
+      "latent_volatility_rms_mean": 0.5,
+      "denoising_update_pred_cosine_mean": 0.8,
+      "denoising_consistency_residual_mean": 1.5,
+      "denoising_consistency_residual_last": 1.2
+    },
+    "cli": {
+      "health_score": 44.00134017463958
+    }
+  },
+  {
+    "label": "No supported features",
+    "features": {
+      "unrecognized_mean": 1
+    },
+    "cli": {
+      "health_score": 50.0
+    }
+  }
+]

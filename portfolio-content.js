@@ -3,8 +3,7 @@ const portfolioContent = {
     "name": "Kajetan Karbowski",
     "role": "MSc Artificial Intelligence student",
     "affiliation": "University of Groningen",
-    "description": "I build reliable and interpretable ML systems spanning generative AI, computer vision, time-series modeling, and LLM automation. I also have experience in teaching, project coordination, and student-organization leadership.",
-    "abstract": "I work on reliable, interpretable AI and build practical software. My experience also spans tutoring and student association leadership.",
+    "abstract": "I research how AI systems behave and build tools to put those findings to use. My work spans diffusion models, antenna optimisation, tutoring and student association leadership.",
     "languages": [
       {
         "language": "Polish",
@@ -24,17 +23,19 @@ const portfolioContent = {
   "education": [
     {
       "id": "msc-ai",
-      "title": "MSc Artificial Intelligence (Machine Learning track)",
+      "title": "MSc Artificial Intelligence",
       "institution": "University of Groningen",
       "start": "2026-09",
-      "end": null,
-      "date_label": "2026–Present",
-      "details": "Current MSc studies in Artificial Intelligence.",
+      "end": "2028-07",
+      "date_label": "Sep 2026–expected Jul 2028",
+      "details": "MSc studies include multi-agent systems and applied learning under partial observability.",
       "tags": [
         "ai",
         "research",
         "software"
-      ]
+      ],
+      "ongoing": true,
+      "summary": "Studying Artificial Intelligence alongside the HTSM Honours Master."
     },
     {
       "id": "htsm",
@@ -42,27 +43,32 @@ const portfolioContent = {
       "institution": "University of Groningen",
       "start": "2026",
       "end": null,
-      "date_label": "2026",
-      "details": "Selective multidisciplinary programme focused on real-world products for industry partners, including Philips and ASTRON.",
+      "date_label": "2026–Present",
+      "details": "The programme connects technical research with engineering practice. My honours work includes a research internship with ASTRON on VLF antennas.",
       "tags": [
         "research",
         "software",
         "education"
-      ]
+      ],
+      "ongoing": true,
+      "summary": "Interdisciplinary honours study in parallel with the MSc.",
+      "project": "vlf-antenna"
     },
     {
       "id": "bsc-ai",
       "title": "BSc Artificial Intelligence",
       "institution": "University of Groningen",
       "start": "2023-09",
-      "end": "2026-06",
-      "date_label": "Sep 2023–Jun 2026",
-      "details": "Final grade 8.4/10; bachelor’s project 9.0/10. Relevant coursework: Computer Vision & Imaging, Human-Computer Interaction, Neural Computation.",
+      "end": "2026-07",
+      "date_label": "Sep 2023–Jul 2026",
+      "details": "The thesis studied early indicators of automatically scored image quality in diffusion generation.",
       "tags": [
         "ai",
         "research",
         "software"
-      ]
+      ],
+      "summary": "Completed with a GPA of 8.4/10 and a thesis grade of 9.0/10.",
+      "project": "diffgate"
     },
     {
       "id": "exchange",
@@ -71,27 +77,56 @@ const portfolioContent = {
       "start": "2025-09",
       "end": "2025-12",
       "date_label": "Sep–Dec 2025",
-      "details": "Exchange studies in Computer Science and AI.",
+      "details": "Studied Neural Computation, Computer Vision and Imaging, and Human–Computer Interaction.",
       "tags": [
         "ai",
         "research",
         "software"
-      ]
+      ],
+      "summary": "Exchange studies in Computer Science and AI."
     },
     {
       "id": "ib",
       "title": "International Baccalaureate Diploma",
       "institution": "Liceum Ogólnokształcące im. Melchiora Wańkowicza, Katowice",
-      "start": "2021-09",
-      "end": "2023-06",
-      "date_label": "2021–2023",
-      "details": "International Baccalaureate secondary qualification.",
+      "start": null,
+      "end": "2023",
+      "date_label": "Completed 2023",
+      "details": "Higher Level: Mathematics Analysis and Approaches, Physics and Computer Science. Standard Level: Psychology, English Literature and Spanish ab initio.",
+      "tags": [
+        "education"
+      ],
+      "summary": "International Baccalaureate Diploma."
+    },
+    {
+      "id": "ta-training",
+      "title": "Teaching Assistant Training",
+      "institution": "Center for Learning and Teaching, Faculty of Science and Engineering · University of Groningen",
+      "date": "2026-02",
+      "date_label": "Feb 2026",
+      "summary": "Completed the 17-hour FSE teaching credential.",
+      "details": "The training included 13 hours of didactics and four hours of intercultural competencies.",
       "tags": [
         "education"
       ]
     }
   ],
   "experience": [
+    {
+      "id": "htsm-research",
+      "title": "Research Intern — ASTRON (University of Groningen HTSM)",
+      "organization": "High Tech Systems and Materials Honours Master",
+      "start": "2026",
+      "ongoing": true,
+      "summary": "Researching compact VLF receiving antennas for ionospheric-disturbance monitoring through HTSM, developing computational models and optimisation methods.",
+      "details": "The work combines analytical models and finite-element simulations with physics-informed surrogate methods for multi-objective design.",
+      "project": "vlf-antenna",
+      "tags": [
+        "ai",
+        "research",
+        "software"
+      ]
+    },
     {
       "id": "psag-president",
       "title": "President",
@@ -101,35 +136,35 @@ const portfolioContent = {
       "start": "2025-06",
       "end": "2026-06",
       "date_label": "Jun 2025–Jun 2026",
-      "details": "Led strategy and operations for an approximately 150-member association; coordinated its board, partners and events, and represented the association to university and external stakeholders.",
+      "details": "Coordinated strategy, delegation, external representation and board handover for PSAG. During the term, the board welcomed EduWorld as the association’s first official partner, and PSAG joined International Student Union Groningen. The Partners Committee led a Polish law careers webinar with Wardyński & Partners. The board also took part in the International Congress of Polish Student Societies in Milan as a community partner.",
       "tags": [
-        "leadership",
-        "education",
-        "software"
-      ]
+        "leadership"
+      ],
+      "project": "amp"
     },
     {
       "id": "psag-external",
       "title": "External Affairs Officer, Social Committee",
       "organization": "Polish Student Association Groningen (PSAG)",
       "start": "2024",
-      "end": "2025",
-      "date_label": "2024–2025",
-      "details": "Worked with external organisations, firms and venues, supporting events, partnerships and community engagement.",
+      "end": "2025-06",
+      "date_label": "2024–Jun 2025",
+      "details": "Worked with the Social Committee on event planning, outreach to venues and organisations, and community engagement.",
       "tags": [
         "leadership",
         "education"
-      ]
+      ],
+      "summary": "Supported events and external relations before serving as president."
     },
     {
       "id": "tdj-camp",
       "title": "Activities Instructor & Co-organizer",
       "abstract": "Designed and led educational activities using games and tabletop role-playing.",
-      "organization": "TDJ Foundation — Wakacje z Pasją",
+      "organization": "Wakacje z Pasją · TDJ",
       "start": "2024-08",
       "end": "2025-08",
       "date_label": "Aug 2024 & Aug 2025",
-      "details": "Designed and delivered gamified education and tabletop RPG activities; coordinated sessions, logistics and group dynamics.",
+      "details": "Co-led tabletop role-playing and gamified activities during two summer camp terms. Designed sessions around collaboration and problem-solving and coordinated scheduling, logistics and group dynamics.",
       "tags": [
         "education",
         "leadership"
@@ -138,28 +173,28 @@ const portfolioContent = {
     {
       "id": "private-tutoring",
       "title": "Private Tutor",
-      "abstract": "Tutored mathematics, physics, programming, and humanities one-to-one.",
+      "abstract": "Tutored mathematics, physics, computing and humanities one-to-one.",
       "organization": "Individual tutoring",
       "start": null,
       "end": null,
       "date_label": "Multi-year",
-      "details": "One-to-one tutoring in mathematics, physics, Python/computer science and humanities; adapted explanations to individual learning needs. FSE TA training and Nonviolent Communication training completed.",
+      "details": "Provided multiyear tutoring in mathematics, physics, computer science and Python, English literature, and psychology. Adapted explanations and practice to each learner.",
       "tags": [
-        "education",
-        "ai"
+        "education"
       ]
     },
     {
       "id": "camp-counsellor",
       "title": "Camp Counsellor and Volunteer",
       "organization": "Educational camp",
-      "start": "2023-06",
-      "end": "2023-08",
+      "start": null,
+      "end": "2023",
       "date_label": "Summer 2023",
-      "details": "Completed camp counselling training; supported children through supervised educational activities and encouragement.",
+      "details": "Volunteered as a camp counsellor, supporting children in supervised educational activities.",
       "tags": [
         "education"
-      ]
+      ],
+      "archived": true
     },
     {
       "id": "name-it-aim-it",
@@ -172,159 +207,886 @@ const portfolioContent = {
       "tags": [
         "education",
         "leadership"
-      ]
+      ],
+      "archived": true
     }
   ],
   "projects": [
     {
-      "id": "psag",
-      "title": "PSAG Platform",
-      "kind": "Software platform",
-      "start": null,
-      "end": null,
-      "date_label": null,
-      "featured": true,
-      "pinned": true,
-      "tags": [
-        "software"
-      ],
-      "summary": "Digital platform for the Polish Student Association Groningen.",
-      "details": "Project details pending. This software project is separate from the PSAG presidency."
-    },
-    {
       "id": "diffgate",
-      "title": "DiffGate — Training-Free Uncertainty for Image Generation",
+      "related": ["xai-face-clustering"],
+      "title": "DiffGate — Early Signals Predict Quality in Image Generation",
       "shortTitle": "DiffGate",
-      "abstract": "Estimates when AI-generated images may be unreliable, without retraining the model.",
-      "kind": "BSc thesis / Python library and CLI tool",
-      "start": null,
-      "end": null,
-      "date_label": null,
-      "featured": true,
-      "pinned": false,
+      "kind": "Completed thesis · Released Python library and CLI",
+      "start": "2026-02",
+      "end": "2026-06",
+      "date_label": "Feb–Jun 2026 (thesis)",
       "tags": [
         "ai",
         "research",
         "software",
         "python",
-        "generative-ai"
+        "generative-ai",
+        "machine-learning",
+        "Diffusion models",
+        "Stable Diffusion 3.5",
+        "CLI",
+        "Uncertainty estimation",
+        "Python packaging",
+        "Model evaluation"
       ],
-      "summary": "A Python library and CLI tool for estimating when generated images may be unreliable using signals from diffusion-generation trajectories, without retraining the model.",
-      "details": "Built reusable uncertainty estimation tooling and reproducible evaluation to support early stopping of potentially unreliable runs. BSc project grade: 9.0/10.",
+      "summary": "On 36,600 generations, five denoising steps retained most of the supervised signal for predicting automatically scored image quality.",
+      "sections": [
+        {
+          "heading": "Approach",
+          "paragraphs": [
+            "My University of Groningen BSc thesis (9.0/10), supervised by Ivo de Jong, tested whether early denoising signals could guide abort decisions. I generated 36,600 images with Stable Diffusion 3.5 Large across 7,320 prompts and five seeds per prompt. Prefix features tracked latent movement and stability, denoiser predictions, classifier-free guidance and update consistency.",
+            "Step five was the checkpoint in a 25-step run. At that point, 20 denoising steps remained. I compared a hand-designed training-free health score with a supervised logistic-regression classifier fitted on labelled generations. DiffGate packages prefix analysis and abort decisions in a Python library and CLI with a generator wrapper, reproducible evaluation and tests."
+          ]
+        },
+        {
+          "heading": "From prefix features to a CLI score",
+          "paragraphs": [
+            "After the first few denoising steps, DiffGate summarises the recorded signals into numeric features. The CLI can score a saved feature file without running the generator. Below, the default training-free scorer evaluates the three-feature input from DiffGate’s unit test. The score is an uncalibrated diagnostic."
+          ],
+          "example": {
+            "caption": "Saved input and actual CLI output",
+            "lines": [
+              "$ cat features.json",
+              "{",
+              "  \"latent_volatility_rms_mean\": 0.5,",
+              "  \"denoising_update_pred_cosine_mean\": 0.8,",
+              "  \"denoising_consistency_residual_mean\": 0.2",
+              "}",
+              "$ diffgate score-features --features features.json",
+              "{",
+              "  \"health_score\": 57.2509653064879",
+              "}"
+            ]
+          }
+        },
+        {
+          "heading": "Global detection and seed ranking",
+          "paragraphs": [
+            "Five of 25 steps retained most of the supervised signal for predicting above-median scorer values across prompts. The handcrafted score reached approximately 0.58–0.60 ROC-AUC. About 79–84% of variation was between prompts. Within a prompt, the supervised HPSv2 model ranked seed pairs correctly 59.1% of the time and recovered 29.1% of the available best-of-five oracle gain. The handcrafted score did not reliably rank seeds."
+          ],
+          "figure": {
+            "src": "assets/research/diffgate/global-quality.png",
+            "width": 2048,
+            "height": 1979,
+            "alt": "Grouped bars compare the handcrafted and supervised scores on global prediction. The supervised score has higher ROC-AUC on CLIP, HPSv2 and ImageReward.",
+            "caption": "Global quality prediction from the five-step prefix. The learned model had its clearest advantage on HPSv2. Figure from the BSc thesis defence.",
+            "fullSize": true
+          },
+          "table": {
+            "caption": "Prefix-five results and matched simulated abort",
+            "columns": [
+              "Scorer",
+              "ROC-AUC",
+              "Learned lift",
+              "Rule lift"
+            ],
+            "rows": [
+              ["CLIP", "0.643", "+1.9%", "+1.3%"],
+              ["HPSv2", "0.764", "+3.8%", "+1.3%"],
+              ["ImageReward", "0.672", "+11.0%", "+4.8%"]
+            ]
+          }
+        },
+        {
+          "heading": "Early-abort trade-off",
+          "paragraphs": [
+            "In the matched offline simulation, both policies dropped 31% of trajectories after step five, saving about 24.8% of simulated sampling steps. The figure compares automatic scores among retained images at that matched abort rate. The study used one fixed generator and measured neither human ratings nor wall-clock savings."
+          ],
+          "figure": {
+            "src": "assets/research/diffgate/matched-abort.png",
+            "width": 2048,
+            "height": 1332,
+            "alt": "Grouped bars compare changes in CLIP, HPSv2 and ImageReward for the handcrafted and learned policies at a matched 31% simulated abort rate. ImageReward has the largest lift.",
+            "caption": "Offline abort simulation from the BSc thesis defence. Bars show the change in mean automatic score for retained images. The 24.8% figure counts simulated sampling steps.",
+            "fullSize": true
+          }
+        }
+      ],
       "repository": "DiffGate"
     },
     {
-      "id": "forescan",
-      "title": "FORESCAN — Early Cognitive Overload Forecasting",
-      "shortTitle": "FORESCAN",
-      "abstract": "Tested whether changes in pupil size can predict cognitive overload.",
-      "kind": "Time-series ML research",
-      "start": null,
-      "end": null,
-      "date_label": null,
-      "featured": false,
-      "pinned": false,
+      "id": "vlf-antenna",
+      "related": ["forescan"],
+      "title": "Physics-Informed Surrogate-Assisted VLF Antenna Optimisation",
+      "shortTitle": "VLF Antenna Optimisation",
+      "kind": "Ongoing academic research · Computational benchmark completed",
+      "start": "2026",
+      "ongoing": true,
       "tags": [
         "ai",
-        "research",
-        "python",
-        "timeseries"
-      ],
-      "summary": "Explored whether physiological pupil-dynamics signals can forecast cognitive overload before onset.",
-      "details": "Compared logistic regression and temporal convolutional networks in subject-held-out forecasting, and evaluated constrained trigger policies.",
-      "repository": "FORESCAN"
-    },
-    {
-      "id": "xai-face-clustering",
-      "title": "XAI Face Clustering",
-      "abstract": "Built a tool to group real and AI-generated faces and explain the groupings.",
-      "kind": "Computer vision & explainability",
-      "start": null,
-      "end": null,
-      "date_label": null,
-      "featured": false,
-      "pinned": false,
-      "tags": [
-        "ai",
-        "research",
-        "python",
         "software",
-        "computer-vision"
-      ],
-      "summary": "A pipeline clustering real and AI-generated faces and explaining cluster assignments.",
-      "details": "FaceNet embeddings, PCA, KMeans/DBSCAN/GMM, surrogate models and SHAP explanations; FastAPI and Streamlit demonstration packaged with Docker and tests."
-    },
-    {
-      "id": "llm-poetry",
-      "title": "LLM Poetry Style Fine-Tuning",
-      "kind": "Generative AI evaluation",
-      "start": null,
-      "end": null,
-      "date_label": null,
-      "featured": false,
-      "pinned": false,
-      "tags": [
-        "ai",
         "research",
         "python",
-        "llm"
+        "machine-learning",
+        "Gaussian processes",
+        "Gmsh",
+        "GetDP",
+        "NSGA-II",
+        "Analytical modelling",
+        "Experiment design",
+        "Model evaluation"
       ],
-      "summary": "Fine-tuning a compact LLM to generate poetry across multiple author styles, with emphasis on evaluation.",
-      "details": "Llama 3.2 1B Instruct, LoRA/QLoRA, PyTorch, Transformers and human/automated evaluation."
+      "summary": "Benchmarked five search methods under matched FEM budgets and shortlisted two compact VLF antenna designs for physical testing.",
+      "sections": [
+        {
+          "heading": "The antenna designs",
+          "paragraphs": [
+            "A compact ferrite core concentrates the incoming magnetic flux through a copper winding. I shortlisted a shaped core and a conventional rod to test how much receive sensitivity each can retain under the same size, mass and turn limits."
+          ],
+          "figure": {
+            "src": "assets/research/vlf/antenna-geometry.png",
+            "width": 1785,
+            "height": 462,
+            "alt": "Simulated ferrite cores at the same scale. R2 is cylindrical and P1 tapers and flares. Each has four copper turns.",
+            "caption": "Same-scale renderings of the conventional R2 rod (32.14 mm) and the P1 taper/flare candidate (32.24 mm), reconstructed from their simulated geometries. Both are proposed for calibrated bench testing.",
+            "fullSize": true,
+            "source": "https://github.com/karbolak/vlf-antenna-public/blob/main/assets/antenna-geometry.png"
+          }
+        },
+        {
+          "heading": "Research question and implementation",
+          "paragraphs": [
+            "How much receive sensitivity can a smaller magnetic antenna retain, and can a physics-informed model improve the search under a fixed simulation budget? The intended use is to monitor changes in received VLF transmitter signals caused by ionospheric disturbances. I developed the computational framework within the University of Groningen HTSM Honours Master in collaboration with ASTRON.",
+            "The framework combines analytical air-core and ferrite-core models, axisymmetric harmonic Gmsh/GetDP simulations, and ngspice circuit cross-checks. It reconstructs effective area, inductance, losses, loaded sensitivity and instrumental noise-equivalent magnetic field (NEMF). A Matérn Gaussian process learns residuals around an analytical equal-volume rod prior with demagnetisation and winding-coupling corrections. The adaptive arm uses gain, uncertainty and design-space coverage to choose coarse FEM evaluations and refits on the new responses."
+          ]
+        },
+        {
+          "heading": "Finite-element evaluation",
+          "paragraphs": [
+            "The axisymmetric mesh resolves individual wire cross-sections and the surrounding air. The harmonic receive and driven-coil solutions feed a circuit model that estimates sensitivity and the instrumental noise floor."
+          ],
+          "figure": {
+            "src": "assets/research/vlf/fem-mesh.svg",
+            "width": 816,
+            "height": 293,
+            "alt": "Archived finite-element verification mesh, with a wide air domain and a magnified view showing three wire cross-sections beside a ferrite rod.",
+            "caption": "Archived verification mesh and winding detail. This three-turn verification case illustrates the numerical model used in the study.",
+            "fullSize": true,
+            "source": "https://github.com/karbolak/vlf-antenna-public/blob/f88b71c6c370231ebce99d316a49d88a486fccd9/assets/fem-mesh.svg"
+          }
+        },
+        {
+          "heading": "Benchmark and numerical validation",
+          "paragraphs": [
+            "The final benchmark compared direct FEM NSGA-II, analytical NSGA-II, frozen and adaptive residual GPs, and random search. Five methods, ten paired seeds, two starting regimes and two objective formulations produced 200 trajectories. Each allocated 195 coarse attempts and five fine-mesh confirmations across five frequencies (10–45 kHz). Cold starts shared 25 designs per seed, while warm starts used 400 qualified geometries. The archive contains 40,311 five-frequency FEM sweeps, including 1,000 production fine-mesh confirmations.",
+            "On a separate panel of 100 held-out fine-mesh geometries, the residual GP’s 90th-percentile relative errors were 0.76% for real effective area and 0.65% for raw inductance. Batched local prediction averaged 13.75 ms per geometry against 8.92 s median fine-mesh FEM time on HPC, a roughly 649× inference-time ratio across environments. The adaptive method still used more median Slurm CPU time than the frozen GP in all four benchmark settings."
+          ]
+        },
+        {
+          "heading": "Search results",
+          "paragraphs": [
+            "At +200 attempts, adaptive GP had higher hypervolume gain than frozen GP in 39 of 40 matched seed–setting comparisons. None of 120 paired contrasts reached the Holm-adjusted 5% threshold (smallest adjusted p = 0.234375). The small seed count limits statistical power. The adaptive arm changed acquisition as well as refitting, so this comparison cannot isolate the effect of model updates."
+          ],
+          "figure": {
+            "src": "assets/research/vlf/convergence.svg",
+            "width": 816,
+            "height": 499,
+            "alt": "Four plots comparing median hypervolume gain across five search methods for cold and warm starts and the two objective formulations.",
+            "caption": "Median hypervolume gain over paired seeds, with interquartile ranges. The grey interval marks the fine-mesh confirmation allocation.",
+            "fullSize": true,
+            "source": "https://github.com/karbolak/vlf-antenna-public/blob/f88b71c6c370231ebce99d316a49d88a486fccd9/assets/convergence.svg"
+          }
+        },
+        {
+          "heading": "Candidates for bench testing",
+          "paragraphs": [
+            "Both compact designs use four turns and meet limits of 2.50 g active mass and 33 mm maximum active dimension. On fine meshes, P1 gave 12.9% higher minimum loaded sensitivity and 11.4% lower worst instrumental NEMF than R2. The complete designs differ in core and winding geometry."
+          ],
+          "figure": {
+            "src": "assets/research/vlf/fine-pareto.svg",
+            "width": 816,
+            "height": 350,
+            "alt": "Legacy and receiver-objective Pareto projections using fine-mesh results, with P1 on the receiver front and R2 marked for comparison.",
+            "caption": "Fine-confirmed design trade-offs. P1 lies on the pooled receiver front. R2 is the compact cylindrical reference, and colour encodes the third objective in each panel.",
+            "fullSize": true,
+            "source": "https://github.com/karbolak/vlf-antenna-public/blob/f88b71c6c370231ebce99d316a49d88a486fccd9/assets/fine-pareto.svg"
+          },
+          "table": {
+            "caption": "Fine-mesh predictions across the frequency grid",
+            "columns": [
+              "Measure",
+              "R2 cylinder",
+              "P1 taper/flare"
+            ],
+            "rows": [
+              ["Min. sensitivity (V/T)", "1515.72", "1710.94"],
+              ["Worst NEMF (pT/√Hz)", "19.13", "16.95"],
+              ["NEMF at 23.4 kHz (pT/√Hz)", "8.18", "7.24"],
+              ["Active mass (g)", "2.145", "2.469"],
+              ["Max. dimension (mm)", "32.14", "32.24"]
+            ]
+          }
+        },
+        {
+          "heading": "Limits and next measurements",
+          "paragraphs": [
+            "Fine-mesh confirmation is numerical. The models assume small-signal behaviour, prescribed axial fields and axisymmetry. Fabrication tolerances, ferrite variation, parasitics and interference still need calibrated bench or field measurements with built hardware."
+          ]
+        }
+      ],
+      "repository": "vlf-antenna-public",
+      "references": [
+        {
+          "label": "Benchmark audit",
+          "url": "https://github.com/karbolak/vlf-antenna-public/blob/main/results/benchmark.json"
+        },
+        {
+          "label": "Held-out surrogate validation",
+          "url": "https://github.com/karbolak/vlf-antenna-public/blob/main/results/surrogate-validation.json"
+        },
+        {
+          "label": "Compact design data",
+          "url": "https://github.com/karbolak/vlf-antenna-public/blob/main/results/compact-designs.csv"
+        }
+      ]
+    },
+    {
+      "id": "amp",
+      "title": "Association Management Platform",
+      "kind": "In production · First client: PSAG",
+      "tags": [
+        "software",
+        "TypeScript",
+        "React",
+        "Docker Compose",
+        "Caddy"
+      ],
+      "summary": "I designed and developed the Association Management Platform (AMP) and continue to maintain it. It integrates a student association’s public website, administration and email operations. The Polish Student Association Groningen (PSAG) is its first client and production deployment.",
+      "action": { "label": "View client deployment", "url": "https://psag.nl/" },
+      "sections": [
+        {
+          "heading": "Production and maintenance",
+          "paragraphs": [
+            "I built the platform with TypeScript and React. It brings public content, member and event administration, and email operations into one product. I maintain the release process, health checks and backups."
+          ],
+          "figure": {
+            "src": "assets/research/amp/workflow.svg",
+            "width": 640,
+            "height": 236,
+            "alt": "Association administration manages content, members and events. It publishes pages and events to the public website and queues event emails.",
+            "caption": "A functional overview of the public publishing and email workflows supported by the platform.",
+            "fullSize": true
+          }
+        },
+        {
+          "heading": "Next steps",
+          "paragraphs": [
+            "I plan to offer AMP to other associations. A standalone product demo is planned."
+          ]
+        }
+      ]
     },
     {
       "id": "ai-intake-automation",
       "title": "AI Intake Automation — Guardrailed LLM Operations",
-      "kind": "Workflow automation",
-      "start": null,
-      "end": null,
-      "date_label": null,
-      "featured": false,
-      "pinned": false,
+      "shortTitle": "AI Intake Automation",
+      "kind": "Completed workflow prototype",
+      "start": "2026-06",
+      "end": "2026-07",
+      "date_label": "Jun–Jul 2026",
       "tags": [
         "ai",
         "software",
         "llm",
-        "automation"
+        "automation",
+        "n8n",
+        "API integrations",
+        "Regression testing",
+        "Structured outputs",
+        "Human-in-the-loop design"
       ],
-      "summary": "A structured LLM-assisted intake workflow routing uncertain or sensitive requests for human review.",
-      "details": "n8n, structured outputs, deterministic privacy/safety rules, human review, rate-limits, provider fallback and regression checks on 35 synthetic cases."
+      "summary": "Built an intake prototype that drafts responses and escalates sensitive or uncertain requests to a human reviewer.",
+      "overviewLink": { "label": "See prototype verification", "anchor": "verification" },
+      "sections": [
+        {
+          "heading": "Workflow",
+          "paragraphs": [
+            "I used n8n and provider APIs to turn incoming requests into structured LLM outputs. Deterministic decision rules apply privacy and handling policies, while the model interprets requests and drafts responses. The workflow handles provider fallback and rate limits."
+          ]
+        },
+        {
+          "heading": "Verification",
+          "paragraphs": [
+            "A regression suite covers 35 synthetic normal, edge and failure scenarios. The evidence comes from prototype testing with synthetic requests."
+          ]
+        }
+      ]
+    },
+    {
+      "id": "xai-face-clustering",
+      "related": ["diffgate"],
+      "title": "Explainable Face Clustering",
+      "kind": "Completed computer vision application",
+      "start": "2025-04",
+      "end": "2025-06",
+      "date_label": "Apr–Jun 2025",
+      "tags": [
+        "ai",
+        "research",
+        "software",
+        "python",
+        "computer-vision",
+        "machine-learning",
+        "SHAP",
+        "FastAPI",
+        "Streamlit",
+        "Docker",
+        "Clustering",
+        "PCA",
+        "FaceNet embeddings",
+        "REST APIs",
+        "Model evaluation"
+      ],
+      "summary": "Explained cluster assignments with SHAP and tested how well those assignments transferred to real versus generated face labels.",
+      "sections": [
+        {
+          "heading": "Pipeline",
+          "paragraphs": [
+            "We compared clustering methods on FaceNet embeddings using roughly 9,600 labelled images and a stratified 80/20 split. PCA reduced 512 features to 475 at 95% explained variance. The main pipeline used a Gaussian mixture model and a sigmoid-kernel SVM surrogate. The baseline used spectral clustering and logistic regression. The application includes a FastAPI service, Streamlit interface, Docker packaging and component tests."
+          ],
+          "figure": {
+            "src": "assets/research/xai/surrogate-pipeline.svg",
+            "width": 640,
+            "height": 228,
+            "alt": "FaceNet embeddings feed PCA and a Gaussian mixture model. An SVM learns the resulting cluster labels and SHAP explains the SVM’s predictions.",
+            "caption": "The explanation follows the clustering surrogate. True real/AI labels are a separate evaluation target.",
+            "fullSize": true,
+            "source": "https://github.com/karbolak/xai-face-clustering/blob/a2faa29b75f6f5e1a55fc07ad4898ae4571e794a/README.md",
+            "sourceLabel": "Implementation"
+          }
+        },
+        {
+          "heading": "Fidelity and generalisation",
+          "paragraphs": [
+            "On 1,926 held-out images, fidelity to cluster assignments was higher than accuracy on the actual real/AI labels. In the separate 1,000-image API batch, 103 of 500 real faces and 493 of 500 generated faces were correctly classified. This drop limits the pipeline’s use as a detector."
+          ],
+          "table": {
+            "caption": "Results by evaluation target",
+            "columns": [
+              "Target",
+              "Accuracy",
+              "Macro F1"
+            ],
+            "rows": [
+              ["Cluster labels (surrogate fidelity)", "88%", "0.87"],
+              ["Actual real/AI labels", "75%", "0.75"],
+              ["Actual labels, baseline", "68%", "0.66"],
+              ["Separate API batch", "≈60%", "—"]
+            ]
+          }
+        },
+        {
+          "heading": "Explanation scope",
+          "paragraphs": [
+            "SHAP attributes feature contributions to the clustering surrogate’s predictions. Its explanations apply to the surrogate, with no direct attribution to the FaceNet model or causal interpretation."
+          ]
+        }
+      ],
+      "repository": "xai-face-clustering",
+      "credit": "Collaborators: Sara, Iulia and Calin. The linked repository provides the implementation and pipeline diagrams."
+    },
+    {
+      "id": "doces",
+      "related": ["wildfire"],
+      "title": "DOCES — Producer Activity, Content Adaptation and Relative Exposure",
+      "shortTitle": "DOCES Exposure Study",
+      "kind": "Completed multi-agent research",
+      "date": "2026",
+      "date_label": "Autumn 2026",
+      "tags": [
+        "ai",
+        "research",
+        "software",
+        "python",
+        "Multi-agent simulation",
+        "Experiment design"
+      ],
+      "summary": "Tested when synthetic producers gained or lost feed exposure relative to their share of production in an adaptive network simulation.",
+      "sections": [
+        {
+          "heading": "Simulator and protocol",
+          "paragraphs": [
+            "We extended the native DOCES adaptive social-network engine with weighted agent activation, post provenance, feed-receipt tracking and receipt-responsive epsilon-greedy selection over five opinion bins (90% exploitation, 10% exploration). The model used 1,000 agents, directed connections and opinion-filtered feeds. Python tooling ran seeded configurations and fingerprinted results for verification.",
+            "The activity sweep covered 430,000 condition-runs across 10,000 independent worlds and 43 conditions. A matched-policy experiment added 7,200 runs across 200 worlds. A separate feed-capacity sensitivity analysis used another 200 worlds and 3,600 runs."
+          ]
+        },
+        {
+          "heading": "Relative exposure",
+          "paragraphs": [
+            "Relative exposure is the synthetic share of feed receipts minus the synthetic share of production. In single-item feeds, a small excess at moderate activity attenuated at 15× activity across tested prevalences. At 10% prevalence and 10× activity, adaptation raised production share from 52.57% to 56.19% and receipt share from 51.00% to 53.53%. Relative exposure fell by 1.09 percentage points (pointwise paired 95% CI −1.75 to −0.42 pp, Holm-adjusted p = 0.029). Six of 16 main-grid comparisons stayed significant after correction across 24 contrasts."
+          ],
+          "figure": {
+            "src": "assets/research/doces/relative-exposure.png",
+            "width": 1200,
+            "height": 637,
+            "alt": "Lines for three producer prevalences start near zero, rise slightly at moderate activity, and fall below zero at high activity.",
+            "caption": "Relative exposure at three selected prevalences in the 10,000-world activity sweep. Shading shows pointwise 95% confidence intervals.",
+            "fullSize": true,
+            "source": "https://github.com/karbolak/dmas-ai-slop/blob/39c7d3f6e27965b620ad3273800f00a85f51fe40/results/volume_sweep_big/final_analysis/condition_summary.csv",
+            "sourceLabel": "Source data"
+          }
+        },
+        {
+          "heading": "Scope",
+          "paragraphs": [
+            "A receipt records insertion into a simulated feed. The synthetic label tracks producer provenance. Neither measure captures human attention or media quality. Larger-feed policy effects and policy–activity interactions remain unresolved."
+          ]
+        }
+      ],
+      "repository": "dmas-ai-slop",
+      "references": [
+        {
+          "label": "Final research paper",
+          "url": "https://github.com/karbolak/dmas-ai-slop/blob/main/dmas-ai-slop-paper.pdf"
+        },
+        {
+          "label": "Native DOCES simulator fork",
+          "url": "https://github.com/karbolak/doces-slop"
+        },
+        {
+          "label": "Original DOCES simulator",
+          "url": "https://github.com/hfarruda/doces"
+        }
+      ],
+      "credit": "Coauthored with Karolina Kozikowska at the University of Groningen. The implementation builds on Henrique Ferraz de Arruda’s DOCES repository."
+    },
+    {
+      "id": "wildfire",
+      "related": ["doces"],
+      "title": "Learning to Contain Wildfires with Distributed Sensors",
+      "shortTitle": "Distributed Wildfire Containment",
+      "kind": "Completed control-policy study · Interactive replay tool",
+      "date": "2026-10",
+      "date_label": "Oct 2026",
+      "tags": [
+        "ai",
+        "research",
+        "software",
+        "education",
+        "python",
+        "machine-learning",
+        "C++",
+        "GRU",
+        "Reinforcement learning",
+        "Multi-agent simulation",
+        "JavaScript",
+        "Experiment design",
+        "Model evaluation"
+      ],
+      "summary": "Reactive control reduced simulated wildfire damage by about 7–35% versus no intervention. The fitted planner and recurrent policy did not improve on it.",
+      "sections": [
+        {
+          "heading": "Environment and methods",
+          "paragraphs": [
+            "The full-network stochastic simulation used a 24×24 grid, 20 stationary sensors with restricted private observations, five initial fires, and five shared water units over ten steps. The spread probabilities were 0.05, 0.15 and 0.30, with 0.8 probability of suppression. The study compared no intervention, greedy and reactive control with a Python finite-scenario sequential occupancy-SARSA approximation with memory (m = 0–3), sampled rollout search, and a shared GRU trained with REINFORCE.",
+            "We adapted the supplied native C++ sequential occupancy-SARSA solver for sensor pairs. On a 2×2 reference problem with four sensors, one fire, one unit of water and two steps, it matched exhaustive optimisation at all three spread settings."
+          ]
+        },
+        {
+          "heading": "Held-out evaluation and scaling",
+          "paragraphs": [
+            "We evaluated 100 held-out fires per spread rate. Memory sometimes improved over m = 0, but it did not consistently improve containment. Terrain, wind and weather were outside the simulation. In a separate scaling test (50 evaluation fires per size), sampled planning took 626 seconds on two cores at 100 sensors and 2,916 cells. The fitted time exponent was about 2.09 across five jointly scaled scenarios. The planner returned the reactive policy at each tested size, so the scaling result concerns computation alone."
+          ]
+        },
+        {
+          "heading": "Interactive replay",
+          "paragraphs": [
+            "I built a replay tool for inspecting the true grid alongside a sensor’s private view, stepping through decisions and comparing policies on the same seed. The static explorer contains 45 selected genuine held-out episodes. They illustrate individual outcomes from the wider evaluation."
+          ],
+          "figure": {
+            "src": "assets/research/wildfire/reactive-sensor-5.webp",
+            "width": 938,
+            "height": 502,
+            "alt": "Two grids from the explorer. The full grid shows burning cells and a suppressed fire. Sensor 5’s private grid shows 25 known cells, with the remaining cells marked unknown.",
+            "caption": "Reactive policy, seed 50000, spread probability 0.30, at the first suppression shown in the replay. Sensor 5 holds a local snapshot while the full environment reflects the intervention.",
+            "fullSize": true
+          }
+        }
+      ],
+      "references": [
+        {
+          "label": "Peralez et al. · Sequential central planning (AAAI 2025)",
+          "url": "https://doi.org/10.1609/aaai.v39i22.34494"
+        }
+      ],
+      "credit": "Research with Beatrice Ursan-Rácz, Iulia Bugan and Katya Toncheva. The native solver builds on sequential central planning by Peralez and colleagues."
+    },
+    {
+      "id": "forescan",
+      "related": ["n1-sleep"],
+      "title": "FORESCAN — Predicting Cognitive Overload from Pupillometry",
+      "shortTitle": "FORESCAN",
+      "kind": "Completed offline signal-modelling study",
+      "start": "2026-02",
+      "end": "2026-04",
+      "date_label": "Feb–Apr 2026",
+      "tags": [
+        "ai",
+        "research",
+        "software",
+        "python",
+        "timeseries",
+        "machine-learning",
+        "Signal processing",
+        "PyTorch",
+        "scikit-learn",
+        "Cross-validation",
+        "Feature engineering",
+        "Model evaluation"
+      ],
+      "summary": "Logistic regression achieved 0.297 mean subject-held-out AUC-PR versus 0.099 for a reactive baseline on a pupil-signal overload proxy.",
+      "sections": [
+        {
+          "heading": "Signal and protocol",
+          "paragraphs": [
+            "I used three subjects from the OpenNeuro Digit Span dataset (ds003838). Preprocessing masked blinks and low-confidence samples, then interpolated, smoothed and normalised per subject. Five-second windows advanced every second. Event labels came from 95th/90th-percentile pupil-signal hysteresis with duration, merge and slope rules. The target was event onset within 4.5 seconds.",
+            "Leave-one-subject-out evaluation used a time-ordered 20% validation tail on the training subjects. I compared logistic regression on summary features, a temporal convolutional network (TCN) on raw windows, and a reactive slope baseline."
+          ]
+        },
+        {
+          "heading": "Forecasting and alert trade-offs",
+          "paragraphs": [
+            "Mean AUC-PR was 0.297 for logistic regression, 0.180 for the TCN and 0.099 for the reactive slope baseline. Threshold alerts used a nominal six-per-minute budget and a ten-second cooldown. Stricter alerting could save triggers while missing more events."
+          ],
+          "figure": {
+            "src": "assets/research/forescan/auc-pr-by-participant.png",
+            "width": 1200,
+            "height": 600,
+            "alt": "AUC-PR for the reactive baseline, temporal convolutional network and logistic regression on each of three held-out participants. Logistic regression scores highest on each.",
+            "caption": "Forecasting results by held-out participant. The groups show how predictive performance varied across participants and models.",
+            "fullSize": true,
+            "source": "https://github.com/karbolak/FORESCAN/blob/b507bb80aaf9061a0650d3a6bae1af92d7c43751/results/reported_auc_pr_by_subject.csv",
+            "sourceLabel": "Source data"
+          },
+          "table": {
+            "caption": "Mean alert outcomes on held-out subjects",
+            "columns": [
+              "Policy",
+              "Early recall",
+              "Alerts/min",
+              "Median lead"
+            ],
+            "rows": [
+              ["Logistic threshold", "46.2%", "2.14", "≈2.4 s"],
+              ["TCN threshold", "34.7%", "1.25", "≈2.2 s"],
+              ["Logistic hysteresis", "8.8%", "0.51", "—"],
+              ["Budget-ranked", "0.3%", "2.01", "—"]
+            ]
+          }
+        },
+        {
+          "heading": "Limits",
+          "paragraphs": [
+            "The small offline study predicts a retrospectively constructed pupil-signal proxy. Subject-specific normalisation and retrospective labels limit what it establishes about live alerts. Clinical ground truth and wearable validation were outside the study."
+          ]
+        }
+      ],
+      "repository": "FORESCAN",
+      "references": [
+        {
+          "label": "Technical report",
+          "url": "https://github.com/karbolak/FORESCAN/blob/main/docs/forescan_report.pdf"
+        },
+        {
+          "label": "Reproduction instructions",
+          "url": "https://github.com/karbolak/FORESCAN/blob/main/REPRODUCIBILITY.md"
+        },
+        {
+          "label": "Reported AUC-PR figure",
+          "url": "https://github.com/karbolak/FORESCAN/blob/main/assets/reported_auc_pr.png"
+        },
+        {
+          "label": "Pupil preprocessing example",
+          "url": "https://github.com/karbolak/FORESCAN/blob/main/assets/pupil_preprocessing_example.png"
+        }
+      ]
+    },
+    {
+      "id": "n1-sleep",
+      "related": ["forescan"],
+      "title": "N1 Sleep Detection from EEG",
+      "kind": "Completed signal-classification study",
+      "start": "2026-02",
+      "end": "2026-04",
+      "date_label": "Feb–Apr 2026",
+      "tags": [
+        "ai",
+        "research",
+        "machine-learning",
+        "Signal processing",
+        "EEG",
+        "SVM",
+        "Cross-validation",
+        "Feature engineering",
+        "Model evaluation"
+      ],
+      "summary": "Measured how tighter false-positive control trades off against recall for the transition into N1 sleep.",
+      "sections": [
+        {
+          "heading": "Features and evaluation",
+          "paragraphs": [
+            "Sleep-EDF contributed 27,464 thirty-second epochs, including 764 N1 epochs (2.8%). We used a 0.5–30 Hz band-pass filter, normalisation, band power, Hjorth activity/mobility/complexity and entropy. A calibrated SVM was evaluated with five-fold subject-wise GroupKFold. Feature comparisons included full-band, ThinkGear and Muse-like presets."
+          ]
+        },
+        {
+          "heading": "Threshold trade-offs",
+          "paragraphs": [
+            "Lower target false-positive rates reduced observed false positives and recall. The table reports observed false-positive rate (FPR), precision and balanced accuracy as cross-validation means. The study did not include clinical or consumer validation."
+          ],
+          "table": {
+            "caption": "Mean subject-wise cross-validation metrics",
+            "columns": [
+              "Threshold",
+              "Recall",
+              "FPR",
+              "Prec.",
+              "Bal. acc."
+            ],
+            "rows": [
+              ["Default", "0.849", "0.234", "0.121", "0.808"],
+              ["Target FPR 0.02", "0.097", "0.005", "0.252", "0.546"],
+              ["Target FPR 0.05", "0.325", "0.027", "0.248", "0.649"]
+            ]
+          }
+        }
+      ],
+      "credit": "Study conducted with Iulia using Sleep-EDF."
+    },
+    {
+      "id": "adaptive-hri",
+      "title": "Adaptive Multimodal Social Signalling in HRI",
+      "shortTitle": "Adaptive Social Signalling in HRI",
+      "kind": "Completed human–robot interaction pilot",
+      "start": "2026-02",
+      "end": "2026-04",
+      "date_label": "Feb–Apr 2026",
+      "tags": [
+        "ai",
+        "research",
+        "education",
+        "Human–robot interaction",
+        "Affect recognition",
+        "Experiment design"
+      ],
+      "summary": "In a four-person pilot, adaptive robot gestures accompanied higher reported attention and lower objective word recall.",
+      "overviewLink": { "label": "See pilot results", "anchor": "descriptive-results" },
+      "sections": [
+        {
+          "heading": "Study design",
+          "paragraphs": [
+            "In a within-subject collaborative word-guessing game, the participant and robot alternated director and matcher roles. The adaptive condition mapped facial affect to calmer or more energetic gestures. The static condition used speech without adaptation."
+          ]
+        },
+        {
+          "heading": "Descriptive results",
+          "paragraphs": [
+            "Participants reported higher attention and recall confidence in the adaptive condition even as mean words recalled fell. The sample was four young adults, and conditions ran in a fixed order. Speech recognition errors, unreliable hints and coarse affect mapping also constrain interpretation."
+          ],
+          "table": {
+            "caption": "Mean results by condition (n = 4)",
+            "columns": [
+              "Measure",
+              "Static",
+              "Adaptive"
+            ],
+            "rows": [
+              ["Words recalled", "2.00", "1.25"],
+              ["Recall confidence", "3.50", "5.00"],
+              ["Self-reported attention", "3.50", "4.75"],
+              ["Involvement", "4.00", "4.25"],
+              ["Perceived mood responsiveness", "1.75", "3.50"]
+            ]
+          }
+        }
+      ],
+      "credit": "Research with Maurice Theo Meijer."
+    },
+    {
+      "id": "m81",
+      "title": "M81 Galaxy Photometry",
+      "kind": "Completed astrophysics analysis",
+      "start": "2025-04",
+      "end": "2025-06",
+      "date_label": "Apr–Jun 2025",
+      "tags": [
+        "research",
+        "python",
+        "Photometry",
+        "Photutils",
+        "Scientific imaging"
+      ],
+      "summary": "Processed B/G/R telescope exposures to measure radial surface brightness and the shape of outer isophotes in M81.",
+      "sections": [
+        {
+          "heading": "Image calibration and fitting",
+          "paragraphs": [
+            "We corrected 300-second exposures for bias, dark current and flats, then registered and stacked the images. After mode-based sky background subtraction and centroid estimation, we used Photutils to fit elliptical isophotes and derive multi-band brightness profiles."
+          ]
+        },
+        {
+          "heading": "Interpretation",
+          "paragraphs": [
+            "The outer isophotes became more elliptical, with wider uncertainty in the blue band. An exponential fit gave lower mean absolute error than a de Vaucouleurs profile, but neither single-component fit gave a satisfactory physical description. The reported profiles support qualitative interpretation of structure and geometry."
+          ]
+        }
+      ],
+      "credit": "Team astronomy analysis using B/G/R telescope exposures."
+    },
+    {
+      "id": "llm-poetry",
+      "title": "Poetry Fusion — Llama 3.2 Fine-Tuning",
+      "kind": "Archived fine-tuning experiment",
+      "date": "2024-11-02",
+      "date_label": "Autumn 2024",
+      "archived": true,
+      "tags": [
+        "ai",
+        "research",
+        "software",
+        "python",
+        "llm",
+        "generative-ai",
+        "LoRA/QLoRA",
+        "PyTorch",
+        "Transformers",
+        "LLM evaluation"
+      ],
+      "summary": "Fine-tuned Llama 3.2 1B Instruct on 524 curated poems to explore blending Shakespeare and Poe styles.",
+      "sections": [
+        {
+          "heading": "Training and evaluation",
+          "paragraphs": [
+            "We used parameter-efficient LoRA/QLoRA with rank 64. In exploratory before/after examples, human rubric scores rose from 5.5 to 7.5 out of 10 for Shakespeare style and 6.0 to 7.5 for Poe style. Ratings from GPT rose from 6.0 to 7.0 and 7.0 to 7.5, respectively. Repetition persisted. These example-based ratings do not establish general creative competence or preference."
+          ]
+        }
+      ],
+      "repository": "llama3.2-qlora-finetunined-poetry-fusion",
+      "references": [
+        {
+          "label": "Model on Hugging Face",
+          "url": "https://huggingface.co/karbolak/llama3.2-qlora-finetunined-poetry-fusion"
+        }
+      ],
+      "credit": "Fine-tuning experiment with Karolina Kozikowska and Natalie Mladenova."
+    },
+    {
+      "id": "bot-detection",
+      "title": "NumPy Bot Detection",
+      "kind": "Archived classification project",
+      "start": "2024-12",
+      "end": "2025-02",
+      "date_label": "Dec 2024–Feb 2025",
+      "archived": true,
+      "tags": [
+        "ai",
+        "research",
+        "software",
+        "education",
+        "python",
+        "machine-learning",
+        "NumPy",
+        "Logistic regression",
+        "Cross-validation",
+        "Model evaluation"
+      ],
+      "summary": "Implemented Elastic Net logistic regression from scratch with NumPy, reaching 0.8275 ROC-AUC on the reported evaluation.",
+      "sections": [
+        {
+          "heading": "Implementation and results",
+          "paragraphs": [
+            "The pipeline uses one-hot encoding and feature scaling, with a grid search and stratified cross-validation. The repository reports 0.7809 accuracy, 0.7026 precision, 0.8915 recall and 0.7859 F1 across 470 labelled observations. The dataset and exact test protocol behind those figures need clarification before interpreting generalisation."
+          ]
+        }
+      ],
+      "repository": "LOGComments_ItML_finalproject"
     },
     {
       "id": "autoop",
       "title": "AutOOP — Automated ML Training Tool",
-      "kind": "ML tooling",
-      "start": null,
-      "end": null,
-      "date_label": null,
-      "featured": false,
-      "pinned": false,
+      "kind": "Archived coursework application",
+      "start": "2024-09",
+      "end": "2024-11",
+      "date_label": "Sep–Nov 2024",
+      "archived": true,
       "tags": [
-        "ai",
         "software",
-        "python"
+        "python",
+        "machine-learning",
+        "Streamlit",
+        "scikit-learn"
       ],
-      "summary": "A Streamlit application for preprocessing datasets, benchmarking models and exporting reports.",
-      "details": "Data upload, feature inference, metric comparison and model selection with an extensible object-oriented design."
+      "summary": "Extended a course-provided Streamlit application for CSV preprocessing, model training, saved pipelines and prediction-report export."
     },
     {
-      "id": "pana",
-      "title": "PANA",
-      "abstract": "Polish-language chatbot project for students navigating study and life in the Netherlands.",
-      "kind": "Student support · Chatbot project",
+      "id": "portfolio",
+      "title": "Personal Portfolio",
+      "kind": "Ongoing website development",
+      "ongoing": true,
+      "archived": true,
       "tags": [
-        "education",
-        "student-support"
+        "software",
+        "HTML",
+        "CSS",
+        "JavaScript"
       ],
-      "summary": "A Polish-language chatbot project for students navigating admissions, academic life, and everyday questions in the Netherlands.",
-      "repository": "PANA"
+      "summary": "Built this static portfolio with URL-based perspectives, keyboard navigation, contextual search, and a catalogue of usable tools.",
+      "repository": "karbolak.github.io"
     }
   ],
-  "keySkills": ["Python", "PyTorch", "scikit-learn", "SQL", "FastAPI", "Docker", "LLM evaluation", "Educational activity design"],
+  "tools": [
+    {
+      "id": "amp",
+      "category": "Product",
+      "project": "amp",
+      "projectLabel": "View project",
+      "perspectives": { "research": 10, "ai-ml": 10, "engineering": 30, "teaching": 10 },
+      "priority": 30
+    },
+    {
+      "id": "diffgate",
+      "title": "DiffGate",
+      "description": "A Python library and command-line tool for analysing early diffusion trajectories and supporting early-abort decisions during image generation.",
+      "category": "Open-source software",
+      "status": "Released",
+      "technologies": ["Python", "CLI", "Diffusion models", "Stable Diffusion 3.5"],
+      "note": "The training-free mode scores trajectory signals with a hand-designed rule. The supervised mode uses a saved predictor and requires exported model artifacts.",
+      "example": {
+        "label": "CLI example",
+        "description": "Score saved features after installing DiffGate from the repository.",
+        "command": "diffgate score-features --features outputs/example/features.json"
+      },
+      "primaryAction": { "label": "Launch demo", "url": "./tools/diffgate/", "preserveView": true },
+      "secondaryActions": [{ "label": "View repository", "url": "https://github.com/karbolak/DiffGate" }],
+      "project": "diffgate",
+      "projectLabel": "View research project",
+      "perspectives": { "research": 30, "ai-ml": 30, "engineering": 20, "teaching": 20 },
+      "priority": 20
+    },
+    {
+      "id": "wildfire",
+      "title": "Wildfire Policy Explorer",
+      "description": "Explore how distributed sensors make intervention decisions under partial observability and a shared resource budget. Compare five control policies across 45 precomputed wildfire episodes, inspect individual sensor observations and replay their decisions.",
+      "category": "Interactive research tool",
+      "status": "Implemented and tested",
+      "technologies": ["Multi-agent systems", "Reinforcement learning", "Python", "JavaScript"],
+      "note": "The browser replays saved episodes. Each episode illustrates one outcome from a wider evaluation.",
+      "primaryAction": { "label": "Launch explorer", "url": "./tools/wildfire/", "preserveView": true },
+      "project": "wildfire",
+      "projectLabel": "View research project",
+      "perspectives": { "research": 20, "ai-ml": 20, "teaching": 30 },
+      "priority": 10
+    }
+  ],
   "skills": [
     {
       "category": "ML and modeling",
-      "tags": ["research", "software"],
+      "tags": ["research", "software", "ai"],
       "items": [
         "PyTorch",
         "scikit-learn",
@@ -333,12 +1095,16 @@ const portfolioContent = {
         "clustering",
         "feature engineering",
         "SHAP / XAI",
-        "cross-validation"
+        "cross-validation",
+        "signal processing",
+        "Gaussian processes",
+        "analytical modelling",
+        "Gmsh/GetDP"
       ]
     },
     {
       "category": "Generative AI and LLMs",
-      "tags": ["research", "software"],
+      "tags": ["research", "software", "ai"],
       "items": [
         "Transformers",
         "LoRA/QLoRA",
@@ -367,7 +1133,7 @@ const portfolioContent = {
     },
     {
       "category": "Data",
-      "tags": ["research", "software"],
+      "tags": ["research", "software", "ai"],
       "items": [
         "NumPy",
         "pandas",

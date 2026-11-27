@@ -4,9 +4,9 @@ const github = profile.github;
 const sectionNames = {
   home: 'Home',
   projects: 'Projects',
+  tools: 'Tools',
   experience: 'Experience',
   education: 'Education',
-  skills: 'Skills',
   contact: 'Contact',
 };
 
@@ -15,75 +15,131 @@ const roles = {
     label: 'General',
     heading: 'General',
     focus: 'all',
-    intro: profile.description,
+    headline: profile.role,
+    intro: profile.abstract,
+    projects: ['diffgate', 'vlf-antenna', 'amp', 'ai-intake-automation', 'xai-face-clustering', 'wildfire', 'forescan'],
+    experience: ['htsm-research', 'psag-president'],
+    skills: ['Python', 'Model evaluation', 'Gaussian processes', 'API integrations', 'Educational activity design'],
+  },
+  'ai-ml': {
+    label: 'AI & ML',
+    heading: 'AI & ML',
+    focus: 'ai-ml',
+    headline: profile.role,
+    intro: 'I study early signals in diffusion models, use surrogate models for optimisation, and build LLM workflows with deterministic rules and human review.',
+    projects: ['diffgate', 'ai-intake-automation', 'xai-face-clustering', 'vlf-antenna', 'forescan'],
+    experience: ['htsm-research'],
+    skills: ['Python', 'PyTorch', 'Diffusion models', 'scikit-learn', 'SHAP', 'LLM evaluation'],
   },
   research: {
-    label: 'AI / Research',
-    heading: 'AI & Research',
-    focus: 'ai',
-    intro: 'I study Artificial Intelligence at the University of Groningen. My research projects span generative AI, computer vision, and time-series forecasting.',
+    label: 'Research',
+    heading: 'Research',
+    focus: 'research',
+    headline: 'MSc AI · HTSM Honours researcher',
+    intro: 'I use controlled experiments to study when diffusion trajectories reveal image quality and how physics-informed surrogates affect antenna optimisation.',
+    projects: ['diffgate', 'vlf-antenna', 'doces', 'forescan', 'n1-sleep'],
+    experience: ['htsm-research'],
+    skills: ['Experiment design', 'Gaussian processes', 'Signal processing', 'Cross-validation', 'Gmsh/GetDP'],
   },
   engineering: {
     label: 'Software Engineering',
     heading: 'Software Engineering',
-    focus: 'engineering',
-    intro: 'My background combines programming and applied AI. My work includes Python tools for machine learning experiments, such as DiffGate.',
+    focus: 'software',
+    headline: 'Software engineering · MSc AI',
+    intro: 'I develop and maintain software for student associations. I also build Python libraries, command-line tools and web applications, and test workflows through deployment or reproducible evaluation.',
+    projects: ['amp', 'diffgate', 'ai-intake-automation', 'xai-face-clustering', 'wildfire'],
+    experience: ['htsm-research', 'psag-president'],
+    skills: ['Python', 'FastAPI', 'Docker', 'pytest', 'Git', 'n8n'],
   },
   teaching: {
-    label: 'Teaching / Education',
-    heading: 'Teaching & Education',
+    label: 'Education',
+    heading: 'Education',
     focus: 'education',
-    intro: 'I’ve tutored students in mathematics, physics, and programming and worked as an educational camp instructor.',
+    headline: 'Tutor and activities instructor · MSc AI',
+    intro: 'I tutor mathematics, physics, computing and humanities, and design collaborative learning activities. I completed the University of Groningen’s FSE Teaching Assistant Training.',
+    projects: ['wildfire', 'adaptive-hri'],
+    experience: ['private-tutoring', 'tdj-camp'],
+    skills: ['Private tutoring', 'Gamification', 'Educational activity design', 'Python'],
   },
 };
 
-const entries = {
-  experience: experience.map(item => [item.title, item.organization, item.details, item.tags, item]),
-  education: education.map(item => [item.title, item.institution, item.details, item.tags, item]),
-  skills: [
-    ...portfolioContent.skills.map(({ category, items, tags }) => [category, '', items.join(' · '), tags]),
-    ['Languages', '', profile.languages.map(({ language, level }) => `${language} (${level})`).join(' · ')],
-  ],
-};
+const entries = { experience, education };
+const skills = [
+  ...portfolioContent.skills.map(({ category, items, tags }) => ({ title: category, items, role: tags })),
+  { title: 'Languages', items: profile.languages.map(({ language, level }) => `${language} (${level})`) },
+];
 
-const draftTags = {
+const technologyLabels = {
   python: 'Python', 'machine-learning': 'Machine learning', 'generative-ai': 'Generative AI', timeseries: 'Time-series',
-  'computer-vision': 'Computer vision', llm: 'LLM', automation: 'Automation', 'student-support': 'Student support',
+  'computer-vision': 'Computer vision', llm: 'LLM', automation: 'Automation',
 };
 const projects = portfolioContent.projects.map(project => ({
   ...project,
   meta: project.kind,
   description: project.summary,
   role: project.tags,
-  tags: [
-    ...project.tags.filter(tag => Object.hasOwn(draftTags, tag)).map(tag => draftTags[tag]),
-    ...(project.tags.includes('research') || project.id === 'autoop' ? [draftTags['machine-learning']] : []),
-  ],
+  tags: project.tags.filter(tag => !['ai', 'research', 'software', 'education'].includes(tag))
+    .map(tag => technologyLabels[tag] ?? tag),
 }));
-const technologies = Object.fromEntries(Object.values(draftTags).map(label => [slug(label), label]));
+const tools = portfolioContent.tools.map(tool => {
+  const project = projects.find(item => item.id === tool.project);
+  return {
+    title: project?.title,
+    description: project?.description,
+    status: project?.meta,
+    technologies: project?.tags ?? [],
+    primaryAction: project?.action,
+    ...tool,
+  };
+});
+const skillAliases = {
+  'cli-development': 'cli',
+  'gmsh-getdp': 'gmsh',
+  'multi-agent-systems': 'multi-agent-simulation',
+  'shap-xai': 'shap',
+  'time-series-forecasting': 'time-series',
+};
+function tagId(label) {
+  const id = slug(label);
+  return Object.hasOwn(skillAliases, id) ? skillAliases[id] : id;
+}
+const technologies = Object.fromEntries([
+  ...Object.values(roles).flatMap(view => view.skills),
+  ...skills.flatMap(group => group.items),
+  ...tools.flatMap(tool => tool.technologies),
+  ...projects.flatMap(project => project.tags),
+].map(label => [tagId(label), label]));
+const ampAliases = { psag: 'amp', 'psag-platform': 'amp' };
+const projectAliases = { ...ampAliases, 'poetry-fusion': 'llm-poetry' };
 const perspectiveTags = {
+  'ai-ml': ['ai'],
   research: ['research'],
   engineering: ['software'],
   teaching: ['education'],
 };
 const pageIntros = {
   projects: 'Selected work across research, software, and education.',
-  experience: 'Student-organization leadership, education, and tutoring.',
-  education: 'Academic background and honours studies.',
-  skills: 'Areas of experience across research, software, and teaching.',
+  tools: 'Software, products, and interactive research tools you can use or explore.',
+  experience: 'Research, teaching, and student association leadership.',
+  education: 'Degrees, honours studies, exchange and teaching credentials.',
   contact: 'Professional profiles and contact information.',
 };
-const contact = { email: 'kajetan.karbowski@gmail.com', linkedin: 'https://www.linkedin.com/in/kajetan-karbowski/', cvs: [] };
+const contact = { email: 'kajetan.karbowski@gmail.com', linkedin: 'https://www.linkedin.com/in/kajetan-karbowski/' };
+const cvFiles = {
+  general: 'Kajetan_Karbowski_CV_General.pdf',
+  'ai-ml': 'Kajetan_Karbowski_CV_AI_ML.pdf',
+  research: 'Kajetan_Karbowski_CV_Research.pdf',
+  engineering: 'Kajetan_Karbowski_CV_Software_Engineering.pdf',
+  teaching: 'Kajetan_Karbowski_CV_Education.pdf',
+};
 const portfolio = document.querySelector('.portfolio');
 const main = document.querySelector('#main');
-const portraitOptions = document.querySelector('#portrait-options');
 const returnLinks = main.querySelector('.return-links');
 const cvPreview = document.querySelector('#cv-preview');
 const nativePopover = typeof cvPreview.showPopover === 'function';
 if (nativePopover) cvPreview.hidden = false;
 else cvPreview.removeAttribute('popover');
 const cvGlance = document.querySelector('#cv-glance');
-const photoOptions = ['colour', 'bw', 'site', 'halftone'];
 const hero = main.querySelector('.hero');
 const heading = hero.querySelector('h1');
 const profileVisual = hero.querySelector('.profile-visual');
@@ -100,9 +156,13 @@ const help = document.querySelector('#command-help');
 const helpToggle = document.querySelector('#help-toggle');
 const outline = document.querySelector('#outline');
 const outlineToggle = document.querySelector('#outline-toggle');
+const tabLinks = [...portfolio.querySelectorAll('.dos-tabs a[data-page]')];
+tabLinks.forEach((link, index) => {
+  const number = index + 1;
+  link.setAttribute('aria-keyshortcuts', `Control+${number} Meta+${number} Control+Shift+${number}`);
+});
 const perspectiveMenu = document.querySelector('#perspective-menu');
 const profileDegree = document.querySelector('.dossier-degree');
-profileDegree.firstChild.nodeValue = profile.role;
 profileDegree.querySelector('span').textContent = profile.affiliation;
 const status = document.querySelector('#status');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -117,32 +177,52 @@ let selection = 0;
 let cvPreviewTrigger;
 
 function readLocation() {
-  const params = new URLSearchParams(location.search);
+  const url = new URL(location.href);
+  const params = url.searchParams;
+  for (const option of ['design', 'type', 'evidence']) {
+    if (params.has(option)) params.delete(option);
+  }
+  if (url.hash.startsWith('#tool-')) {
+    const tool = url.hash.slice(6);
+    if (Object.hasOwn(ampAliases, tool)) url.hash = 'tool-amp';
+    if (!params.has('section') && tools.some(item => url.hash === `#tool-${item.id}`)) {
+      params.set('section', 'tools');
+    }
+  }
+  if (params.get('section') === 'skills') {
+    params.set('section', 'tools');
+    const anchor = url.hash.slice(1);
+    if (anchor && !skills.some(skill => slug(skill.title) === anchor) &&
+        skills.some(skill => skill.items.some(item => slug(item) === anchor))) {
+      url.hash = `skill-${anchor}`;
+    }
+  }
   const role = Object.hasOwn(roles, params.get('role')) ? params.get('role') : 'general';
-  const id = projects.find(project => project.id === (params.get('project') === 'psag-platform' ? 'psag' : params.get('project')))?.id ?? '';
+  const requestedProject = params.get('project');
+  const id = projects.find(project => project.id === (projectAliases[requestedProject] ?? requestedProject))?.id ?? '';
+  if (id && id !== requestedProject) params.set('project', id);
+  if (url.href !== location.href) history.replaceState(null, '', url);
   const page = Object.hasOwn(sectionNames, params.get('section')) ? params.get('section') : id ? 'projects' : 'home';
+  const requestedFilter = params.get('filter');
+  const filter = requestedFilter ? tagId(requestedFilter) : '';
   return {
     page, role,
     project: page === 'projects' ? id : '',
-    filter: Object.hasOwn(technologies, params.get('filter')) ? params.get('filter') : '',
+    filter: Object.hasOwn(technologies, filter) ? filter : '',
     theme: params.get('theme') === 'dark' ? 'dark' : 'light',
-    photo: photoOptions.includes(params.get('photo')) ? params.get('photo') : 'colour',
+    photo: params.get('photo'),
   };
 }
 let state = readLocation();
 
-const initialUrl = new URL(location.href);
-for (const option of ['design', 'type', 'evidence']) initialUrl.searchParams.delete(option);
-if (initialUrl.href !== location.href) history.replaceState(null, '', initialUrl);
-
 function urlFor(next, anchor = '', path = location.pathname) {
   const params = new URLSearchParams();
-  if (next.photo !== 'colour') params.set('photo', next.photo);
   if (next.role !== 'general') params.set('role', next.role);
   if (next.page !== 'home') params.set('section', next.page);
   if (next.project) params.set('project', next.project);
   if (next.page === 'projects' && next.filter) params.set('filter', next.filter);
   if (next.theme === 'dark') params.set('theme', next.theme);
+  if (next.photo !== null) params.set('photo', next.photo);
   return `${path}${params.size ? `?${params}` : ''}${anchor ? `#${anchor}` : ''}`;
 }
 
@@ -162,20 +242,25 @@ function projectLink(project, label = project.title, className = '') {
   return `<a href="${url}" data-project="${project.id}"${presentation}>${label}</a>`;
 }
 
-function externalLink(url, label, id = '') {
+function toolLink(tool, label = tool.title) {
+  const anchor = `tool-${tool.id}`;
+  const url = urlFor({ ...state, page: 'tools', project: '' }, anchor);
+  return `<a href="${url}" data-page="tools" data-anchor="${anchor}">${label}</a>`;
+}
+
+function externalLink(url, label, id = '', classes = '') {
   const destination = url.startsWith('mailto:') ? 'opens email app' : 'external website';
-  return `<a ${id ? `id="${id}" ` : ''}class="external-link" href="${url}" aria-label="${label} (${destination})">${label}<span aria-hidden="true"> ↗</span></a>`;
+  return `<a ${id ? `id="${id}" ` : ''}class="external-link${classes ? ` ${classes}` : ''}" href="${url}" aria-label="${label} (${destination})">${label} <svg class="external-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M4 12 12 4M5 4h7v7"/></svg></a>`;
 }
 
 function slug(text) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
-function tags(project, interactive = false) {
-  return `<ul class="tags" aria-label="Project tags">${project.tags.map(tag => {
-    const id = slug(tag);
-    const filter = interactive && Object.hasOwn(technologies, id);
-    return `<li>${filter ? `<button type="button" data-filter="${id}" aria-label="Filter by ${tag}" aria-pressed="${state.filter === id}">${tag}</button>` : `<span>${tag}</span>`}</li>`;
+function tagList(labels, { label = 'Project tags', anchors = false } = {}) {
+  return `<ul class="tags" aria-label="${label}">${labels.map(tag => {
+    const id = tagId(tag);
+    return `<li${anchors ? ` id="skill-${slug(tag)}"` : ''}><button type="button" data-filter="${id}" aria-pressed="${state.page === 'projects' && !state.project && state.filter === id}">${tag}</button></li>`;
   }).join('')}</ul>`;
 }
 
@@ -197,6 +282,11 @@ function chronological(items) {
     Number(Boolean(second.pinned)) - Number(Boolean(first.pinned)) || latest(second).localeCompare(latest(first)));
 }
 
+function prioritise(items, ids) {
+  const ranked = ids.map(id => items.find(item => item.id === id)).filter(Boolean);
+  return [...ranked, ...items.filter(item => !ranked.includes(item))];
+}
+
 function listingDate({ date, start, end, ongoing, date_label }) {
   if (date_label) return `<p class="listing-date">${date_label}</p>`;
   const first = start || date || end;
@@ -205,23 +295,30 @@ function listingDate({ date, start, end, ongoing, date_label }) {
   return `<p class="listing-date"><time datetime="${first}">${first}</time>${last ? `–${last}` : ''}</p>`;
 }
 
-function perspectiveGroups(items) {
-  if (state.role === 'general') return { primary: items, other: [] };
+function perspectiveGroups(items, belongs, priorities = []) {
   const primary = [];
   const other = [];
+  const archive = [];
   for (const item of items) {
-    (item.pinned || relevantToView(item.role) ? primary : other).push(item);
+    if (item.archived) {
+      if (state.role === 'general' || belongs(item) || location.hash === `#${item.id}`) archive.push(item);
+    } else {
+      (belongs(item) ? primary : other).push(item);
+    }
   }
-  return { primary, other };
+  return { primary: prioritise(primary, priorities), other, archive };
 }
 
-function renderPerspectiveList({ primary, other }, label, renderList) {
-  if (!other.length) return renderList(primary);
-  return `${primary.length ? renderList(primary) : ''}
-    <details class="other-entries" id="other-entries" data-outline="Other ${label}">
-      <summary>Other ${label} (${other.length})</summary>
-      ${renderList(other)}
-    </details>`;
+function renderPerspectiveList({ primary, other, archive }, label, renderList) {
+  return `${primary.length || !other.length && !archive.length ? renderList(primary) : ''}
+    ${[
+      ['other-entries', `Other ${label}`, other],
+      ['archive', 'Archive', archive],
+    ].filter(([, , items]) => items.length).map(([id, title, items]) => `
+      <details class="other-entries" id="${id}" data-outline="${title}">
+        <summary>${title} (${items.length})</summary>
+        ${renderList(items)}
+      </details>`).join('')}`;
 }
 
 function cvPreviewButton(key, label) {
@@ -250,7 +347,7 @@ function showCvPreview(trigger) {
   const title = item.shortTitle ?? item.title;
   const link = kind === 'project' ? projectLink(item, 'Open project')
     : `<a href="${urlFor({ ...state, page: kind, project: '' }, id)}" data-page="${kind}" data-anchor="${id}">Open ${kind === 'education' ? 'education' : 'experience'} entry</a>`;
-  const text = item.details ?? item.summary;
+  const text = item.abstract ?? item.summary ?? item.details;
   cvPreview.innerHTML = `<h3 id="cv-preview-title">${title}</h3><p>${text}</p>${link}`;
   cvPreviewTrigger?.setAttribute('aria-expanded', 'false');
   cvPreviewTrigger = trigger;
@@ -276,16 +373,9 @@ for (const term of cvGlance.querySelectorAll('[data-cv-source]')) {
 }
 
 function cvHome() {
-  const timeline = chronological(projects);
-  const priority = ordered(timeline, item => item.role);
-  const shortlist = [...timeline.filter(item => item.pinned || item.featured),
-    ...priority.filter(item => !item.pinned && !item.featured)].slice(0, 3);
-  const work = timeline.filter(item => shortlist.includes(item));
-  const experienceIds = {
-    engineering: ['psag-president'],
-    teaching: ['tdj-camp', 'private-tutoring'],
-  }[state.role] ?? ['psag-president', 'tdj-camp'];
-  const history = chronological(experience.filter(item => experienceIds.includes(item.id)));
+  const view = roles[state.role];
+  const work = view.projects.slice(0, 3).map(id => projects.find(item => item.id === id));
+  const history = view.experience.map(id => experience.find(item => item.id === id));
 
   return `<section id="cv-work" class="cv-section" aria-labelledby="cv-work-title" data-outline="Selected work">
     <header class="cv-section-heading">
@@ -305,16 +395,27 @@ function cvHome() {
     </header>
     <ul class="cv-rows">${history.map(item => `<li>
       <h3><a href="?section=experience#${item.id}" data-page="experience" data-anchor="${item.id}">${item.shortTitle ?? item.title}</a></h3>
-      <p>${item.abstract ?? item.details}</p>
+      <p>${item.abstract ?? item.summary}</p>
       ${listingDate(item)}
     </li>`).join('')}</ul>
   </section>
+  ${state.role === 'teaching' ? `
+  <section id="cv-credentials" class="cv-section" aria-labelledby="cv-credentials-title" data-outline="Credentials">
+    <header class="cv-section-heading">
+      <h2 id="cv-credentials-title">Credentials</h2>
+    </header>
+    <ul class="cv-rows">${education.filter(item => item.id === 'ta-training').map(item => `<li>
+      <h3><a href="?section=education#${item.id}" data-page="education" data-anchor="${item.id}">${item.title}</a></h3>
+      <p>${item.summary}</p>
+      ${listingDate(item)}
+    </li>`).join('')}</ul>
+  </section>` : ''}
   <section id="cv-skills" class="cv-section" aria-labelledby="cv-skills-title" data-outline="Key skills">
     <header class="cv-section-heading">
       <h2 id="cv-skills-title"><span class="section-number" aria-hidden="true">04 /</span> Key skills</h2>
-      <a href="?section=skills" data-page="skills">All skills</a>
+      <a href="?section=tools#technical-skills" data-page="tools" data-anchor="technical-skills">All skills</a>
     </header>
-    <ul class="tags">${portfolioContent.keySkills.map(skill => `<li><span>${skill}</span></li>`).join('')}</ul>
+    ${tagList(view.skills, { label: 'Key skills' })}
   </section>`;
 }
 
@@ -324,6 +425,7 @@ function renderCvProfile(active) {
   heading.toggleAttribute('data-outline', active);
   if (!active) return;
   actions.innerHTML = [
+    cvActions(state.role),
     contact.email && externalLink(`mailto:${contact.email}`, 'Email'),
     github && externalLink(github, 'GitHub'),
     contact.linkedin && externalLink(contact.linkedin, 'LinkedIn'),
@@ -339,34 +441,69 @@ function projectIndex(items) {
       <p class="meta">${project.meta}</p>
       <h2>${projectLink(project)}</h2>
       <p>${project.description}</p>
-      ${tags(project, true)}
+      ${tagList(project.tags)}
     </div>
     <div class="listing-aside">${listingDate(project)}${projectLink(project, 'View project', 'text-action')}</div>
   </li>`).join('')}</ul>`;
 }
 
 function projectDetail(project) {
-  const related = ordered(projects.filter(item => item.id !== project.id), item => item.role).slice(0, 2);
+  const related = (project.related ?? []).map(id => projects.find(item => item.id === id)).filter(Boolean);
+  const relatedTools = tools.filter(tool => tool.project === project.id);
+  const action = project.action ?? relatedTools.find(tool => tool.primaryAction && actionAvailable(tool.primaryAction))?.primaryAction;
+  const [featuredReference, ...otherReferences] = project.references ?? [];
+  const hasSources = otherReferences.length || project.credit;
+  const overviewLink = project.overviewLink;
+  const overviewActions = [
+    action && toolAction(action, true),
+    project.repository && externalLink(`${github}/${project.repository}`, 'View repository on GitHub', '', action ? '' : 'button primary'),
+    featuredReference && toolAction(featuredReference),
+    overviewLink && `<a href="${urlFor(state, overviewLink.anchor)}" data-jump="${overviewLink.anchor}">${overviewLink.label}</a>`,
+  ].filter(Boolean);
   return `<div class="project-detail">
     <nav class="document-index" aria-label="Project sections"></nav>
-    ${project.id === 'psag'
-      ? `<a class="project-demo-link" href="${urlFor({ ...state, page: 'home', project: '' }, '', 'psag-demo.html')}">
-          <span>View demo</span><span aria-hidden="true">→</span>
-        </a>`
-      : ''}
     <div class="detail-body">
       <section aria-labelledby="overview">
         <h2 id="overview" data-outline>Overview</h2>
         <p>${project.description}</p>
-        ${tags(project)}
+        ${listingDate(project)}
+        ${tagList(project.tags)}
+        ${overviewActions.length ? `<div class="tool-actions"${hasSources ? '' : ' id="materials"'}>${overviewActions.join('')}</div>` : ''}
       </section>
-      ${project.repository ? `<section aria-labelledby="materials">
-        <h2 id="materials" data-outline>Supporting materials</h2>
-        ${externalLink(`${github}/${project.repository}`, 'View repository on GitHub')}
+      ${(project.sections ?? []).map(({ heading, paragraphs, table, figure, example }, index) => {
+        const id = index === 0 ? 'technical' : slug(heading);
+        return `<section aria-labelledby="${id}">
+          <h2 id="${id}" data-outline>${heading}</h2>
+          ${paragraphs.map(paragraph => `<p>${paragraph}</p>`).join('')}
+          ${figure ? `<figure class="research-figure">
+            <img src="${figure.src}" width="${figure.width}" height="${figure.height}" alt="${figure.alt}" loading="lazy">
+            <figcaption>${figure.caption}
+              ${figure.fullSize ? `<a href="${figure.src}" target="_blank" rel="noopener" aria-label="Open full-size figure: ${heading} (new tab)">Full size</a>` : ''}
+              ${figure.source ? externalLink(figure.source, figure.sourceLabel ?? 'Source figure') : ''}
+            </figcaption>
+          </figure>` : ''}
+          ${example ? `<figure class="research-figure project-example">
+            <pre tabindex="0" aria-label="${example.caption}"><code>${example.lines.join('\n')}</code></pre>
+            <figcaption>${example.caption}</figcaption>
+          </figure>` : ''}
+          ${table ? `<div class="result-table">
+            <table>
+              <caption>${table.caption}</caption>
+              <thead><tr>${table.columns.map(column => `<th scope="col">${column}</th>`).join('')}</tr></thead>
+              <tbody>${table.rows.map(([label, ...values]) => `<tr><th scope="row">${label}</th>
+                ${values.map(value => `<td>${value}</td>`).join('')}</tr>`).join('')}</tbody>
+            </table>
+          </div>` : ''}
+        </section>`;
+      }).join('')}
+      ${hasSources ? `<section aria-labelledby="materials">
+        <h2 id="materials" data-outline>Sources and credits</h2>
+        ${project.credit ? `<p>${project.credit}</p>` : ''}
+        ${otherReferences.map(({ url, label }) => `<p>${externalLink(url, label)}</p>`).join('')}
       </section>` : ''}
-      ${project.details ? `<details id="technical" data-outline="Technical details"><summary>Technical details</summary>
-        <p>${project.details}</p>
-      </details>` : ''}
+      ${relatedTools.length ? `<nav class="related-documents" aria-label="Related tools">
+        ${relatedTools.map(tool => toolLink(tool, `${tool.title} in Tools`)).join('')}
+      </nav>` : ''}
       ${related.length ? `<nav class="related-documents" aria-label="Related projects">
         <span>Related projects</span>
         ${related.map(item => projectLink(item)).join('')}
@@ -375,10 +512,64 @@ function projectDetail(project) {
   </div>`;
 }
 
+function toolAction({ label, url, preserveView }, primary = false) {
+  const classes = primary ? 'button primary' : '';
+  if (preserveView) url = urlFor({ ...state, page: 'home', project: '' }, '', url);
+  return /^https?:\/\//i.test(url) ? externalLink(url, label, '', classes)
+    : `<a${classes ? ` class="${classes}"` : ''} href="${url}">${label}</a>`;
+}
+
+function actionAvailable(action) {
+  return action.available !== false &&
+    (!action.localOnly || ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname));
+}
+
+function toolsContent(skillsOpen) {
+  const priority = tool => tool.perspectives?.[state.role] ?? tool.priority;
+  const sorted = [...tools].sort((a, b) => priority(b) - priority(a) || b.priority - a.priority);
+  return `<ul class="tool-catalogue">${sorted.map(tool => {
+    const project = projects.find(item => item.id === tool.project);
+    const primary = tool.primaryAction && actionAvailable(tool.primaryAction);
+    return `<li class="tool-card">
+      <p class="meta">${tool.category}</p>
+      <h2 id="tool-${tool.id}" data-outline>${tool.title}</h2>
+      <p class="tool-status">${tool.status}</p>
+      ${tool.preview ? `<img class="tool-preview" src="${tool.preview.src}" alt="${tool.preview.alt}" loading="lazy">` : ''}
+      <p>${tool.description}</p>
+      ${tool.note ? `<p class="tool-note">${tool.note}</p>` : ''}
+      ${tool.example ? `<details class="tool-example"><summary>${tool.example.label}</summary>
+        <p>${tool.example.description}</p><pre><code>${tool.example.command}</code></pre>
+      </details>` : ''}
+      ${tool.technologies.length ? tagList(tool.technologies, { label: 'Tool technologies' }) : ''}
+      ${!primary && tool.availability ? `<p class="tool-note">${tool.availability}</p>` : ''}
+      <div class="tool-actions">
+        ${primary ? toolAction(tool.primaryAction, true) : ''}
+        ${(tool.secondaryActions ?? []).filter(actionAvailable).map(action => toolAction(action)).join('')}
+        ${project ? projectLink(project, tool.projectLabel ?? 'View project') : ''}
+      </div>
+    </li>`;
+  }).join('')}</ul>
+  <details class="technical-skills" id="technical-skills" data-outline="Technical skills" ${skillsOpen ? 'open' : ''}>
+    <summary>Technical skills</summary>
+    <ul class="entries">${ordered(skills, skill => skill.role).map(({ title, items }) => `<li>
+      <h2 id="${slug(title)}">${title}</h2>
+      ${tagList(items, { label: title, anchors: true })}
+    </li>`).join('')}</ul>
+  </details>`;
+}
+
+function cvActions(role, selected = true) {
+  const label = roles[role].heading;
+  const href = `./assets/cv/${cvFiles[role]}`;
+  return `<a href="${href}" target="_blank" rel="noopener"${selected ? ' class="button cv-view"' : ''}
+      aria-label="View CV — ${label} (PDF, new tab)">View CV</a>
+    <a href="${href}" download${selected ? ' class="button"' : ''}
+      aria-label="Download CV — ${label} (PDF)">Download CV</a>`;
+}
+
 function contactContent() {
-  const { email, linkedin, cvs } = contact;
-  const cvList = ordered(cvs, item => item.role);
-  const preferredCv = cvList[0];
+  const { email, linkedin } = contact;
+  const otherRoles = Object.keys(cvFiles).filter(role => role !== state.role);
   return `<div class="contact-document">
     <section aria-labelledby="email-heading">
       <h2 id="email-heading" data-outline>Email</h2>
@@ -391,16 +582,6 @@ function contactContent() {
           : '<p class="contact-pending">Email address pending</p>'}
       </div>
     </section>
-    <section aria-labelledby="phone-heading">
-      <h2 id="phone-heading" data-outline>Phone</h2>
-      <details class="contact-phone">
-        <summary>Show phone details</summary>
-        <p>To limit automated scrapers, please download a CV copy to find my phone number.</p>
-        ${preferredCv
-          ? `<a href="${preferredCv.url}" download>Download CV copy</a>`
-          : '<p class="contact-pending">The CV download is currently unavailable.</p>'}
-      </details>
-    </section>
     <section aria-labelledby="links-heading">
       <h2 id="links-heading" data-outline>Professional profiles</h2>
       <div class="contact-record">${externalLink(github, 'GitHub')}</div>
@@ -408,19 +589,41 @@ function contactContent() {
     </section>
     <section id="cv" tabindex="-1" aria-labelledby="cv-heading">
       <h2 id="cv-heading" data-outline>Curriculum vitae</h2>
-      ${cvList.length ? cvList.map(({ title, url }) =>
-        `<div class="contact-record"><span>${title}</span><span class="contact-links"><a href="${url}" aria-label="View ${title}">View</a> <a href="${url}" download aria-label="Download ${title}">Download</a></span></div>`).join('')
-        : '<div class="contact-record"><p class="contact-pending">CV download pending</p></div>'}
+      <div class="contact-record cv-download-row contact-cv-selected">
+        <div>
+          <p class="meta">Selected CV</p>
+          <h3>${roles[state.role].heading}</h3>
+        </div>
+        <div class="contact-cv-actions">${cvActions(state.role)}</div>
+      </div>
+      <details class="other-cvs">
+        <summary>Other CVs</summary>
+        ${otherRoles.map(role => `
+          <div class="contact-record cv-download-row">
+            <span>${roles[role].heading}</span>
+            <div class="contact-cv-actions">${cvActions(role, false)}</div>
+          </div>`).join('')}
+      </details>
     </section>
   </div>`;
 }
 
 function entryList(records) {
-  return `<ul class="entries">${records.map(item => `<li>
-    <div class="entry-heading"><h2 id="${item.id || slug(item.title)}" data-outline>${item.title}</h2>${listingDate(item)}</div>
-    ${item.meta ? `<p class="meta">${item.meta}</p>` : ''}
-    ${item.id ? `<details><summary aria-label="Details for ${item.title}">Details</summary><p>${item.description}</p></details>` : `<p>${item.description}</p>`}
-  </li>`).join('')}</ul>`;
+  return `<ul class="entries">${records.map(item => {
+    const project = projects.find(project => project.id === item.project);
+    return `<li>
+      <div class="entry-heading"><h2 id="${item.id}" data-outline>
+        <a href="${urlFor(state, item.id)}" data-jump="${item.id}" data-entry-toggle
+          aria-controls="${item.id}-details" aria-expanded="false">${item.title}</a>
+      </h2>${listingDate(item)}</div>
+      <p class="meta">${item.organization ?? item.institution}</p>
+      ${item.summary || item.abstract ? `<p>${item.summary ?? item.abstract}</p>` : ''}
+      <details id="${item.id}-details"><summary aria-label="Details for ${item.title}">Details</summary>
+        <p>${item.details}</p>
+        ${project ? projectLink(project) : ''}
+      </details>
+    </li>`;
+  }).join('')}</ul>`;
 }
 
 function render() {
@@ -434,15 +637,15 @@ function render() {
   const listing = page === 'projects' && !detail;
   const breadcrumb = currentPath();
   const visibleProjects = listing ? chronological(projects)
-    .filter(item => !filter || item.tags.includes(technologies[filter])) : [];
-  const projectGroups = listing ? perspectiveGroups(visibleProjects) : null;
-  const matches = `${visibleProjects.length} ${visibleProjects.length === 1 ? 'match' : 'matches'}`;
+    .filter(item => !filter || item.tags.some(tag => tagId(tag) === filter)) : [];
+  const filteredProjects = filter ? prioritise(visibleProjects, view.projects) : visibleProjects;
+  const projectGroups = listing && !filter ? perspectiveGroups(visibleProjects, item =>
+    role === 'general' ? view.projects.includes(item.id) : relevantToView(item.role), view.projects) : null;
+  const matchCount = projectGroups ? projectGroups.primary.length + projectGroups.other.length + projectGroups.archive.length : visibleProjects.length;
+  const matches = `${matchCount} ${matchCount === 1 ? 'match' : 'matches'}`;
 
   portfolio.dataset.theme = theme;
   portfolio.toggleAttribute('data-cv-home', home);
-  portfolio.dataset.photo = state.photo;
-  portraitOptions.hidden = !home;
-  portraitOptions.querySelector(`[value="${state.photo}"]`).checked = true;
   const themeToggle = document.querySelector('#theme-toggle');
   const nextTheme = theme === 'dark' ? 'light' : 'dark';
   themeToggle.hidden = false;
@@ -450,7 +653,6 @@ function render() {
   themeToggle.textContent = nextTheme === 'light' ? 'Light' : 'Dark';
   themeToggle.setAttribute('aria-label', `Use ${nextTheme} theme`);
   themeToggle.setAttribute('title', `Switch to ${nextTheme} theme`);
-  outlineToggle.textContent = 'Explorer';
   helpToggle.hidden = false;
   searchToggle.hidden = false;
   updateSearchPrompt();
@@ -459,7 +661,7 @@ function render() {
   if (documentTools.parentElement !== toolsParent) toolsParent.append(documentTools);
   profileToolbar.hidden = !home;
   documentTools.hidden = !!detail;
-  if (detail) perspectiveMenu.open = false;
+  if (documentTools.hidden) perspectiveMenu.open = false;
   main.querySelector('.dossier-profile').hidden = !home;
   document.querySelector('#active-perspective').textContent = perspectiveMenu.querySelector(`[data-perspective="${role}"]`).textContent;
   perspectiveMenu.querySelector('summary').setAttribute('aria-label', `Perspective: ${view.heading}`);
@@ -475,31 +677,34 @@ function render() {
   }
   hero.toggleAttribute('data-home', home);
   profileVisual.hidden = !home;
-  const title = home ? profileName : detail?.title ?? sectionNames[page];
+  const title = home ? profileName : detail?.title ?? (page === 'tools' ? 'Tools & Products' : sectionNames[page]);
   heading.textContent = title;
   const introduction = hero.querySelector('.intro');
   introduction.hidden = page === 'contact';
   introduction.textContent = home ? view.intro : detail?.meta ?? pageIntros[page];
-  if (home && role === 'general') introduction.textContent = profile.abstract;
+  if (home) profileDegree.firstChild.nodeValue = `${view.headline} `;
   returnLinks.hidden = home;
   document.querySelector('#back-to-projects').hidden = !detail;
   renderCvProfile(home);
 
   const content = document.querySelector('#section-content');
-  const detailsOpen = detail && content.dataset.project === detail.id && content.querySelector('details')?.open;
   if (home) content.innerHTML = cvHome();
   else if (detail) content.innerHTML = projectDetail(detail);
-  else if (listing) content.innerHTML = renderPerspectiveList(projectGroups, 'projects', projectIndex);
+  else if (listing) content.innerHTML = projectGroups
+    ? renderPerspectiveList(projectGroups, 'projects', projectIndex)
+    : projectIndex(filteredProjects);
+  else if (page === 'tools') content.innerHTML = toolsContent(content.querySelector('.technical-skills')?.open);
   else if (page === 'contact') content.innerHTML = contactContent();
   else {
-    const records = entries[page].map(([title, meta, description, role, dates]) => ({ title, meta, description, role, ...dates }));
-    content.innerHTML = renderPerspectiveList(perspectiveGroups(chronological(records)), page, entryList);
+    const records = chronological(entries[page]);
+    const groups = perspectiveGroups(records, item => role === 'general' ||
+      (page === 'education' && role === 'teaching') || relevantToView(item.tags),
+      page === 'experience' ? view.experience : role === 'teaching' ? ['ta-training'] : []);
+    content.innerHTML = renderPerspectiveList(groups, page, entryList);
   }
-  content.dataset.project = detail?.id ?? '';
-  if (detailsOpen) content.querySelector('details').open = true;
 
   renderLinks();
-  renderOutline(detail, projectGroups?.primary);
+  renderOutline(detail, listing ? projectGroups?.primary ?? filteredProjects : null);
   document.querySelector('#status-path').textContent = breadcrumb;
   statusText = listing ? `${matches}${filter ? ` · tag: ${technologies[filter]}` : ''}` : role === 'general' ? 'Ready' : `View: ${view.heading}`;
   status.textContent = !panel.hidden ? 'Search' : statusText;
@@ -593,7 +798,7 @@ function notify(message) {
 function renderOutline(detail, listing) {
   const sections = [...main.querySelectorAll('[data-outline]:not([hidden])')]
     .filter(part => !part.parentElement.closest('.other-entries'))
-    .map(part => `<a href="#${part.id}" data-jump="${part.id}">${part.dataset.outline || part.textContent}</a>`);
+    .map(part => `<a href="#${part.id}" data-jump="${part.id}">${part.dataset.outline || part.textContent.trim()}</a>`);
   const links = listing ? [...listing.map(project => projectLink(project)), ...sections] : sections;
   document.querySelector('#outline-path').textContent = detail ? `${detail.id}/` : `${state.page}/`;
   document.querySelector('#outline-links').innerHTML = links.map(link => `<li>${link}</li>`).join('');
@@ -620,7 +825,7 @@ function focusDestination(anchor = '') {
   if (anchor) {
     const destination = document.getElementById(anchor);
     if (!destination) return;
-    const group = destination.closest('.other-entries');
+    const group = destination.closest('.other-entries, .technical-skills');
     if (group) group.open = true;
     if (destination instanceof HTMLDetailsElement) destination.open = true;
     const block = destination.closest('li, section, details') ?? destination;
@@ -639,7 +844,7 @@ function focusDestination(anchor = '') {
 function navigate(page, project = '', anchor = '') {
   const oldPath = currentPath();
   const changed = page !== state.page || project !== state.project;
-  if (!changed && !anchor) return;
+  if (!changed && !anchor && !location.hash) return;
   go({ ...state, page, project }, { anchor });
   focusDestination(anchor);
   if (changed) typeCommand(project ? `open ${project}.md` : `cd ${page}`, oldPath);
@@ -656,9 +861,10 @@ function changePerspective(role) {
 
 function changeFilter(filter) {
   if (state.page === 'projects' && !state.project && filter === state.filter) return;
+  const oldPath = currentPath();
   go({ ...state, page: 'projects', project: '', filter });
   focusDestination();
-  typeCommand(filter ? `filter --tag ${filter}` : 'filter --clear');
+  typeCommand(filter ? `SELECT * FROM projects WHERE tag = '${filter}';` : 'SELECT * FROM projects;', oldPath, true);
   if (!filter) notify('Filter cleared');
 }
 
@@ -667,8 +873,14 @@ const searchItems = [
     type: 'Page', id, label, path: portfolioPath(id), description: pageIntros[id] || roles.general.intro,
   })),
   ...projects.map(project => ({
-    type: 'Project', id: project.id, label: project.title, path: portfolioPath('projects', project.id),
-    description: project.description, meta: project.meta, tags: project.tags,
+    type: 'Project', id: project.id, searchId: project.id, label: project.title, path: portfolioPath('projects', project.id),
+    description: project.description, meta: project.meta,
+    tags: [...project.tags, ...Object.keys(projectAliases).filter(alias => projectAliases[alias] === project.id)],
+  })),
+  ...tools.map(tool => ({
+    type: 'Tool', page: 'tools', id: `tool-${tool.id}`, searchId: tool.id, label: tool.title,
+    path: `${portfolioPath('tools')}/${tool.id}`, description: tool.description,
+    meta: `${tool.category} · ${tool.status}`, tags: [...tool.technologies, ...Object.keys(ampAliases).filter(alias => ampAliases[alias] === tool.id)],
   })),
   ...Object.entries(roles).map(([id, view]) => ({
     type: 'Perspective', id, label: view.label, path: `view ${view.focus}`, description: view.intro,
@@ -676,11 +888,17 @@ const searchItems = [
   ...Object.entries(technologies).map(([id, label]) => ({
     type: 'Tag', id, label, path: `filter --tag ${id}`, description: `Show projects tagged ${label}.`,
   })),
-  ...entries.skills.map(([label, meta, description]) => ({
-    type: 'Skill', id: slug(label), label, meta, description, path: `${portfolioPath('skills')}#${slug(label)}`,
-  })),
-  ...['experience', 'education'].flatMap(page => entries[page].map(([label, meta, description, , record]) => ({
-    type: sectionNames[page], page, id: record.id, label, meta, description,
+  ...skills.flatMap(({ title, items }) => [
+    { type: 'Skill', page: 'tools', id: slug(title), label: title, description: items.join(' · '),
+      path: `${portfolioPath('tools')}#${slug(title)}` },
+    ...items.map(label => ({
+      type: 'Skill', filter: tagId(label), id: `skill-${slug(label)}`, label, meta: title,
+      path: `filter --tag ${tagId(label)}`,
+    })),
+  ]),
+  ...Object.entries(entries).flatMap(([page, records]) => records.map(record => ({
+    type: sectionNames[page], page, id: record.id, label: record.title,
+    meta: record.organization ?? record.institution, description: record.summary ?? record.abstract ?? record.details,
     path: `${portfolioPath(page)}#${record.id}`,
   }))),
   { type: 'Help', id: 'help', label: 'Command help', path: 'help', description: 'Show the available commands and keyboard shortcuts.' },
@@ -689,13 +907,15 @@ const searchItems = [
 const searchSuggestions = [
   ['Quick actions', [
     { type: 'Action', label: 'Search projects', query: 'project', description: 'Find project titles, descriptions and technology tags.' },
-    { type: 'Action', label: 'Change perspective', query: 'view', description: 'Find and apply a research, software or teaching perspective.' },
+    { type: 'Action', label: 'Search tools', query: 'tool', description: 'Find software, products and interactive research tools.' },
+    { type: 'Action', label: 'Change perspective', query: 'view', description: 'Find and apply a portfolio perspective.' },
     { type: 'Page', id: 'projects', label: 'Browse work', path: portfolioPath('projects'), description: 'Open the full project list.' },
   ]],
-  ['Pages', searchItems.filter(item => item.type === 'Page').slice(0, 3)],
+  ['Pages', searchItems.filter(item => item.type === 'Page').slice(0, 4)],
   ['Commands', [
     { type: 'Command', label: 'help', command: 'help', description: 'Show available commands and keyboard shortcuts.' },
-    { type: 'Command', label: 'view research', command: 'view research', description: 'Select AI & Research while keeping the current page open.' },
+    { type: 'Command', label: 'view ai-ml', command: 'view ai-ml', description: 'Select AI & ML while keeping the current page open.' },
+    { type: 'Command', label: 'cd tools', command: 'cd tools', description: 'Navigate to Tools & Products.' },
     { type: 'Command', label: 'cd projects', command: 'cd projects', description: 'Navigate to the project listing.' },
   ]],
 ];
@@ -718,11 +938,19 @@ function fuzzyScore(term, text) {
 function explicitCommand(value) {
   if (value === 'help') return searchItems.at(-1);
   const [verb, id, tag, extra] = value.split(/\s+/);
-  const aliases = { ai: 'research', research: 'research', software: 'engineering', education: 'teaching', general: 'general' };
-  if (verb === 'cd' && id && !tag) return searchItems.find(item => item.type === 'Page' && item.id === id);
-  if (verb === 'open' && id && !tag) return searchItems.find(item => item.type === 'Project' && item.id === id.replace(/^(projects\/)|\.md$/g, ''));
-  if (verb === 'view' && id && !tag) return searchItems.find(item => item.type === 'Perspective' && item.id === aliases[id]);
-  if (verb === 'filter' && id === '--tag' && !extra) return searchItems.find(item => item.type === 'Tag' && item.id === tag);
+  const aliases = { ai: 'ai-ml', software: 'engineering', education: 'teaching' };
+  if (verb === 'cd' && id && !tag) return searchItems.find(item => item.type === 'Page' && item.id === (id === 'skills' ? 'tools' : id));
+  const path = id?.replace(/^~?\//, '');
+  if (verb === 'open' && path?.startsWith('tools/') && !tag) {
+    const tool = path.slice(6);
+    return searchItems.find(item => item.type === 'Tool' && item.searchId === (ampAliases[tool] ?? tool));
+  }
+  if (verb === 'open' && id && !tag) {
+    const project = path.replace(/^projects\/|\.md$/g, '');
+    return searchItems.find(item => item.type === 'Project' && item.id === (projectAliases[project] ?? project));
+  }
+  if (verb === 'view' && id && !tag) return searchItems.find(item => item.type === 'Perspective' && item.id === (aliases[id] ?? id));
+  if (verb === 'filter' && id === '--tag' && !extra) return searchItems.find(item => item.type === 'Tag' && item.id === tagId(tag ?? ''));
   if (value === 'filter --clear') return { type: 'Tag', id: '', label: 'Clear project filter', path: value, description: 'Show all projects.' };
 }
 
@@ -731,12 +959,12 @@ function renderSearch() {
   const command = explicitCommand(query);
   const terms = query.split(/\s+/);
   const grouped = !query;
-  const verbs = { Page: 'cd', Project: 'open', Perspective: 'view', Tag: 'filter' };
+  const verbs = { Page: 'cd', Project: 'open', Tool: 'open', Perspective: 'view', Tag: 'filter' };
   matches = command ? [command] : query ? searchItems.map(item => {
     const label = item.label.toLowerCase();
     const keywords = [verbs[item.type], item.type, item.path, item.meta, ...(item.tags ?? [])].join(' ').toLowerCase();
     const summary = item.description?.toLowerCase() ?? '';
-    const score = terms.reduce((sum, term) => sum + Math.min(
+    const score = query === item.searchId ? -1 : terms.reduce((sum, term) => sum + Math.min(
       fuzzyScore(term, label), 20 + fuzzyScore(term, keywords), summary.includes(term) ? 50 : Infinity,
     ), 0);
     return { item, score };
@@ -835,8 +1063,8 @@ function runMatch(item) {
     changePerspective(item.id);
     const control = state.project ? heading : perspectiveMenu.querySelector('summary');
     control.focus({ preventScroll: true });
-  } else if (item.type === 'Tag') changeFilter(item.id);
-  else navigate(item.page || 'skills', '', item.id);
+  } else if (item.type === 'Tag' || item.filter) changeFilter(item.filter ?? item.id);
+  else navigate(item.page, '', item.id);
 }
 
 function updateSearchPrompt() {
@@ -846,10 +1074,6 @@ function updateSearchPrompt() {
 compactCommandBar.addEventListener('change', updateSearchPrompt);
 new ResizeObserver(fitPromptPath).observe(search.form);
 document.fonts.ready.then(fitPromptPath);
-portraitOptions.addEventListener('change', event => {
-  go({ ...state, photo: event.target.value }, { replace: true, anchor: location.hash.slice(1) });
-});
-
 outlineToggle.addEventListener('click', () => setOutline(outline.hidden));
 function toggleHelp() {
   if (!panel.hidden && !help.hidden) {
@@ -905,6 +1129,18 @@ document.addEventListener('pointerdown', event => {
 });
 document.addEventListener('keydown', event => {
   const key = event.key.toLowerCase();
+  const digit = event.code.startsWith('Digit') ? event.code.slice(5) : key;
+  const tabModifier = event.ctrlKey || (event.metaKey && !event.shiftKey);
+  const tab = tabModifier && !event.altKey && /^[1-6]$/.test(digit) ? tabLinks[Number(digit) - 1] : null;
+  if (tab) {
+    event.preventDefault();
+    if (event.repeat) return;
+    closeSearch();
+    search.value = '';
+    search.blur();
+    navigate(tab.dataset.page);
+    return;
+  }
   if ((event.ctrlKey || event.metaKey) && !event.altKey && key === 'k') {
     event.preventDefault();
     if (event.repeat) return;
@@ -925,8 +1161,13 @@ document.addEventListener('keydown', event => {
     perspectiveMenu.querySelector('summary').focus();
   } else if (key === 'escape' && !outline.hidden) {
     setOutline(false);
-  } else if (key === 'e' && !event.repeat && !event.ctrlKey && !event.altKey && !event.metaKey &&
-      !outlineToggle.hidden && !event.target.closest('input, textarea, select, [contenteditable]')) {
+  } else if (key === 'e' && (event.ctrlKey || event.metaKey) && !event.altKey && !event.shiftKey && !outlineToggle.hidden) {
+    event.preventDefault();
+    if (event.repeat) return;
+    if (!panel.hidden) {
+      closeSearch();
+      outlineToggle.focus({ preventScroll: true });
+    }
     setOutline(outline.hidden);
   }
 });
@@ -977,6 +1218,12 @@ portfolio.addEventListener('click', async event => {
   event.preventDefault();
   const { page, project, jump, anchor } = link.dataset;
   if (link.closest('#outline') && narrowLayout.matches) setOutline(false);
+  if (link.hasAttribute('data-entry-toggle')) {
+    const details = document.getElementById(link.getAttribute('aria-controls'));
+    details.open = !details.open;
+    if (details.open && location.hash !== `#${jump}`) history.pushState(null, '', urlFor(state, jump));
+    return;
+  }
   if (jump) {
     if (location.hash !== `#${jump}`) history.pushState(null, '', urlFor(state, jump));
     focusDestination(jump);
@@ -988,6 +1235,14 @@ addEventListener('popstate', () => {
   render();
   if (location.hash) focusDestination(location.hash.slice(1));
 });
+
+main.addEventListener('error', event => {
+  if (event.target.matches('.research-figure img')) event.target.hidden = true;
+}, true);
+main.addEventListener('toggle', event => {
+  const title = event.target.closest('.entries > li')?.querySelector('[data-entry-toggle]');
+  if (title) title.setAttribute('aria-expanded', event.target.open);
+}, true);
 
 render();
 if (location.hash) focusDestination(location.hash.slice(1));
