@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore saved wildfire simulations and compare how policies act on partial observations with a shared water budget.">
+  <title>Wildfire Policy Explorer</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./viewer.css">
+  <script src="./viewer.js" defer></script>
+</head>
+<body>
+<main class="shell">
+  <nav class="portfolio-return" aria-label="Portfolio">
+    <a id="portfolio-return" href="../../?section=tools#tool-wildfire"><span aria-hidden="true">←</span> Back to portfolio tools</a>
+  </nav>
+  <header class="header">
+    <p class="eyebrow">Wildfire intervention research</p>
+    <h1>Wildfire Policy Explorer</h1>
+    <p class="subtitle">Follow a fire from the full map and through one sensor’s eyes. Compare how different policies decide when and where to spend a shared supply of water.</p>
+  </header>
+
+  <section class="configuration card" aria-label="Episode selection">
+    <div class="primary-controls">
+      <label>Spread probability<select id="scenario" disabled></select></label>
+      <label>Fire seed<select id="seed" disabled></select></label>
+      <label>Policy<select id="policy" disabled></select></label>
+      <label>Compare with<select id="compare" disabled><option value="">Single policy</option></select></label>
+    </div>
+    <p id="scenario-details" class="map-note" hidden></p>
+    <p id="status" class="map-note" role="status">Loading the replay catalogue…</p>
+    <p id="error" class="error" role="alert" hidden></p>
+  </section>
+
+  <noscript><p class="error">Enable JavaScript to inspect the saved replays.</p></noscript>
+
+  <section id="replay" class="replay card" aria-label="Replay controls and map legend" hidden>
+    <div class="replay-top">
+      <div>
+        <p id="clock" class="eyebrow"></p>
+        <h2 id="phase-title"></h2>
+      </div>
+      <div class="playback">
+        <button id="previous" type="button" aria-label="Previous frame">←</button>
+        <button id="play" type="button" class="primary">Play</button>
+        <button id="next" type="button" aria-label="Next frame">→</button>
+        <label class="speed-label">Speed
+          <select id="speed"><option value="1200">0.5×</option><option value="600" selected>1×</option><option value="300">2×</option><option value="240">2.5×</option></select>
+        </label>
+      </div>
+    </div>
+    <label class="sr-only" for="timeline">Replay frame</label>
+    <input id="timeline" type="range" min="0" max="0" value="0" aria-describedby="clock">
+    <p id="phase-description" class="phase-description"></p>
+    <div class="replay-bottom">
+      <div class="legend" aria-label="Map legend">
+        <span><i class="safe"></i>Safe</span>
+        <span><i class="fire"></i>Burning</span>
+        <span><i class="burned"></i>Burned</span>
+        <span><i class="unknown"></i>Unknown</span>
+        <span><i class="target"></i>Accepted target</span>
+        <span><i class="suppressed"></i>Suppressed earlier</span>
+        <span><i class="sensor"></i>Sensor</span>
+      </div>
+      <label class="sensor-select">Inspect sensor<select id="sensor"></select></label>
+    </div>
+  </section>
+
+  <div id="episodes" class="episodes" aria-label="Policy replays"></div>
+
+  <template id="episode-template">
+    <article class="episode card">
+      <div class="episode-heading">
+        <h2 class="policy-title"></h2>
+        <p class="position"></p>
+      </div>
+      <div class="workspace">
+        <section class="map-card">
+          <div class="card-heading"><h3>Full environment</h3><span class="map-count burning"></span></div>
+          <canvas class="world" role="img"></canvas>
+          <p class="map-note">Click a sensor marker to inspect its view.</p>
+        </section>
+        <section class="map-card">
+          <div class="card-heading"><h3>Private observation</h3><span class="map-count known"></span></div>
+          <canvas class="private" role="img"></canvas>
+          <p class="map-note observation"></p>
+        </section>
+      </div>
+      <dl class="stats">
+        <div><dt>Water remaining</dt><dd class="water"></dd></div>
+        <div><dt>Requests accepted</dt><dd class="targets"></dd></div>
+        <div><dt>Fires suppressed</dt><dd class="suppressed-now"></dd></div>
+      </dl>
+      <section class="decision">
+        <h3>Selected sensor’s decision</h3>
+        <p class="decision-text"></p>
+        <details class="requests"><summary>All recorded decisions</summary>
+          <div class="table-wrap" tabindex="0" role="region" aria-label="Recorded sensor decisions">
+            <table>
+              <thead><tr><th scope="col">Sensor</th><th scope="col">Action</th><th scope="col">Target (x, y)</th><th scope="col">Accepted</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </details>
+      </section>
+      <section class="outcome">
+        <h3>Final outcome <span>Illustrative episode</span></h3>
+        <dl class="stats final-stats">
+          <div><dt>Cumulative damage</dt><dd class="damage"></dd></div>
+          <div><dt>Burned cells</dt><dd class="burned-final"></dd></div>
+          <div><dt>Water used</dt><dd class="water-used"></dd></div>
+          <div><dt>Successful suppressions</dt><dd class="successes"></dd></div>
+        </dl>
+        <div class="chart-card">
+          <svg class="chart" role="img" aria-label="Burning cells and remaining water over completed simulation timesteps"></svg>
+          <p class="chart-key"><span class="fire-line">Burning cells</span><span class="budget-line">Water remaining</span></p>
+        </div>
+      </section>
+    </article>
+  </template>
+
+  <details class="method card">
+    <summary>How the simulation works</summary>
+    <div>
+      <p><strong>Decide now or save water for later.</strong> Wildfire containment is a sequence of decisions. An intervention now can slow future spread, but each accepted request spends a unit from the episode’s shared water budget. Sensors decide independently without messages. The simulator accepts unique targets in sensor ID order until the water runs out. An accepted request costs water even if its target is safe or the suppression fails.</p>
+      <p><strong>Each sensor sees only part of the map.</strong> The full map shows the simulator’s actual state. A private map shows the last recorded observation for the selected sensor. Dotted cells are unknown to that sensor. The first decision happens before any observation. Later decisions use a local fire signal, whether water remains, and, where the policy uses memory, the sensor’s own past actions and signals.</p>
+      <p><strong>Compare policies under the same conditions.</strong> A matching seed starts both policies with the same ignitions and uses the same simulator seed schedule. Interventions can change how fire unfolds. The reactive policy targets the nearest observed fire when water is available. Local greedy ranks visible fires by nearby safe and unknown cells. The GRU is a recurrent policy loaded from saved replicate 0. The sampled planner adapts ideas from oSarsaSeq using Monte Carlo rollouts. It omits the original method’s exact backups and optimality guarantees. At spread 0.15 and 0.30, the saved planner retained its reactive initialization. <a href="https://doi.org/10.1609/aaai.v39i22.34494">Peralez et al., AAAI 2025</a></p>
+      <p><strong>Episode outcomes are examples.</strong> The wider evaluation used 100 held-out seeds per spread setting and three trained GRU replicates. This explorer shows three of those seeds and one GRU replicate. Cumulative damage adds burning and burned cells after each step through the configured horizon. If the fire ends early, the final damage count carries forward for the remaining steps.</p>
+      <p><strong>Model limits.</strong> Fire spreads stochastically to four adjacent cells. Surviving fires spread once and then burn out. The grid omits wind, weather, terrain, fuel variation and constraints on deploying real firefighting resources. The episodes illustrate the study’s control problem and provide no validation for field operations.</p>
+    </div>
+  </details>
+  <footer>Adapted from the Wildfire Intervention course project and its full-network evaluation.</footer>
+</main>
+</body>
+</html>

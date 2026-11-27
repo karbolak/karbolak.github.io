@@ -221,8 +221,7 @@ body:has(> .portfolio[data-design="experimental"]:not([hidden])) {
 .contact-document h2 { margin: 5px 0 7px; }
 .contact-record { display: flex; justify-content: space-between; gap: 5px 14px; flex-wrap: wrap; padding-block: 6px; }
 .contact-record + .contact-record { border-top: 1px solid var(--rule); }
-.contact-links { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.contact-links button { font: inherit; min-height: 30px; }
+.cv-download-row { align-items: center; }
 .contact-pending { color: var(--muted); }
 .portfolio[data-design="experimental"] .document-index { padding: 6px 9px; margin-bottom: 9px; }
 .related-documents {
@@ -364,8 +363,8 @@ body:has(> .portfolio[data-design="experimental"]:not([hidden])) {
 .portfolio[data-cv-home] .dossier-degree { margin-top: 7px; }
 #cv-actions, .cv-section-heading nav { display: flex; flex-wrap: wrap; align-items: baseline; gap: 3px 12px; }
 #cv-actions { margin-top: 10px; font-size: .88rem; grid-area: actions; }
-#cv-actions a, .cv-section a { color: var(--accent); }
-#cv-actions a { padding-block: 4px; }
+#cv-actions a:not(.button), .cv-section a { color: var(--accent); }
+#cv-actions a:not(.button) { padding-block: 4px; }
 
 .cv-section { border-top: 1px solid var(--line); margin-top: 18px; }
 .cv-section-heading {

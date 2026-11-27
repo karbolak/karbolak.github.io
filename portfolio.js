@@ -1,4 +1,4 @@
-const { profile, education, experience, tools } = portfolioContent;
+const { profile, education, experience } = portfolioContent;
 const profileName = profile.name;
 const github = profile.github;
 const sectionNames = {
@@ -46,7 +46,7 @@ const roles = {
     heading: 'Software Engineering',
     focus: 'software',
     headline: 'Software engineering · MSc AI',
-    intro: 'I build Python libraries, command-line tools and web applications, and test workflows from input handling through deployment or reproducible evaluation.',
+    intro: 'I develop and maintain software for student associations. I also build Python libraries, command-line tools and web applications, and test workflows through deployment or reproducible evaluation.',
     projects: ['psag', 'diffgate', 'ai-intake-automation', 'xai-face-clustering', 'wildfire'],
     experience: ['htsm-research', 'psag-president'],
     skills: ['Python', 'FastAPI', 'Docker', 'pytest', 'Git', 'n8n'],
@@ -81,6 +81,17 @@ const projects = portfolioContent.projects.map(project => ({
   tags: project.tags.filter(tag => !['ai', 'research', 'software', 'education'].includes(tag))
     .map(tag => technologyLabels[tag] ?? tag),
 }));
+const tools = portfolioContent.tools.map(tool => {
+  const project = projects.find(item => item.id === tool.project);
+  return {
+    title: project?.title,
+    description: project?.description,
+    status: project?.meta,
+    technologies: project?.tags ?? [],
+    primaryAction: project?.action,
+    ...tool,
+  };
+});
 const skillAliases = {
   'cli-development': 'cli',
   'gmsh-getdp': 'gmsh',
@@ -108,11 +119,18 @@ const perspectiveTags = {
 const pageIntros = {
   projects: 'Selected work across research, software, and education.',
   tools: 'Software, products, and interactive research tools you can use or explore.',
-  experience: 'Research collaboration, teaching, and student association leadership.',
+  experience: 'Research, teaching, and student association leadership.',
   education: 'Degrees, honours studies, exchange and teaching credentials.',
   contact: 'Professional profiles and contact information.',
 };
-const contact = { email: 'kajetan.karbowski@gmail.com', linkedin: 'https://www.linkedin.com/in/kajetan-karbowski/', cvs: [] };
+const contact = { email: 'kajetan.karbowski@gmail.com', linkedin: 'https://www.linkedin.com/in/kajetan-karbowski/' };
+const cvFiles = {
+  general: 'Kajetan_Karbowski_CV_General.pdf',
+  'ai-ml': 'Kajetan_Karbowski_CV_AI_ML.pdf',
+  research: 'Kajetan_Karbowski_CV_Research.pdf',
+  engineering: 'Kajetan_Karbowski_CV_Software_Engineering.pdf',
+  teaching: 'Kajetan_Karbowski_CV_Education.pdf',
+};
 const portfolio = document.querySelector('.portfolio');
 const main = document.querySelector('#main');
 const returnLinks = main.querySelector('.return-links');
@@ -397,6 +415,7 @@ function renderCvProfile(active) {
   heading.toggleAttribute('data-outline', active);
   if (!active) return;
   actions.innerHTML = [
+    cvDownload(state.role, true),
     contact.email && externalLink(`mailto:${contact.email}`, 'Email'),
     github && externalLink(github, 'GitHub'),
     contact.linkedin && externalLink(contact.linkedin, 'LinkedIn'),
@@ -421,6 +440,16 @@ function projectIndex(items) {
 function projectDetail(project) {
   const related = ordered(projects.filter(item => item.id !== project.id && !item.archived), item => item.role).slice(0, 2);
   const relatedTools = tools.filter(tool => tool.project === project.id);
+  const action = project.action ?? relatedTools.find(tool => tool.primaryAction && actionAvailable(tool.primaryAction))?.primaryAction;
+  const [featuredReference, ...otherReferences] = project.references ?? [];
+  const hasSources = otherReferences.length || project.credit;
+  const overviewLink = project.overviewLink;
+  const overviewActions = [
+    action && toolAction(action, true),
+    project.repository && externalLink(`${github}/${project.repository}`, 'View repository on GitHub', '', action ? '' : 'button primary'),
+    featuredReference && toolAction(featuredReference),
+    overviewLink && `<a href="${urlFor(state, overviewLink.anchor)}" data-jump="${overviewLink.anchor}">${overviewLink.label}</a>`,
+  ].filter(Boolean);
   return `<div class="project-detail">
     <nav class="document-index" aria-label="Project sections"></nav>
     <div class="detail-body">
@@ -429,6 +458,7 @@ function projectDetail(project) {
         <p>${project.description}</p>
         ${listingDate(project)}
         ${tagList(project.tags)}
+        ${overviewActions.length ? `<div class="tool-actions"${hasSources ? '' : ' id="materials"'}>${overviewActions.join('')}</div>` : ''}
       </section>
       ${(project.sections ?? []).map(({ heading, paragraphs, table, figure }, index) => {
         const id = index === 0 ? 'technical' : slug(heading);
@@ -449,11 +479,10 @@ function projectDetail(project) {
           </div>` : ''}
         </section>`;
       }).join('')}
-      ${project.repository || project.references?.length || project.credit ? `<section aria-labelledby="materials">
+      ${hasSources ? `<section aria-labelledby="materials">
         <h2 id="materials" data-outline>Sources and credits</h2>
         ${project.credit ? `<p>${project.credit}</p>` : ''}
-        ${project.repository ? externalLink(`${github}/${project.repository}`, 'View repository on GitHub') : ''}
-        ${(project.references ?? []).map(({ url, label }) => `<p>${externalLink(url, label)}</p>`).join('')}
+        ${otherReferences.map(({ url, label }) => `<p>${externalLink(url, label)}</p>`).join('')}
       </section>` : ''}
       ${relatedTools.length ? `<nav class="related-documents" aria-label="Related tools">
         ${relatedTools.map(tool => toolLink(tool, `${tool.title} in Tools`)).join('')}
@@ -466,8 +495,9 @@ function projectDetail(project) {
   </div>`;
 }
 
-function toolAction({ label, url }, primary = false) {
+function toolAction({ label, url, preserveView }, primary = false) {
   const classes = primary ? 'button primary' : '';
+  if (preserveView) url = urlFor({ ...state, page: 'home', project: '' }, '', url);
   return /^https?:\/\//i.test(url) ? externalLink(url, label, '', classes)
     : `<a${classes ? ` class="${classes}"` : ''} href="${url}">${label}</a>`;
 }
@@ -511,10 +541,14 @@ function toolsContent(skillsOpen) {
   </details>`;
 }
 
+function cvDownload(role, primary = false) {
+  const label = roles[role].heading;
+  return `<a href="./assets/cv/${cvFiles[role]}" download${primary ? ' class="button primary"' : ''}>Download CV — ${label} (PDF)</a>`;
+}
+
 function contactContent() {
-  const { email, linkedin, cvs } = contact;
-  const cvList = ordered(cvs, item => item.role);
-  const preferredCv = cvList[0];
+  const { email, linkedin } = contact;
+  const otherRoles = Object.keys(cvFiles).filter(role => role !== state.role);
   return `<div class="contact-document">
     <section aria-labelledby="email-heading">
       <h2 id="email-heading" data-outline>Email</h2>
@@ -527,16 +561,6 @@ function contactContent() {
           : '<p class="contact-pending">Email address pending</p>'}
       </div>
     </section>
-    <section aria-labelledby="phone-heading">
-      <h2 id="phone-heading" data-outline>Phone</h2>
-      <details class="contact-phone">
-        <summary>Show phone details</summary>
-        <p>To limit automated scrapers, please download a CV copy to find my phone number.</p>
-        ${preferredCv
-          ? `<a href="${preferredCv.url}" download>Download CV copy</a>`
-          : '<p class="contact-pending">The CV download is currently unavailable.</p>'}
-      </details>
-    </section>
     <section aria-labelledby="links-heading">
       <h2 id="links-heading" data-outline>Professional profiles</h2>
       <div class="contact-record">${externalLink(github, 'GitHub')}</div>
@@ -544,9 +568,11 @@ function contactContent() {
     </section>
     <section id="cv" tabindex="-1" aria-labelledby="cv-heading">
       <h2 id="cv-heading" data-outline>Curriculum vitae</h2>
-      ${cvList.length ? cvList.map(({ title, url }) =>
-        `<div class="contact-record"><span>${title}</span><span class="contact-links"><a href="${url}" aria-label="View ${title}">View</a> <a href="${url}" download aria-label="Download ${title}">Download</a></span></div>`).join('')
-        : '<div class="contact-record"><p class="contact-pending">CV download pending</p></div>'}
+      ${[state.role, ...otherRoles].map(role => `
+        <div class="contact-record cv-download-row">
+          ${cvDownload(role, role === state.role)}
+          <a href="./assets/cv/${cvFiles[role]}" aria-label="Open CV — ${roles[role].heading} (PDF)">Open PDF</a>
+        </div>`).join('')}
     </section>
   </div>`;
 }
@@ -603,7 +629,7 @@ function render() {
   const toolsParent = home ? profileToolbar : heading.parentElement;
   if (documentTools.parentElement !== toolsParent) toolsParent.append(documentTools);
   profileToolbar.hidden = !home;
-  documentTools.hidden = !!detail || page === 'contact';
+  documentTools.hidden = !!detail;
   if (documentTools.hidden) perspectiveMenu.open = false;
   main.querySelector('.dossier-profile').hidden = !home;
   document.querySelector('#active-perspective').textContent = perspectiveMenu.querySelector(`[data-perspective="${role}"]`).textContent;

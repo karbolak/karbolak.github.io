@@ -44,7 +44,7 @@ const portfolioContent = {
       "start": "2026",
       "end": null,
       "date_label": "2026–Present",
-      "details": "The programme connects technical research with engineering practice. My honours work includes the VLF antenna research collaboration with ASTRON.",
+      "details": "The programme connects technical research with engineering practice. My honours work includes a research internship with ASTRON on VLF antennas.",
       "tags": [
         "research",
         "software",
@@ -114,12 +114,12 @@ const portfolioContent = {
   "experience": [
     {
       "id": "htsm-research",
-      "title": "ASTRON Research Collaboration",
-      "organization": "University of Groningen · in collaboration with ASTRON",
+      "title": "Research Intern — ASTRON (University of Groningen HTSM)",
+      "organization": "High Tech Systems and Materials Honours Master",
       "start": "2026",
       "ongoing": true,
-      "summary": "Research on compact magnetic VLF receiving antennas through the University of Groningen’s HTSM Honours Master.",
-      "details": "Developed an analytical and finite-element simulation framework and evaluated physics-informed surrogate methods for multi-objective design under fixed computational budgets.",
+      "summary": "Researching compact VLF receiving antennas for ionospheric-disturbance monitoring through HTSM, developing computational models and optimisation methods.",
+      "details": "The work combines analytical models and finite-element simulations with physics-informed surrogate methods for multi-objective design.",
       "project": "vlf-antenna",
       "tags": [
         "ai",
@@ -376,16 +376,30 @@ const portfolioContent = {
     },
     {
       "id": "psag",
-      "title": "PSAG Platform",
-      "kind": "Deployed product · Ongoing development",
+      "title": "Association Management Platform",
+      "kind": "In production · First client: PSAG",
       "tags": [
-        "software"
+        "software",
+        "TypeScript",
+        "React",
+        "PostgreSQL",
+        "Docker Compose",
+        "Caddy"
       ],
-      "summary": "Developed and deployed a digital platform for the Polish Student Association Groningen.",
-      "references": [
+      "summary": "I created, develop and maintain the Association Management Platform (AMP), an independent product that integrates a student association’s public website, administration and email operations. The Polish Student Association Groningen (PSAG) is its first client and production deployment.",
+      "action": { "label": "View client deployment", "url": "https://psag.nl/" },
+      "sections": [
         {
-          "label": "Visit the live PSAG website",
-          "url": "https://psag.nl"
+          "heading": "Production and maintenance",
+          "paragraphs": [
+            "I built the product with TypeScript, React and PostgreSQL. I maintain the Docker Compose web, admin and email-worker services, Caddy and TLS, health checks and backups."
+          ]
+        },
+        {
+          "heading": "Next steps",
+          "paragraphs": [
+            "I plan to offer AMP to other associations. A standalone product demo is planned."
+          ]
         }
       ]
     },
@@ -409,6 +423,7 @@ const portfolioContent = {
         "Human-in-the-loop design"
       ],
       "summary": "Built an intake prototype that drafts responses and escalates sensitive or uncertain requests to a human reviewer.",
+      "overviewLink": { "label": "See prototype verification", "anchor": "verification" },
       "sections": [
         {
           "heading": "Workflow",
@@ -738,6 +753,7 @@ const portfolioContent = {
         "Experiment design"
       ],
       "summary": "In a four-person pilot, adaptive robot gestures accompanied higher reported attention and lower objective word recall.",
+      "overviewLink": { "label": "See pilot results", "anchor": "descriptive-results" },
       "sections": [
         {
           "heading": "Study design",
@@ -903,14 +919,7 @@ const portfolioContent = {
   "tools": [
     {
       "id": "psag",
-      "title": "PSAG Platform",
-      "description": "A digital platform for managing and supporting the activities of a student association, developed for the Polish Student Association Groningen.",
       "category": "Product",
-      "status": "Deployed",
-      "technologies": [],
-      "note": "The demo walkthrough is in progress.",
-      "primaryAction": { "label": "Preview demo", "url": "./psag-demo.html" },
-      "secondaryActions": [{ "label": "Visit live website", "url": "https://psag.nl" }],
       "project": "psag",
       "projectLabel": "View project",
       "perspectives": { "research": 10, "ai-ml": 10, "engineering": 30, "teaching": 10 },
@@ -938,13 +947,12 @@ const portfolioContent = {
     {
       "id": "wildfire",
       "title": "Wildfire Policy Explorer",
-      "description": "Explore how distributed sensors make intervention decisions under partial observability and a shared resource budget. Compare five control policies across 45 precomputed wildfire simulations, inspect individual sensor observations and replay their decisions.",
+      "description": "Explore how distributed sensors make intervention decisions under partial observability and a shared resource budget. Compare five control policies across 45 precomputed wildfire episodes, inspect individual sensor observations and replay their decisions.",
       "category": "Interactive research tool",
       "status": "Implemented and tested",
       "technologies": ["Multi-agent systems", "Reinforcement learning", "Python", "JavaScript"],
       "note": "The browser replays saved episodes. Each episode illustrates one outcome from a wider evaluation.",
-      "availability": "Public launch pending.",
-      "primaryAction": { "label": "Launch demo", "url": "./tools/wildfire/", "localOnly": true },
+      "primaryAction": { "label": "Launch explorer", "url": "./tools/wildfire/", "preserveView": true },
       "project": "wildfire",
       "projectLabel": "View research project",
       "perspectives": { "research": 20, "ai-ml": 20, "teaching": 30 },
